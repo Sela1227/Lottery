@@ -1,9 +1,0 @@
-{
-  "name": "lottery-group",
-  "version": "1.0.0",
-  "private": true,
-  "description": "SELA 樂透一路發 - 團購彩券系統",
-  "engines": {
-    "node": ">=20.0.0"
-  }
-}

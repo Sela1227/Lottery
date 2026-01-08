@@ -1,8 +1,11 @@
-# Nixpacks 建置設定
-# 讓 Nixpacks 自動偵測 Python（從 requirements.txt）
+# 明確指定 Python 專案
+providers = ["python"]
 
 [phases.setup]
 nixPkgs = ["postgresql"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
 
 [start]
 cmd = "python scripts/migrate.py && python main.py"
