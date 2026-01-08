@@ -1,13 +1,14 @@
 """
 SELA 樂透一路發 - 主入口
 
-Railway 部署用（純 API 版本）
-UI 功能之後透過前端框架（如 React/Vue）或獨立 Flet App 實現
+Railway 部署用，整合 Web UI 和 FastAPI
 """
 import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from app.config import settings
 from app.main import app as api_app
@@ -18,8 +19,8 @@ main_app = FastAPI(
     title=settings.app_name,
     description="團購彩券系統",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url=None,
+    redoc_url=None,
 )
 
 # CORS 設定
@@ -31,86 +32,30 @@ main_app.add_middleware(
     allow_headers=["*"],
 )
 
+# 靜態檔案目錄
+STATIC_DIR = Path(__file__).parent / "static"
+
 
 # 掛載 API
 main_app.mount("/api", api_app)
 
 
-@main_app.get("/", response_class=HTMLResponse)
-async def root():
-    """首頁 - 顯示系統狀態"""
-    return """
-    <!DOCTYPE html>
-    <html lang="zh-TW">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>🎰 SELA 樂透一路發</title>
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #fff;
-            }
-            .container {
-                text-align: center;
-                padding: 40px;
-                background: rgba(255,255,255,0.05);
-                border-radius: 20px;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255,255,255,0.1);
-                max-width: 500px;
-            }
-            .logo { font-size: 64px; margin-bottom: 20px; }
-            h1 {
-                font-size: 32px;
-                margin-bottom: 10px;
-                background: linear-gradient(90deg, #FA7A35, #FFB347);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            .subtitle { color: #888; margin-bottom: 30px; }
-            .status {
-                display: inline-block;
-                padding: 8px 20px;
-                background: #2ecc71;
-                border-radius: 20px;
-                font-size: 14px;
-                margin-bottom: 30px;
-            }
-            .links { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-            .links a {
-                padding: 12px 24px;
-                background: #FA7A35;
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-                transition: all 0.3s;
-            }
-            .links a:hover { background: #e06620; transform: translateY(-2px); }
-            .links a.secondary { background: rgba(255,255,255,0.1); }
-            .links a.secondary:hover { background: rgba(255,255,255,0.2); }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="logo">🎰</div>
-            <h1>SELA 樂透一路發</h1>
-            <p class="subtitle">團購彩券系統 API</p>
-            <div class="status">✓ 系統運行中</div>
-            <div class="links">
-                <a href="/api/docs">📚 API 文件</a>
-                <a href="/api/v1/health" class="secondary">❤️ 健康檢查</a>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
+# 頁面路由
+@main_app.get("/")
+async def index():
+    """首頁（登入頁）"""
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+@main_app.get("/dashboard")
+async def dashboard():
+    """儀表板"""
+    return FileResponse(STATIC_DIR / "dashboard.html")
+
+
+# 掛載靜態檔案（放在路由之後）
+if STATIC_DIR.exists():
+    main_app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 if __name__ == "__main__":
