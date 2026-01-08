@@ -32,18 +32,24 @@ main_app.add_middleware(
 )
 
 
-# Flet UI 主函數
-def flet_main(page: ft.Page):
+# Flet UI 主函數（Flet 0.70+ 需要 async）
+async def flet_main(page: ft.Page):
     """Flet 主函數"""
     from ui.main import App
     App(page)
 
 
-# 掛載 API（注意：不加 /api 前綴，因為 api_app 內部已經有 /api/v1）
+# Flet before_main 函數（可選的初始化）
+async def before_main(page: ft.Page):
+    """Flet 頁面初始化前的設定"""
+    pass
+
+
+# 掛載 API
 main_app.mount("/api", api_app)
 
-# 掛載 Flet UI（放在最後，作為 fallback）
-main_app.mount("/", flet_fastapi.app(flet_main))
+# 掛載 Flet UI（Flet 0.70+ 語法）
+main_app.mount("/", flet_fastapi.app(flet_main, before_main))
 
 
 if __name__ == "__main__":
