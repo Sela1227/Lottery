@@ -2,104 +2,149 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎰 SELA 樂透一路發</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --sela-orange-light: #FF8547;
+            --bg-dark: #1a1410;
+            --bg-card: rgba(242, 101, 34, 0.08);
+            --border-color: rgba(242, 101, 34, 0.2);
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(145deg, #1a1410 0%, #2d1f15 50%, #1a1410 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
+            padding: 20px;
         }
         
         .container {
             text-align: center;
-            padding: 50px 40px;
-            background: rgba(255,255,255,0.05);
+            padding: 40px 30px;
+            background: linear-gradient(145deg, rgba(242, 101, 34, 0.1), rgba(242, 101, 34, 0.03));
             border-radius: 24px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.4),
+                0 0 100px rgba(242, 101, 34, 0.1);
+        }
+        
+        .logo-wrapper {
+            margin-bottom: 20px;
         }
         
         .logo {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(242, 101, 34, 0.3);
+            animation: float 3s ease-in-out infinite;
         }
         
-        @keyframes bounce {
+        @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
         
         h1 {
             font-size: 36px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #FA7A35, #FFB347);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 6px;
+            color: var(--sela-orange);
+            font-weight: 900;
+            letter-spacing: 4px;
         }
         
         .subtitle {
-            color: #888;
-            margin-bottom: 40px;
-            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+        
+        .subtitle span {
+            color: var(--sela-orange-light);
         }
         
         .features {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 32px;
         }
         
         .feature {
             text-align: center;
+            flex: 1;
+            max-width: 80px;
         }
         
         .feature-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
+            width: 48px;
+            height: 48px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 22px;
         }
         
         .feature-text {
             font-size: 12px;
-            color: #aaa;
+            color: #888;
         }
         
         .login-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 16px 40px;
+            gap: 10px;
+            padding: 16px 32px;
             background: #06C755;
             color: white;
             text-decoration: none;
-            border-radius: 12px;
-            font-size: 18px;
+            border-radius: 14px;
+            font-size: 17px;
             font-weight: 600;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 8px 24px rgba(6, 199, 85, 0.3);
         }
         
         .login-btn:hover {
             background: #05b54c;
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(6, 199, 85, 0.3);
+            box-shadow: 0 12px 32px rgba(6, 199, 85, 0.4);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
         }
         
         .login-btn svg {
@@ -108,14 +153,13 @@
         }
         
         .footer {
-            margin-top: 40px;
-            color: #666;
-            font-size: 12px;
+            margin-top: 32px;
+            color: #555;
+            font-size: 11px;
         }
         
-        .footer a {
-            color: #FA7A35;
-            text-decoration: none;
+        .footer .gecko {
+            color: var(--sela-orange);
         }
         
         /* Loading state */
@@ -123,14 +167,14 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
         
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: #FA7A35;
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(242, 101, 34, 0.2);
+            border-top-color: var(--sela-orange);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -141,15 +185,115 @@
         
         .loading-text {
             color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Error message */
+        .error-msg {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            color: #e74c3c;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        /* 手機優化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+                align-items: flex-start;
+                padding-top: 8vh;
+            }
+            
+            .container {
+                padding: 32px 24px;
+            }
+            
+            .logo {
+                width: 88px;
+                height: 88px;
+            }
+            
+            h1 {
+                font-size: 32px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 28px;
+            }
+            
+            .features {
+                gap: 16px;
+                margin-bottom: 28px;
+            }
+            
+            .feature-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+            
+            .feature-text {
+                font-size: 11px;
+            }
+            
+            .login-btn {
+                max-width: 100%;
+            }
+        }
+        
+        /* 小螢幕手機 */
+        @media (max-width: 360px) {
+            .container {
+                padding: 28px 20px;
+            }
+            
+            .logo {
+                width: 76px;
+                height: 76px;
+            }
+            
+            h1 {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+            
+            .features {
+                gap: 12px;
+            }
+        }
+        
+        /* 大螢幕 */
+        @media (min-width: 768px) {
+            .container {
+                padding: 50px 40px;
+            }
+            
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+            
+            h1 {
+                font-size: 42px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div id="error-msg" class="error-msg"></div>
+        
         <div id="login-content">
-            <div class="logo">🎰</div>
+            <div class="logo-wrapper">
+                <img src="/static/logo.jpg" alt="SELA" class="logo">
+            </div>
             <h1>SELA</h1>
-            <p class="subtitle">樂透一路發 - 團購彩券系統</p>
+            <p class="subtitle"><span>樂透一路發</span> - 團購彩券系統</p>
             
             <div class="features">
                 <div class="feature">
@@ -180,27 +324,32 @@
         </div>
         
         <div class="footer">
-            <p>© 2024 SELA 樂透一路發</p>
-            <p><a href="/api/docs">API 文件</a></p>
+            <p>© 2024 <span class="gecko">🦎</span> SELA 樂透一路發</p>
         </div>
     </div>
     
     <script>
-        // 檢查是否已登入
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            window.location.href = '/dashboard';
-        }
-        
-        // 檢查 URL 是否有 token（從 LINE callback 回來）
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('token');
+        const error = urlParams.get('error');
+        
+        if (error) {
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.textContent = '登入失敗：' + decodeURIComponent(error);
+            errorMsg.style.display = 'block';
+            window.history.replaceState({}, '', '/');
+        }
+        
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
             window.location.href = '/dashboard';
         }
         
-        // 登入按鈕點擊效果
+        const token = localStorage.getItem('access_token');
+        if (token && !error) {
+            window.location.href = '/dashboard';
+        }
+        
         document.getElementById('login-btn').addEventListener('click', function(e) {
             document.getElementById('login-content').style.display = 'none';
             document.getElementById('loading').style.display = 'flex';
