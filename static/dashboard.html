@@ -26,6 +26,7 @@
             --text-secondary: #8B7355;
             --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
             --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
+            --success: #16A34A;
         }
         
         body {
@@ -134,7 +135,7 @@
         /* Main Content */
         .main {
             padding: 20px;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -210,7 +211,7 @@
             color: var(--sela-orange);
         }
         
-        .stat-card-value.green { color: #16A34A; }
+        .stat-card-value.green { color: var(--success); }
         .stat-card-value.blue { color: #2563EB; }
         
         /* Section Title */
@@ -284,13 +285,90 @@
             color: rgba(255,255,255,0.85);
         }
         
+        /* Recent Activity */
+        .activity-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+        
+        .activity-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .activity-title {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .view-all {
+            color: var(--sela-orange);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .activity-list {
+            padding: 0;
+        }
+        
+        .activity-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.3s;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .activity-info {
+            flex: 1;
+        }
+        
+        .activity-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .activity-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .activity-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .activity-status.collecting { background: rgba(37, 99, 235, 0.1); color: #2563EB; }
+        .activity-status.locked { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+        .activity-status.purchased { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+        .activity-status.drawn { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+        .activity-status.settled { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            background: var(--bg-card);
-            border: 2px dashed var(--border-color);
-            border-radius: 16px;
         }
         
         .empty-icon {
@@ -416,25 +494,6 @@
             }
         }
         
-        /* 小螢幕手機 */
-        @media (max-width: 360px) {
-            .main {
-                padding: 12px;
-            }
-            
-            .stat-card {
-                padding: 12px 10px;
-            }
-            
-            .stat-card-value {
-                font-size: 16px;
-            }
-            
-            .action-icon {
-                font-size: 24px;
-            }
-        }
-        
         /* 大螢幕 */
         @media (min-width: 768px) {
             .header {
@@ -475,43 +534,6 @@
             .stat-card {
                 padding: 22px;
             }
-            
-            .stat-card-title {
-                font-size: 13px;
-            }
-            
-            .stat-card-icon {
-                font-size: 24px;
-            }
-            
-            .stat-card-value {
-                font-size: 28px;
-            }
-            
-            .section-title {
-                font-size: 18px;
-            }
-            
-            .actions {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-            }
-            
-            .action-btn {
-                padding: 28px 16px;
-            }
-            
-            .action-icon {
-                font-size: 36px;
-            }
-            
-            .action-title {
-                font-size: 16px;
-            }
-            
-            .action-desc {
-                font-size: 12px;
-            }
         }
     </style>
 </head>
@@ -520,7 +542,7 @@
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-content">
             <img src="/static/logo.jpg" alt="SELA" class="loading-logo">
-            <div class="loading-text">載入中...</div>
+            <p class="loading-text">載入中...</p>
         </div>
     </div>
     
@@ -528,12 +550,12 @@
     <header class="header">
         <div class="header-left">
             <img src="/static/logo.jpg" alt="SELA" class="logo">
-            <div class="brand">SELA 樂透一路發</div>
+            <span class="brand">樂透一路發</span>
         </div>
         <div class="header-right">
             <div class="user-info">
-                <div class="user-avatar" id="user-avatar">👤</div>
-                <span class="user-name" id="user-name">載入中</span>
+                <div class="user-avatar" id="user-avatar"></div>
+                <span class="user-name" id="user-name"></span>
             </div>
             <button class="logout-btn" onclick="logout()">登出</button>
         </div>
@@ -541,75 +563,156 @@
     
     <!-- Main Content -->
     <main class="main">
+        <!-- Welcome -->
         <div class="welcome">
-            <h1>👋 歡迎，<span id="welcome-name">用戶</span>！</h1>
-            <p>今天想試試手氣嗎？🦎</p>
+            <h1>你好，<span id="welcome-name"></span>！</h1>
+            <p>今天是發財的好日子 🍀</p>
         </div>
         
         <!-- Stats -->
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-card-header">
-                    <span class="stat-card-title">錢包餘額</span>
+                    <span class="stat-card-title">總份額</span>
                     <span class="stat-card-icon">💰</span>
                 </div>
-                <div class="stat-card-value" id="wallet-balance">$0</div>
+                <div class="stat-card-value" id="total-pool">$0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
-                    <span class="stat-card-title">系列團</span>
-                    <span class="stat-card-icon">👥</span>
+                    <span class="stat-card-title">參與團數</span>
+                    <span class="stat-card-icon">🎰</span>
                 </div>
-                <div class="stat-card-value blue">0</div>
+                <div class="stat-card-value blue" id="series-count">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
                     <span class="stat-card-title">累計獎金</span>
-                    <span class="stat-card-icon">🏆</span>
+                    <span class="stat-card-icon">🎉</span>
                 </div>
-                <div class="stat-card-value green">$0</div>
+                <div class="stat-card-value green" id="total-prize">$0</div>
             </div>
         </div>
         
         <!-- Quick Actions -->
         <h2 class="section-title">⚡ 快速操作</h2>
         <div class="actions">
-            <div class="action-btn primary" onclick="showComingSoon('建立系列團')">
-                <div class="action-icon">➕</div>
-                <div class="action-title">建立系列團</div>
-                <div class="action-desc">開始新的團購</div>
-            </div>
-            <div class="action-btn" onclick="showComingSoon('加入系列團')">
-                <div class="action-icon">🔗</div>
-                <div class="action-title">加入系列團</div>
-                <div class="action-desc">輸入邀請碼</div>
-            </div>
-            <div class="action-btn" onclick="showComingSoon('個人彩券')">
+            <a href="/series" class="action-btn primary">
+                <div class="action-icon">🎰</div>
+                <div class="action-title">我的系列團</div>
+                <div class="action-desc">查看與管理團購</div>
+            </a>
+            <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
                 <div class="action-icon">🎫</div>
-                <div class="action-title">個人彩券</div>
-                <div class="action-desc">記錄購買</div>
-            </div>
-            <div class="action-btn" onclick="showComingSoon('統計報表')">
+                <div class="action-title">加入系列團</div>
+                <div class="action-desc">使用邀請碼</div>
+            </a>
+            <a href="#" class="action-btn" onclick="event.preventDefault(); showComingSoon('統計報表');">
                 <div class="action-icon">📊</div>
                 <div class="action-title">統計報表</div>
-                <div class="action-desc">查看投報率</div>
-            </div>
+                <div class="action-desc">查看投資報酬</div>
+            </a>
+            <a href="#" class="action-btn" onclick="event.preventDefault(); showComingSoon('個人彩券');">
+                <div class="action-icon">🎫</div>
+                <div class="action-title">個人彩券</div>
+                <div class="action-desc">私人記錄</div>
+            </a>
         </div>
         
-        <!-- My Series -->
-        <h2 class="section-title">🎯 我的系列團</h2>
-        <div class="empty-state">
-            <div class="empty-icon">🦎</div>
-            <div class="empty-title">還沒有加入任何系列團</div>
-            <div class="empty-desc">建立或加入一個系列團<br>開始團購彩券吧！</div>
+        <!-- Recent Activity -->
+        <div class="activity-section">
+            <div class="activity-header">
+                <span class="activity-title">📋 近期活動</span>
+                <a href="/series" class="view-all">查看全部</a>
+            </div>
+            <div class="activity-list" id="activity-list">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3 class="empty-title">尚無活動</h3>
+                    <p class="empty-desc">加入或建立系列團開始吧！</p>
+                </div>
+            </div>
         </div>
     </main>
+    
+    <!-- Join Modal -->
+    <div class="modal-overlay" id="join-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+        <div style="background: #fff; border-radius: 20px; width: 90%; max-width: 400px; padding: 24px;">
+            <h3 style="margin-bottom: 20px; font-size: 18px;">使用邀請碼加入</h3>
+            <input type="text" id="invite-code" placeholder="輸入邀請碼" style="width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; margin-bottom: 12px; text-transform: uppercase;">
+            <input type="number" id="join-pool" value="500" placeholder="初始份額" style="width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; margin-bottom: 20px;">
+            <div style="display: flex; gap: 12px;">
+                <button onclick="closeJoinModal()" style="flex: 1; padding: 14px; border: 1px solid var(--border-color); background: #fff; border-radius: 10px; font-size: 14px; cursor: pointer;">取消</button>
+                <button onclick="joinSeries()" style="flex: 1; padding: 14px; border: none; background: var(--sela-orange); color: #fff; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">加入</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div id="toast" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 2000;"></div>
     
     <script>
         const API_BASE = '/api/v1';
         
         function showComingSoon(feature) {
-            alert(`「${feature}」功能即將推出！\n\n此功能將在 Step 2 實作。`);
+            showToast(`「${feature}」功能即將推出！`);
+        }
+        
+        function showJoinModal() {
+            document.getElementById('join-modal').style.display = 'flex';
+        }
+        
+        function closeJoinModal() {
+            document.getElementById('join-modal').style.display = 'none';
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? '#DC2626' : type === 'success' ? '#16A34A' : '#333';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(100px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+        
+        async function joinSeries() {
+            const code = document.getElementById('invite-code').value.trim().toUpperCase();
+            const pool = parseFloat(document.getElementById('join-pool').value);
+            
+            if (!code) {
+                showToast('請輸入邀請碼', 'error');
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const res = await fetch(`${API_BASE}/series/join`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        invitation_code: code,
+                        initial_pool_share: pool
+                    })
+                });
+                
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || '加入失敗');
+                }
+                
+                closeJoinModal();
+                showToast('成功加入系列團！', 'success');
+                loadDashboardData();
+                
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
         }
         
         async function checkAuth() {
@@ -633,17 +736,7 @@
                 
                 const user = await response.json();
                 updateUI(user);
-                
-                const walletRes = await fetch(`${API_BASE}/users/me/wallet`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (walletRes.ok) {
-                    const wallet = await walletRes.json();
-                    document.getElementById('wallet-balance').textContent = `$${wallet.balance.toLocaleString()}`;
-                }
+                loadDashboardData();
                 
             } catch (error) {
                 console.error('Auth error:', error);
@@ -667,12 +760,110 @@
             document.getElementById('loading-overlay').classList.add('hidden');
         }
         
+        async function loadDashboardData() {
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                // Load series list
+                const seriesRes = await fetch(`${API_BASE}/series`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (seriesRes.ok) {
+                    const seriesList = await seriesRes.json();
+                    
+                    // Calculate stats
+                    let totalPool = 0;
+                    let totalPrize = 0;
+                    
+                    seriesList.forEach(s => {
+                        totalPool += Number(s.my_pool_share) || 0;
+                    });
+                    
+                    document.getElementById('total-pool').textContent = `$${totalPool.toLocaleString()}`;
+                    document.getElementById('series-count').textContent = seriesList.length;
+                    document.getElementById('total-prize').textContent = `$${totalPrize.toLocaleString()}`;
+                    
+                    // Render recent activity
+                    renderRecentActivity(seriesList);
+                }
+            } catch (e) {
+                console.error('Failed to load dashboard data:', e);
+            }
+        }
+        
+        async function renderRecentActivity(seriesList) {
+            const container = document.getElementById('activity-list');
+            
+            if (seriesList.length === 0) {
+                return; // Keep empty state
+            }
+            
+            // Get recent groups from all series
+            const recentGroups = [];
+            const token = localStorage.getItem('access_token');
+            
+            for (const series of seriesList.slice(0, 3)) {
+                try {
+                    const res = await fetch(`${API_BASE}/series/${series.id}/groups`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const groups = await res.json();
+                        groups.slice(0, 2).forEach(g => {
+                            recentGroups.push({
+                                ...g,
+                                seriesName: series.name,
+                                seriesId: series.id
+                            });
+                        });
+                    }
+                } catch (e) {
+                    console.error('Failed to load groups:', e);
+                }
+            }
+            
+            if (recentGroups.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3 class="empty-title">尚無單期團</h3>
+                        <p class="empty-desc">管理員開新期後會顯示在這裡</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const statusText = {
+                collecting: '集資中',
+                locked: '已鎖定',
+                purchased: '已購買',
+                drawn: '已開獎',
+                settled: '已結算'
+            };
+            
+            container.innerHTML = recentGroups.slice(0, 5).map(g => `
+                <a href="/group/${g.id}" class="activity-item">
+                    <div class="activity-info">
+                        <div class="activity-name">${g.seriesName} - 第 ${g.period_number} 期</div>
+                        <div class="activity-detail">${g.lottery_type_name} · 池 $${Number(g.total_pool).toLocaleString()}</div>
+                    </div>
+                    <span class="activity-status ${g.status}">${statusText[g.status] || g.status}</span>
+                </a>
+            `).join('');
+        }
+        
         function logout() {
             if (confirm('確定要登出嗎？')) {
                 localStorage.removeItem('access_token');
                 window.location.href = '/';
             }
         }
+        
+        // Close modal on click outside
+        document.getElementById('join-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeJoinModal();
+        });
         
         checkAuth();
     </script>

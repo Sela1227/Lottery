@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F26522">
+    <title>SELA 樂透一路發 - 即將推出</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-light: #FF8547;
+            --bg-primary: #FFF8F4;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 400px;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        
+        p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(242, 101, 34, 0.4);
+        }
+        
+        .progress {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(242, 101, 34, 0.08);
+        }
+        
+        .progress-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #FFF0E8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, var(--sela-orange), var(--sela-orange-light));
+            border-radius: 4px;
+            animation: progress 2s ease-out;
+        }
+        
+        @keyframes progress {
+            from { width: 0; }
+        }
+        
+        .progress-text {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--sela-orange);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>即將推出</h1>
+        <p>此功能正在開發中，敬請期待！<br>我們正在努力為您打造更好的體驗。</p>
+        <a href="/dashboard" class="btn">← 返回儀表板</a>
+        
+        <div class="progress">
+            <div class="progress-title">開發進度</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Step 2 / 4 完成</div>
+        </div>
+    </div>
+</body>
+</html>
