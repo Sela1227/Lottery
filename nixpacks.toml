@@ -2,10 +2,10 @@
 providers = ["python"]
 
 [phases.setup]
-nixPkgs = ["postgresql"]
+nixPkgs = ["python312", "python312Packages.pip", "postgresql"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = ["python3 -m pip install -r requirements.txt"]
 
 [start]
-cmd = "python scripts/migrate.py && python main.py"
+cmd = "python3 scripts/migrate.py && python3 main.py"
