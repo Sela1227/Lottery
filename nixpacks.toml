@@ -1,8 +1,8 @@
-[phases.setup]
-nixPkgs = ["python311", "postgresql"]
+# Nixpacks 建置設定
+# 讓 Nixpacks 自動偵測 Python（從 requirements.txt）
 
-[phases.install]
-cmds = ["pip install -r requirements.txt"]
+[phases.setup]
+nixPkgs = ["postgresql"]
 
 [start]
-cmd = "python main.py"
+cmd = "python scripts/migrate.py && python main.py"
