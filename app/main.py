@@ -12,6 +12,7 @@ from app.core.database import init_database
 from app.api.v1 import health, auth, users
 from app.api.v1.series import router as series_router
 from app.api.v1.groups import router as groups_router
+from app.api.v1.admin import router as admin_router
 
 
 # 建立 FastAPI 應用
@@ -38,6 +39,7 @@ app.include_router(auth.router, prefix="/v1")
 app.include_router(users.router, prefix="/v1")
 app.include_router(series_router, prefix="/v1")
 app.include_router(groups_router, prefix="/v1")
+app.include_router(admin_router, prefix="/v1")
 
 
 @app.on_event("startup")
@@ -60,41 +62,15 @@ async def startup():
         # 檢查是否需要初始化彩種
         count = db.query(LotteryType).count()
         if count == 0:
-            print("   彩種: 正在初始化...")
-            for type_data in DEFAULT_LOTTERY_TYPES:
-                lottery_type = LotteryType(
-                    code=type_data["code"],
-                    name=type_data["name"],
-                    description=type_data["description"],
-                    price_per_bet=type_data["price_per_bet"],
-                    number_rules=type_data["number_rules"],
-                    prize_structure=type_data["prize_structure"],
-                    draw_days=type_data["draw_days"],
-                    draw_time=type_data["draw_time"],
-                    sort_order=type_data["sort_order"],
-                    is_active=True
-                )
-                db.add(lottery_type)
+            print("   初始化彩種資料...")
+            for lt_data in DEFAULT_LOTTERY_TYPES:
+                lt = LotteryType(**lt_data)
+                db.add(lt)
             db.commit()
-            print("   彩種: 已初始化 3 種彩券")
+            print(f"   彩種: 已建立 {len(DEFAULT_LOTTERY_TYPES)} 種")
         else:
-            print(f"   彩種: 已有 {count} 種")
+            print(f"   彩種: 已存在 {count} 種")
     finally:
         db.close()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    """應用關閉時執行"""
-    print(f"🎰 {settings.app_name} API 已關閉")
-
-
-@app.get("/")
-async def root():
-    """API 根路徑"""
-    return {
-        "app": settings.app_name,
-        "version": "1.0.0",
-        "status": "running",
-        "docs": "/api/docs"
-    }
+    
+    print("   ✅ API 啟動完成")

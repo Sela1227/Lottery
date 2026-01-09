@@ -72,6 +72,14 @@ async def group_detail(group_id: int):
     return FileResponse(STATIC_DIR / "group-detail.html")
 
 
+# ==================== 管理員後台 ====================
+
+@main_app.get("/admin")
+async def admin_panel():
+    """管理員後台"""
+    return FileResponse(STATIC_DIR / "admin.html")
+
+
 # ==================== 未來頁面(Step 3+)====================
 
 @main_app.get("/statistics")
@@ -113,8 +121,8 @@ if __name__ == "__main__":
     ║   🎰 SELA 樂透一路發                 ║
     ║   ─────────────────────────────      ║
     ║   環境: {settings.app_env:<28}║
-    â•'   URL:  http://localhost:{port:<13}â•'
-    â•'   API:  http://localhost:{port}/api/docs  â•'
+    ║   URL:  http://localhost:{port:<13}║
+    ║   API:  http://localhost:{port}/api/docs  ║
     ╚══════════════════════════════════════╝
     """)
     

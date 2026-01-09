@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理後台 - SELA 樂透一路發</title>
+    <style>
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-light: #FF8A50;
+            --bg-primary: #FFFAF5;
+            --bg-secondary: #FFF5EE;
+            --text-primary: #2D2D2D;
+            --text-secondary: #666666;
+            --border-color: #FFE4D6;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* Main */
+        .main {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(242, 101, 34, 0.08);
+        }
+        
+        .stat-card-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--sela-orange);
+        }
+        
+        .stat-card-value.blue { color: var(--info); }
+        .stat-card-value.green { color: var(--success); }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: var(--sela-orange);
+            color: white;
+            border-color: var(--sela-orange);
+        }
+        
+        /* Content Section */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(242, 101, 34, 0.08);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-input:focus {
+            border-color: var(--sela-orange);
+        }
+        
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+        }
+        
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+        
+        /* User Row */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-id {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-admin {
+            background: #FFF3E0;
+            color: var(--sela-orange);
+        }
+        
+        .badge-user {
+            background: #E3F2FD;
+            color: var(--info);
+        }
+        
+        .badge-active {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+        
+        .badge-ended {
+            background: #ECEFF1;
+            color: #607D8B;
+        }
+        
+        /* Button */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-primary {
+            background: var(--sela-orange);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .btn-danger {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .modal-body {
+            padding: 16px;
+        }
+        
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        /* Log Item */
+        .log-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .log-type {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .log-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .log-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 300;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .data-table {
+                font-size: 12px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px 4px;
+            }
+            
+            .hide-mobile {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/dashboard" class="back-btn">←</a>
+            <h1 class="header-title">🔧 管理後台</h1>
+        </div>
+    </header>
+    
+    <!-- Main -->
+    <main class="main">
+        <!-- Stats -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-label">總用戶數</div>
+                <div class="stat-card-value" id="stat-users">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">管理員數</div>
+                <div class="stat-card-value blue" id="stat-admins">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">系列團數</div>
+                <div class="stat-card-value" id="stat-series">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-label">總資金池</div>
+                <div class="stat-card-value green" id="stat-pool">-</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="users">👤 用戶管理</div>
+            <div class="tab" data-tab="series">🎰 系列團</div>
+            <div class="tab" data-tab="logs">📋 事件日誌</div>
+        </div>
+        
+        <!-- Users Tab -->
+        <div id="tab-users" class="tab-content">
+            <div class="section">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="user-search" placeholder="搜尋用戶名稱...">
+                    <select class="filter-select" id="user-role-filter">
+                        <option value="">全部角色</option>
+                        <option value="admin">管理員</option>
+                        <option value="user">一般用戶</option>
+                    </select>
+                </div>
+                <div id="users-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Series Tab -->
+        <div id="tab-series" class="tab-content" style="display:none;">
+            <div class="section">
+                <div class="search-bar">
+                    <select class="filter-select" id="series-status-filter">
+                        <option value="">全部狀態</option>
+                        <option value="active">進行中</option>
+                        <option value="ended">已結束</option>
+                    </select>
+                </div>
+                <div id="series-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logs Tab -->
+        <div id="tab-logs" class="tab-content" style="display:none;">
+            <div class="section">
+                <div id="logs-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Role Modal -->
+    <div class="modal-overlay" id="role-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">變更用戶角色</h2>
+                <button class="modal-close" onclick="closeModal('role-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="role-modal-text"></p>
+                <div style="margin-top: 16px;">
+                    <select class="filter-select" id="new-role" style="width: 100%;">
+                        <option value="user">一般用戶</option>
+                        <option value="admin">管理員</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('role-modal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmRoleChange()">確認變更</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        const API_BASE = '/api/v1';
+        let currentTab = 'users';
+        let selectedUserId = null;
+        
+        // Auth Check
+        async function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
+                return null;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!res.ok) {
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/';
+                    return null;
+                }
+                
+                const user = await res.json();
+                
+                // 檢查是否為管理員
+                if (user.role !== 'admin') {
+                    showToast('您沒有管理員權限', 'error');
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
+                    return null;
+                }
+                
+                return user;
+            } catch (e) {
+                window.location.href = '/';
+                return null;
+            }
+        }
+        
+        // API Helpers
+        async function apiGet(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        async function apiPut(url, data) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        // Load Stats
+        async function loadStats() {
+            try {
+                const stats = await apiGet('/admin/stats');
+                document.getElementById('stat-users').textContent = stats.total_users;
+                document.getElementById('stat-admins').textContent = stats.total_admins;
+                document.getElementById('stat-series').textContent = `${stats.active_series}/${stats.total_series}`;
+                document.getElementById('stat-pool').textContent = `$${Number(stats.total_pool).toLocaleString()}`;
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+        }
+        
+        // Load Users
+        async function loadUsers() {
+            const search = document.getElementById('user-search').value;
+            const role = document.getElementById('user-role-filter').value;
+            
+            let url = '/admin/users?limit=100';
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (role) url += `&role=${role}`;
+            
+            try {
+                const users = await apiGet(url);
+                renderUsers(users);
+            } catch (e) {
+                document.getElementById('users-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <p>載入失敗: ${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderUsers(users) {
+            if (users.length === 0) {
+                document.getElementById('users-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👤</div>
+                        <p>沒有找到用戶</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>用戶</th>
+                            <th>角色</th>
+                            <th class="hide-mobile">團數</th>
+                            <th class="hide-mobile">最後登入</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(u => `
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">
+                                            ${u.picture_url 
+                                                ? `<img src="${u.picture_url}" alt="">` 
+                                                : u.display_name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <div class="user-name">${u.nickname || u.display_name}</div>
+                                            <div class="user-id">ID: ${u.id}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-${u.role}">
+                                        ${u.role === 'admin' ? '管理員' : '用戶'}
+                                    </span>
+                                </td>
+                                <td class="hide-mobile">${u.series_count}</td>
+                                <td class="hide-mobile">${u.last_login_at ? formatDate(u.last_login_at) : '-'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-secondary" onclick="showRoleModal(${u.id}, '${u.display_name}', '${u.role}')">
+                                        變更
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('users-list').innerHTML = html;
+        }
+        
+        // Load Series
+        async function loadSeries() {
+            const status = document.getElementById('series-status-filter').value;
+            
+            let url = '/admin/series?limit=100';
+            if (status) url += `&status=${status}`;
+            
+            try {
+                const series = await apiGet(url);
+                renderSeries(series);
+            } catch (e) {
+                document.getElementById('series-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <p>載入失敗: ${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderSeries(series) {
+            if (series.length === 0) {
+                document.getElementById('series-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎰</div>
+                        <p>沒有系列團</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>名稱</th>
+                            <th>狀態</th>
+                            <th>成員</th>
+                            <th>資金池</th>
+                            <th class="hide-mobile">期數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${series.map(s => `
+                            <tr>
+                                <td>
+                                    <div class="user-name">${s.name}</div>
+                                    <div class="user-id">建立者: ${s.creator_name}</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-${s.status}">
+                                        ${s.status === 'active' ? '進行中' : '已結束'}
+                                    </span>
+                                </td>
+                                <td>${s.member_count}</td>
+                                <td>$${Number(s.current_pool).toLocaleString()}</td>
+                                <td class="hide-mobile">${s.total_periods}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('series-list').innerHTML = html;
+        }
+        
+        // Load Logs
+        async function loadLogs() {
+            try {
+                const logs = await apiGet('/admin/logs?limit=50');
+                renderLogs(logs);
+            } catch (e) {
+                document.getElementById('logs-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <p>載入失敗: ${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderLogs(logs) {
+            if (logs.length === 0) {
+                document.getElementById('logs-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <p>沒有事件日誌</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = logs.map(log => `
+                <div class="log-item">
+                    <div class="log-header">
+                        <span class="log-type">${getEventTypeText(log.event_type)}</span>
+                        <span class="log-time">${formatDateTime(log.created_at)}</span>
+                    </div>
+                    <div class="log-desc">
+                        ${log.actor_name || '系統'} ${log.description || log.event_type}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('logs-list').innerHTML = html;
+        }
+        
+        function getEventTypeText(type) {
+            const map = {
+                'series_created': '建立系列團',
+                'member_joined': '成員加入',
+                'group_created': '開新期',
+                'ticket_added': '新增彩券',
+                'settlement': '結算',
+                'topup': '加碼'
+            };
+            return map[type] || type;
+        }
+        
+        // Role Modal
+        function showRoleModal(userId, name, currentRole) {
+            selectedUserId = userId;
+            document.getElementById('role-modal-text').textContent = `變更「${name}」的角色`;
+            document.getElementById('new-role').value = currentRole;
+            document.getElementById('role-modal').classList.add('active');
+        }
+        
+        async function confirmRoleChange() {
+            const newRole = document.getElementById('new-role').value;
+            
+            try {
+                await apiPut(`/admin/users/${selectedUserId}/role`, { role: newRole });
+                closeModal('role-modal');
+                showToast('角色已更新', 'success');
+                loadUsers();
+                loadStats();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        // Tab Switch
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabName = tab.dataset.tab;
+                currentTab = tabName;
+                
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                document.getElementById(`tab-${tabName}`).style.display = 'block';
+                
+                if (tabName === 'users') loadUsers();
+                else if (tabName === 'series') loadSeries();
+                else if (tabName === 'logs') loadLogs();
+            });
+        });
+        
+        // Search & Filter
+        document.getElementById('user-search').addEventListener('input', debounce(loadUsers, 300));
+        document.getElementById('user-role-filter').addEventListener('change', loadUsers);
+        document.getElementById('series-status-filter').addEventListener('change', loadSeries);
+        
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+        
+        // Utilities
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getMonth()+1}/${d.getDate()}`;
+        }
+        
+        function formatDateTime(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Init
+        async function init() {
+            const user = await checkAuth();
+            if (user) {
+                loadStats();
+                loadUsers();
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
