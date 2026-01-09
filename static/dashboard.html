@@ -265,6 +265,22 @@
             transform: translateY(-2px);
         }
         
+        .action-btn.admin {
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            border: none;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+        
+        .action-btn.admin:hover, .action-btn.admin:active {
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.admin .action-desc {
+            color: rgba(255,255,255,0.85);
+        }
+        
         .action-icon {
             font-size: 32px;
             margin-bottom: 10px;
@@ -617,6 +633,12 @@
                 <div class="action-title">個人彩券</div>
                 <div class="action-desc">私人記錄</div>
             </a>
+            <!-- 管理後台按鈕（僅管理員可見） -->
+            <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">
+                <div class="action-icon">🔧</div>
+                <div class="action-title">管理後台</div>
+                <div class="action-desc">系統管理</div>
+            </a>
         </div>
         
         <!-- Recent Activity -->
@@ -755,6 +777,11 @@
                 avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`;
             } else {
                 avatarEl.textContent = displayName.charAt(0);
+            }
+            
+            // 如果是管理員，顯示管理後台按鈕
+            if (user.role === 'admin') {
+                document.getElementById('admin-btn').style.display = 'block';
             }
             
             document.getElementById('loading-overlay').classList.add('hidden');
