@@ -125,12 +125,13 @@ async def get_current_user_with_role(
 
 
 async def require_admin(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db)
 ) -> int:
     """
     要求管理員權限
     
-    驗證用戶是否為管理員，若不是則拋出 403 錯誤
+    從資料庫即時查詢用戶角色，確保角色變更後立即生效
     
     Returns:
         管理員的用戶 ID
@@ -144,7 +145,6 @@ async def require_admin(
     
     payload = verify_token(credentials.credentials)
     user_id = payload.get("sub")
-    role = payload.get("role", "user")
     
     if not user_id:
         raise HTTPException(
@@ -152,7 +152,17 @@ async def require_admin(
             detail="Token 格式錯誤"
         )
     
-    if role != "admin":
+    # 從資料庫查詢用戶角色（而非僅依賴 Token）
+    from app.models.user import User, UserRole
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="用戶不存在"
+        )
+    
+    if user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="需要管理員權限"
