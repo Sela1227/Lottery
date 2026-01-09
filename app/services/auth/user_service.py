@@ -120,3 +120,7 @@ class UserService:
         db.commit()
         db.refresh(user)
         return user
+
+
+# 全域實例
+user_service = UserService()

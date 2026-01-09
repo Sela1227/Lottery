@@ -1,4 +1,4 @@
-# 🔄 更新包：管理員設定功能
+# 🔄 更新包：管理員設定功能 (修正版)
 
 ## 📅 更新日期：2026-01-09
 
@@ -6,10 +6,10 @@
 
 ```
 scripts/
-└── set_admin.py          # 管理員設定腳本 (新增)
+└── set_admin.py              # 管理員設定腳本 (新增)
 
 app/services/auth/
-└── user_service.py       # 用戶服務 (更新)
+└── user_service.py           # 用戶服務 (覆蓋)
 ```
 
 ## 🚀 部署步驟
@@ -53,4 +53,9 @@ python scripts/set_admin.py --list
 ## ✨ 功能說明
 
 1. **set_admin.py**：手動設定管理員的腳本工具
-2. **user_service.py**：更新後第一個註冊的用戶會自動成為管理員
+2. **user_service.py**：更新後，未來第一個註冊的用戶會自動成為管理員
+
+## 🐛 修正內容
+
+- 修正 `ImportError: cannot import name 'user_service'` 錯誤
+- 補上遺漏的全域實例 `user_service = UserService()`
