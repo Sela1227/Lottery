@@ -265,6 +265,22 @@
             transform: translateY(-2px);
         }
         
+        .action-btn.wallet {
+            background: linear-gradient(135deg, #16A34A, #15803D);
+            border: none;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+        }
+        
+        .action-btn.wallet:hover, .action-btn.wallet:active {
+            box-shadow: 0 12px 32px rgba(22, 163, 74, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.wallet .action-desc {
+            color: rgba(255,255,255,0.85);
+        }
+        
         .action-btn.admin {
             background: linear-gradient(135deg, #6366F1, #4F46E5);
             border: none;
@@ -618,6 +634,11 @@
                 <div class="action-title">我的系列團</div>
                 <div class="action-desc">查看與管理團購</div>
             </a>
+            <a href="/wallet" class="action-btn wallet">
+                <div class="action-icon">💰</div>
+                <div class="action-title">我的錢包</div>
+                <div class="action-desc">查看資產與記錄</div>
+            </a>
             <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
                 <div class="action-icon">🎫</div>
                 <div class="action-title">加入系列團</div>
@@ -627,11 +648,6 @@
                 <div class="action-icon">📊</div>
                 <div class="action-title">統計報表</div>
                 <div class="action-desc">查看投資報酬</div>
-            </a>
-            <a href="#" class="action-btn" onclick="event.preventDefault(); showComingSoon('個人彩券');">
-                <div class="action-icon">🎫</div>
-                <div class="action-title">個人彩券</div>
-                <div class="action-desc">私人記錄</div>
             </a>
             <!-- 管理後台按鈕（僅管理員可見） -->
             <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">

@@ -80,29 +80,31 @@ async def admin_panel():
     return FileResponse(STATIC_DIR / "admin.html")
 
 
-# ==================== 未來頁面(Step 3+)====================
-
-@main_app.get("/statistics")
-async def statistics():
-    """統計報表(Step 3)"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
-
+# ==================== Step 3 功能 ====================
 
 @main_app.get("/wallet")
 async def wallet():
-    """錢包(Step 3)"""
+    """錢包"""
+    return FileResponse(STATIC_DIR / "wallet.html")
+
+
+@main_app.get("/statistics")
+async def statistics():
+    """統計報表"""
     return FileResponse(STATIC_DIR / "coming-soon.html")
 
 
 @main_app.get("/personal")
 async def personal():
-    """個人彩券(Step 3)"""
+    """個人彩券"""
     return FileResponse(STATIC_DIR / "coming-soon.html")
 
 
+# ==================== Step 4 功能 ====================
+
 @main_app.get("/settings")
 async def user_settings():
-    """設定(Step 4)"""
+    """設定"""
     return FileResponse(STATIC_DIR / "coming-soon.html")
 
 
