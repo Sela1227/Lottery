@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <title>統計報表 - SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --sela-orange-light: #FF8547;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.12);
+            --success: #16A34A;
+            --danger: #DC2626;
+            --info: #2563EB;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding-bottom: 40px;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* Main */
+        .main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* ROI Card */
+        .roi-card {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
+            text-align: center;
+        }
+        
+        .roi-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .roi-value {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        
+        .roi-value.positive { color: #86efac; }
+        .roi-value.negative { color: #fca5a5; }
+        
+        .roi-detail {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value.orange { color: var(--sela-orange); }
+        .stat-value.green { color: var(--success); }
+        .stat-value.blue { color: var(--info); }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        /* Performance List */
+        .perf-list {
+            padding: 0;
+        }
+        
+        .perf-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .perf-item:last-child {
+            border-bottom: none;
+        }
+        
+        .perf-info {
+            flex: 1;
+        }
+        
+        .perf-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .perf-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .perf-roi {
+            text-align: right;
+        }
+        
+        .perf-roi-value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .perf-roi-value.positive { color: var(--success); }
+        .perf-roi-value.negative { color: var(--danger); }
+        
+        .perf-profit {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Winning List */
+        .win-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .win-item:last-child {
+            border-bottom: none;
+        }
+        
+        .win-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .win-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .win-amount {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--success);
+        }
+        
+        .win-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Monthly Chart */
+        .chart-container {
+            padding: 20px;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 120px;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .chart-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .chart-bar {
+            width: 100%;
+            max-width: 40px;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s;
+        }
+        
+        .chart-bar.invested {
+            background: var(--sela-orange);
+            opacity: 0.6;
+        }
+        
+        .chart-bar.prize {
+            background: var(--success);
+        }
+        
+        .chart-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .legend-dot.invested {
+            background: var(--sela-orange);
+            opacity: 0.6;
+        }
+        
+        .legend-dot.prize {
+            background: var(--success);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--sela-orange);
+            border-bottom-color: var(--sela-orange);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .empty-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .roi-value {
+                font-size: 36px;
+            }
+            
+            .stats-grid {
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/dashboard" class="back-btn">←</a>
+        <h1 class="page-title">📊 統計報表</h1>
+    </header>
+    
+    <!-- Main -->
+    <main class="main">
+        <!-- ROI Card -->
+        <div class="roi-card">
+            <div class="roi-label">投資報酬率</div>
+            <div class="roi-value" id="roi-value">0%</div>
+            <div class="roi-detail" id="roi-detail">獲利 $0</div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value orange" id="total-invested">$0</div>
+                <div class="stat-label">累計投資</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎉</div>
+                <div class="stat-value green" id="total-prize">$0</div>
+                <div class="stat-label">累計獎金</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value blue" id="win-rate">0%</div>
+                <div class="stat-label">中獎率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="periods-count">0</div>
+                <div class="stat-label">參與期數</div>
+            </div>
+        </div>
+        
+        <!-- Monthly Chart -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">📈 月度趨勢</span>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars" id="chart-bars">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot invested"></div>
+                        <span>投資</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot prize"></div>
+                        <span>獎金</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Section -->
+        <div class="section">
+            <div class="tabs">
+                <button class="tab active" data-tab="performance">系列團績效</button>
+                <button class="tab" data-tab="winning">中獎記錄</button>
+                <button class="tab" data-tab="lottery">彩種分析</button>
+            </div>
+            
+            <!-- Performance Tab -->
+            <div class="tab-content" id="tab-performance">
+                <div class="perf-list" id="perf-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+            
+            <!-- Winning Tab -->
+            <div class="tab-content" id="tab-winning" style="display: none;">
+                <div class="win-list" id="win-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+            
+            <!-- Lottery Type Tab -->
+            <div class="tab-content" id="tab-lottery" style="display: none;">
+                <div class="perf-list" id="lottery-list">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        const API_BASE = '/api/v1';
+        
+        // Auth Check
+        async function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+        
+        // API Helper
+        async function apiGet(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return null;
+                }
+                throw new Error('API Error');
+            }
+            return res.json();
+        }
+        
+        // Load Overall Stats
+        async function loadOverallStats() {
+            try {
+                const data = await apiGet('/statistics/overall');
+                if (!data) return;
+                
+                // ROI
+                const roiEl = document.getElementById('roi-value');
+                roiEl.textContent = `${data.roi_percent >= 0 ? '+' : ''}${data.roi_percent}%`;
+                roiEl.className = `roi-value ${data.roi_percent >= 0 ? 'positive' : 'negative'}`;
+                
+                const profitText = data.total_profit >= 0 
+                    ? `獲利 $${Number(data.total_profit).toLocaleString()}`
+                    : `虧損 $${Math.abs(Number(data.total_profit)).toLocaleString()}`;
+                document.getElementById('roi-detail').textContent = profitText;
+                
+                // Stats
+                document.getElementById('total-invested').textContent = `$${Number(data.total_invested).toLocaleString()}`;
+                document.getElementById('total-prize').textContent = `$${Number(data.total_prize).toLocaleString()}`;
+                document.getElementById('win-rate').textContent = `${data.win_rate}%`;
+                document.getElementById('periods-count').textContent = data.periods_participated;
+                
+            } catch (e) {
+                console.error('Failed to load overall stats:', e);
+            }
+        }
+        
+        // Load Monthly Stats
+        async function loadMonthlyStats() {
+            try {
+                const data = await apiGet('/statistics/monthly?months=6');
+                if (!data) return;
+                
+                const container = document.getElementById('chart-bars');
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📈</div>
+                            <p class="empty-text">尚無數據</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 找最大值
+                let maxVal = 0;
+                data.forEach(d => {
+                    maxVal = Math.max(maxVal, Math.abs(Number(d.invested)), Math.abs(Number(d.prize)));
+                });
+                maxVal = maxVal || 1;
+                
+                // 反轉順序（最新在右）
+                const reversed = [...data].reverse();
+                
+                container.innerHTML = reversed.map(d => {
+                    const investedHeight = Math.abs(Number(d.invested)) / maxVal * 100;
+                    const prizeHeight = Math.abs(Number(d.prize)) / maxVal * 100;
+                    const month = d.year_month.split('-')[1];
+                    
+                    return `
+                        <div class="chart-bar-group">
+                            <div style="display: flex; gap: 2px; align-items: flex-end; height: 100px;">
+                                <div class="chart-bar invested" style="height: ${Math.max(investedHeight, 2)}%;"></div>
+                                <div class="chart-bar prize" style="height: ${Math.max(prizeHeight, 2)}%;"></div>
+                            </div>
+                            <div class="chart-label">${parseInt(month)}月</div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (e) {
+                console.error('Failed to load monthly stats:', e);
+            }
+        }
+        
+        // Load Series Performance
+        async function loadSeriesPerformance() {
+            try {
+                const data = await apiGet('/statistics/series-performance');
+                if (!data) return;
+                
+                const container = document.getElementById('perf-list');
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🎰</div>
+                            <p class="empty-text">尚未參與任何系列團</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.map(s => `
+                    <div class="perf-item">
+                        <div class="perf-info">
+                            <div class="perf-name">${s.series_name}</div>
+                            <div class="perf-detail">
+                                ${s.periods_count} 期 · 
+                                投資 $${Number(s.invested).toLocaleString()} · 
+                                份額 $${Number(s.current_pool_share).toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="perf-roi">
+                            <div class="perf-roi-value ${s.roi_percent >= 0 ? 'positive' : 'negative'}">
+                                ${s.roi_percent >= 0 ? '+' : ''}${s.roi_percent}%
+                            </div>
+                            <div class="perf-profit">
+                                ${s.profit >= 0 ? '+' : ''}$${Number(s.profit).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (e) {
+                console.error('Failed to load series performance:', e);
+            }
+        }
+        
+        // Load Winning Records
+        async function loadWinningRecords() {
+            try {
+                const data = await apiGet('/statistics/winning-records?limit=20');
+                if (!data) return;
+                
+                const container = document.getElementById('win-list');
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🎉</div>
+                            <p class="empty-text">尚無中獎記錄</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.map(w => `
+                    <div class="win-item">
+                        <div class="win-header">
+                            <div class="win-title">${w.series_name} 第${w.period_number}期</div>
+                            <div class="win-amount">+$${Number(w.my_share).toLocaleString()}</div>
+                        </div>
+                        <div class="win-detail">
+                            ${w.lottery_type}
+                            ${w.draw_date ? ` · ${w.draw_date}` : ''}
+                            · 總獎金 $${Number(w.prize_amount).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (e) {
+                console.error('Failed to load winning records:', e);
+            }
+        }
+        
+        // Load Lottery Type Stats
+        async function loadLotteryTypeStats() {
+            try {
+                const data = await apiGet('/statistics/by-lottery-type');
+                if (!data) return;
+                
+                const container = document.getElementById('lottery-list');
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🎫</div>
+                            <p class="empty-text">尚無數據</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.map(l => `
+                    <div class="perf-item">
+                        <div class="perf-info">
+                            <div class="perf-name">${l.lottery_name}</div>
+                            <div class="perf-detail">
+                                ${l.periods} 期 · 
+                                投資 $${Number(l.invested).toLocaleString()} · 
+                                獎金 $${Number(l.prize).toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="perf-roi">
+                            <div class="perf-roi-value ${l.roi_percent >= 0 ? 'positive' : 'negative'}">
+                                ${l.roi_percent >= 0 ? '+' : ''}${l.roi_percent}%
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (e) {
+                console.error('Failed to load lottery type stats:', e);
+            }
+        }
+        
+        // Tab Switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                document.getElementById(`tab-${tabName}`).style.display = 'block';
+                
+                // Load data on first view
+                if (tabName === 'winning') {
+                    loadWinningRecords();
+                } else if (tabName === 'lottery') {
+                    loadLotteryTypeStats();
+                }
+            });
+        });
+        
+        // Init
+        async function init() {
+            if (!await checkAuth()) return;
+            
+            loadOverallStats();
+            loadMonthlyStats();
+            loadSeriesPerformance();
+        }
+        
+        init();
+    </script>
+</body>
+</html>

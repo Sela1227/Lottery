@@ -91,7 +91,7 @@ async def wallet():
 @main_app.get("/statistics")
 async def statistics():
     """統計報表"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    return FileResponse(STATIC_DIR / "statistics.html")
 
 
 @main_app.get("/personal")

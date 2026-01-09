@@ -37,7 +37,6 @@
             color: var(--text-primary);
         }
         
-        /* Header */
         .header {
             background: var(--bg-card);
             border-bottom: 1px solid var(--border-color);
@@ -51,526 +50,179 @@
             box-shadow: var(--shadow-sm);
         }
         
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .brand {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--sela-orange);
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .logo { width: 36px; height: 36px; border-radius: 8px; box-shadow: var(--shadow-sm); }
+        .brand { font-size: 16px; font-weight: 700; color: var(--sela-orange); }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
         
         .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 600; color: #fff; overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
-        
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
         .user-name {
-            font-weight: 500;
-            font-size: 14px;
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text-primary);
+            font-weight: 500; font-size: 14px; max-width: 100px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         
         .logout-btn {
-            padding: 8px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--sela-orange);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-            font-weight: 500;
-            -webkit-tap-highlight-color: transparent;
+            padding: 8px 14px; background: var(--bg-secondary);
+            border: 1px solid var(--border-color); color: var(--sela-orange);
+            border-radius: 8px; cursor: pointer; transition: all 0.3s;
+            font-size: 13px; font-weight: 500;
         }
+        .logout-btn:hover { background: var(--sela-orange); color: #fff; border-color: var(--sela-orange); }
         
-        .logout-btn:hover, .logout-btn:active {
-            background: var(--sela-orange);
-            color: #fff;
-            border-color: var(--sela-orange);
-        }
+        .main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .welcome { margin-bottom: 24px; }
+        .welcome h1 { font-size: 22px; margin-bottom: 4px; font-weight: 700; }
+        .welcome h1 span { color: var(--sela-orange); }
+        .welcome p { color: var(--text-secondary); font-size: 14px; }
         
-        /* Main Content */
-        .main {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .welcome {
-            margin-bottom: 24px;
-        }
-        
-        .welcome h1 {
-            font-size: 22px;
-            margin-bottom: 4px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        .welcome h1 span {
-            color: var(--sela-orange);
-        }
-        
-        .welcome p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        /* Stats Cards */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-        
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
         .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm);
+            position: relative; overflow: hidden;
         }
-        
         .stat-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--sela-orange), var(--sela-orange-light));
-            opacity: 0.6;
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--sela-orange), var(--sela-orange-light)); opacity: 0.6;
         }
-        
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .stat-card-title {
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .stat-card-icon {
-            font-size: 20px;
-        }
-        
-        .stat-card-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--sela-orange);
-        }
-        
+        .stat-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .stat-card-title { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
+        .stat-card-icon { font-size: 20px; }
+        .stat-card-value { font-size: 22px; font-weight: 700; color: var(--sela-orange); }
         .stat-card-value.green { color: var(--success); }
         .stat-card-value.blue { color: #2563EB; }
         
-        /* Section Title */
-        .section-title {
-            font-size: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        .section-title { font-size: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
         
-        /* Quick Actions */
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-        
+        .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
         .action-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            -webkit-tap-highlight-color: transparent;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 20px 14px; text-align: center;
+            cursor: pointer; transition: all 0.3s; text-decoration: none;
+            color: var(--text-primary); box-shadow: var(--shadow-sm);
         }
-        
-        .action-btn:hover, .action-btn:active {
-            border-color: var(--sela-orange);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
+        .action-btn:hover { border-color: var(--sela-orange); box-shadow: var(--shadow-md); transform: translateY(-2px); }
         
         .action-btn.primary {
             background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            border: none;
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
+            border: none; color: #fff; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
         }
-        
-        .action-btn.primary:hover, .action-btn.primary:active {
-            box-shadow: 0 12px 32px rgba(242, 101, 34, 0.4);
-            transform: translateY(-2px);
-        }
+        .action-btn.primary:hover { box-shadow: 0 12px 32px rgba(242, 101, 34, 0.4); }
+        .action-btn.primary .action-desc { color: rgba(255,255,255,0.85); }
         
         .action-btn.wallet {
             background: linear-gradient(135deg, #16A34A, #15803D);
-            border: none;
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+            border: none; color: #fff; box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
         }
+        .action-btn.wallet:hover { box-shadow: 0 12px 32px rgba(22, 163, 74, 0.4); }
+        .action-btn.wallet .action-desc { color: rgba(255,255,255,0.85); }
         
-        .action-btn.wallet:hover, .action-btn.wallet:active {
-            box-shadow: 0 12px 32px rgba(22, 163, 74, 0.4);
-            transform: translateY(-2px);
+        .action-btn.stats {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            border: none; color: #fff; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
         }
-        
-        .action-btn.wallet .action-desc {
-            color: rgba(255,255,255,0.85);
-        }
+        .action-btn.stats:hover { box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4); }
+        .action-btn.stats .action-desc { color: rgba(255,255,255,0.85); }
         
         .action-btn.admin {
             background: linear-gradient(135deg, #6366F1, #4F46E5);
-            border: none;
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            border: none; color: #fff; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
         }
+        .action-btn.admin:hover { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4); }
+        .action-btn.admin .action-desc { color: rgba(255,255,255,0.85); }
         
-        .action-btn.admin:hover, .action-btn.admin:active {
-            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
-            transform: translateY(-2px);
-        }
+        .action-icon { font-size: 32px; margin-bottom: 10px; }
+        .action-title { font-weight: 600; margin-bottom: 4px; font-size: 15px; }
+        .action-desc { font-size: 11px; color: var(--text-secondary); }
         
-        .action-btn.admin .action-desc {
-            color: rgba(255,255,255,0.85);
-        }
-        
-        .action-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .action-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 15px;
-        }
-        
-        .action-desc {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-        
-        .action-btn.primary .action-desc {
-            color: rgba(255,255,255,0.85);
-        }
-        
-        /* Recent Activity */
         .activity-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 28px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; overflow: hidden; margin-bottom: 28px;
         }
-        
         .activity-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        
-        .activity-title {
-            font-weight: 700;
-            font-size: 15px;
-        }
-        
-        .view-all {
-            color: var(--sela-orange);
-            font-size: 13px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .activity-list {
-            padding: 0;
-        }
-        
+        .activity-title { font-weight: 700; font-size: 15px; }
+        .view-all { color: var(--sela-orange); font-size: 13px; text-decoration: none; font-weight: 500; }
+        .activity-list { padding: 0; }
         .activity-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.3s;
+            padding: 14px 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            text-decoration: none; color: inherit; transition: background 0.3s;
         }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-item:hover {
-            background: var(--bg-secondary);
-        }
-        
-        .activity-info {
-            flex: 1;
-        }
-        
-        .activity-name {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-        
-        .activity-detail {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .activity-status {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item:hover { background: var(--bg-secondary); }
+        .activity-info { flex: 1; }
+        .activity-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .activity-detail { font-size: 12px; color: var(--text-secondary); }
+        .activity-status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
         .activity-status.collecting { background: rgba(37, 99, 235, 0.1); color: #2563EB; }
         .activity-status.locked { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
         .activity-status.purchased { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
         .activity-status.drawn { background: rgba(22, 163, 74, 0.1); color: var(--success); }
         .activity-status.settled { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
         
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-icon { font-size: 52px; margin-bottom: 14px; }
+        .empty-title { font-size: 16px; margin-bottom: 8px; font-weight: 600; }
+        .empty-desc { color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
         
-        .empty-icon {
-            font-size: 52px;
-            margin-bottom: 14px;
-        }
-        
-        .empty-title {
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .empty-desc {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        /* Loading Overlay */
         .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-primary); display: flex; align-items: center;
+            justify-content: center; z-index: 1000;
         }
-        
-        .loading-content {
-            text-align: center;
-        }
-        
+        .loading-content { text-align: center; }
         .loading-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-md);
+            width: 72px; height: 72px; border-radius: 16px;
+            margin-bottom: 20px; box-shadow: var(--shadow-md);
             animation: pulse 1.5s ease-in-out infinite;
         }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
+        .loading-text { color: var(--text-secondary); font-size: 14px; }
+        .hidden { display: none !important; }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
-        }
-        
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        /* 手機直向 */
         @media (max-width: 480px) {
-            .header {
-                padding: 10px 16px;
-            }
-            
-            .brand {
-                display: none;
-            }
-            
-            .user-name {
-                display: none;
-            }
-            
-            .main {
-                padding: 16px;
-            }
-            
-            .welcome h1 {
-                font-size: 20px;
-            }
-            
-            .stats {
-                gap: 8px;
-            }
-            
-            .stat-card {
-                padding: 14px 12px;
-            }
-            
-            .stat-card-title {
-                font-size: 10px;
-            }
-            
-            .stat-card-icon {
-                font-size: 18px;
-            }
-            
-            .stat-card-value {
-                font-size: 18px;
-            }
-            
-            .actions {
-                gap: 10px;
-            }
-            
-            .action-btn {
-                padding: 16px 12px;
-            }
-            
-            .action-icon {
-                font-size: 28px;
-                margin-bottom: 8px;
-            }
-            
-            .action-title {
-                font-size: 13px;
-            }
-            
-            .action-desc {
-                font-size: 10px;
-            }
+            .header { padding: 10px 16px; }
+            .brand, .user-name { display: none; }
+            .main { padding: 16px; }
+            .welcome h1 { font-size: 20px; }
+            .stats { gap: 8px; }
+            .stat-card { padding: 14px 12px; }
+            .stat-card-title { font-size: 10px; }
+            .stat-card-icon { font-size: 18px; }
+            .stat-card-value { font-size: 18px; }
+            .actions { gap: 10px; }
+            .action-btn { padding: 16px 12px; }
+            .action-icon { font-size: 28px; margin-bottom: 8px; }
+            .action-title { font-size: 13px; }
+            .action-desc { font-size: 10px; }
         }
         
-        /* 大螢幕 */
         @media (min-width: 768px) {
-            .header {
-                padding: 14px 30px;
-            }
-            
-            .logo {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .brand {
-                font-size: 18px;
-            }
-            
-            .user-avatar {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .user-name {
-                max-width: 150px;
-                font-size: 15px;
-            }
-            
-            .main {
-                padding: 30px;
-            }
-            
-            .welcome h1 {
-                font-size: 26px;
-            }
-            
-            .stats {
-                gap: 16px;
-            }
-            
-            .stat-card {
-                padding: 22px;
-            }
+            .header { padding: 14px 30px; }
+            .logo { width: 40px; height: 40px; }
+            .brand { font-size: 18px; }
+            .user-avatar { width: 40px; height: 40px; }
+            .user-name { max-width: 150px; font-size: 15px; }
+            .main { padding: 30px; }
+            .welcome h1 { font-size: 26px; }
+            .stats { gap: 16px; }
+            .stat-card { padding: 22px; }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-content">
             <img src="/static/logo.jpg" alt="SELA" class="loading-logo">
@@ -578,7 +230,6 @@
         </div>
     </div>
     
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <img src="/static/logo.jpg" alt="SELA" class="logo">
@@ -593,15 +244,12 @@
         </div>
     </header>
     
-    <!-- Main Content -->
     <main class="main">
-        <!-- Welcome -->
         <div class="welcome">
             <h1>你好,<span id="welcome-name"></span>!</h1>
             <p>今天是發財的好日子 🍀</p>
         </div>
         
-        <!-- Stats -->
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -626,7 +274,6 @@
             </div>
         </div>
         
-        <!-- Quick Actions -->
         <h2 class="section-title">⚡ 快速操作</h2>
         <div class="actions">
             <a href="/series" class="action-btn primary">
@@ -639,17 +286,16 @@
                 <div class="action-title">我的錢包</div>
                 <div class="action-desc">查看資產與記錄</div>
             </a>
+            <a href="/statistics" class="action-btn stats">
+                <div class="action-icon">📊</div>
+                <div class="action-title">統計報表</div>
+                <div class="action-desc">查看投資報酬</div>
+            </a>
             <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
                 <div class="action-icon">🎫</div>
                 <div class="action-title">加入系列團</div>
                 <div class="action-desc">使用邀請碼</div>
             </a>
-            <a href="#" class="action-btn" onclick="event.preventDefault(); showComingSoon('統計報表');">
-                <div class="action-icon">📊</div>
-                <div class="action-title">統計報表</div>
-                <div class="action-desc">查看投資報酬</div>
-            </a>
-            <!-- 管理後台按鈕（僅管理員可見） -->
             <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">
                 <div class="action-icon">🔧</div>
                 <div class="action-title">管理後台</div>
@@ -657,7 +303,6 @@
             </a>
         </div>
         
-        <!-- Recent Activity -->
         <div class="activity-section">
             <div class="activity-header">
                 <span class="activity-title">📋 近期活動</span>
@@ -673,7 +318,6 @@
         </div>
     </main>
     
-    <!-- Join Modal -->
     <div class="modal-overlay" id="join-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: #fff; border-radius: 20px; width: 90%; max-width: 400px; padding: 24px;">
             <h3 style="margin-bottom: 20px; font-size: 18px;">使用邀請碼加入</h3>
@@ -686,23 +330,13 @@
         </div>
     </div>
     
-    <!-- Toast -->
     <div id="toast" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 2000;"></div>
     
     <script>
         const API_BASE = '/api/v1';
         
-        function showComingSoon(feature) {
-            showToast(`「${feature}」功能即將推出!`);
-        }
-        
-        function showJoinModal() {
-            document.getElementById('join-modal').style.display = 'flex';
-        }
-        
-        function closeJoinModal() {
-            document.getElementById('join-modal').style.display = 'none';
-        }
+        function showJoinModal() { document.getElementById('join-modal').style.display = 'flex'; }
+        function closeJoinModal() { document.getElementById('join-modal').style.display = 'none'; }
         
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
@@ -710,72 +344,36 @@
             toast.style.background = type === 'error' ? '#DC2626' : type === 'success' ? '#16A34A' : '#333';
             toast.style.transform = 'translateX(-50%) translateY(0)';
             toast.style.opacity = '1';
-            setTimeout(() => {
-                toast.style.transform = 'translateX(-50%) translateY(100px)';
-                toast.style.opacity = '0';
-            }, 3000);
+            setTimeout(() => { toast.style.transform = 'translateX(-50%) translateY(100px)'; toast.style.opacity = '0'; }, 3000);
         }
         
         async function joinSeries() {
             const code = document.getElementById('invite-code').value.trim().toUpperCase();
             const pool = parseFloat(document.getElementById('join-pool').value);
-            
-            if (!code) {
-                showToast('請輸入邀請碼', 'error');
-                return;
-            }
-            
+            if (!code) { showToast('請輸入邀請碼', 'error'); return; }
             try {
                 const token = localStorage.getItem('access_token');
                 const res = await fetch(`${API_BASE}/series/join`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        invitation_code: code,
-                        initial_pool_share: pool
-                    })
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ invitation_code: code, initial_pool_share: pool })
                 });
-                
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.detail || '加入失敗');
-                }
-                
+                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || '加入失敗'); }
                 closeJoinModal();
                 showToast('成功加入系列團!', 'success');
                 loadDashboardData();
-                
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            } catch (e) { showToast(e.message, 'error'); }
         }
         
         async function checkAuth() {
             const token = localStorage.getItem('access_token');
-            
-            if (!token) {
-                window.location.href = '/';
-                return;
-            }
-            
+            if (!token) { window.location.href = '/'; return; }
             try {
-                const response = await fetch(`${API_BASE}/users/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Unauthorized');
-                }
-                
+                const response = await fetch(`${API_BASE}/users/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) throw new Error('Unauthorized');
                 const user = await response.json();
                 updateUI(user);
                 loadDashboardData();
-                
             } catch (error) {
                 console.error('Auth error:', error);
                 localStorage.removeItem('access_token');
@@ -787,104 +385,48 @@
             const displayName = user.nickname || user.display_name;
             document.getElementById('user-name').textContent = displayName;
             document.getElementById('welcome-name').textContent = displayName;
-            
             const avatarEl = document.getElementById('user-avatar');
-            if (user.picture_url) {
-                avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`;
-            } else {
-                avatarEl.textContent = displayName.charAt(0);
-            }
-            
-            // 如果是管理員，顯示管理後台按鈕
-            if (user.role === 'admin') {
-                document.getElementById('admin-btn').style.display = 'block';
-            }
-            
+            if (user.picture_url) { avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`; }
+            else { avatarEl.textContent = displayName.charAt(0); }
+            if (user.role === 'admin') { document.getElementById('admin-btn').style.display = 'block'; }
             document.getElementById('loading-overlay').classList.add('hidden');
         }
         
         async function loadDashboardData() {
             const token = localStorage.getItem('access_token');
-            
             try {
-                // Load series list
-                const seriesRes = await fetch(`${API_BASE}/series`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
+                const seriesRes = await fetch(`${API_BASE}/series`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (seriesRes.ok) {
                     const seriesList = await seriesRes.json();
-                    
-                    // Calculate stats
-                    let totalPool = 0;
-                    let totalPrize = 0;
-                    
-                    seriesList.forEach(s => {
-                        totalPool += Number(s.my_pool_share) || 0;
-                    });
-                    
+                    let totalPool = 0, totalPrize = 0;
+                    seriesList.forEach(s => { totalPool += Number(s.my_pool_share) || 0; });
                     document.getElementById('total-pool').textContent = `$${totalPool.toLocaleString()}`;
                     document.getElementById('series-count').textContent = seriesList.length;
                     document.getElementById('total-prize').textContent = `$${totalPrize.toLocaleString()}`;
-                    
-                    // Render recent activity
                     renderRecentActivity(seriesList);
                 }
-            } catch (e) {
-                console.error('Failed to load dashboard data:', e);
-            }
+            } catch (e) { console.error('Failed to load dashboard data:', e); }
         }
         
         async function renderRecentActivity(seriesList) {
             const container = document.getElementById('activity-list');
-            
-            if (seriesList.length === 0) {
-                return; // Keep empty state
-            }
-            
-            // Get recent groups from all series
+            if (seriesList.length === 0) return;
             const recentGroups = [];
             const token = localStorage.getItem('access_token');
-            
             for (const series of seriesList.slice(0, 3)) {
                 try {
-                    const res = await fetch(`${API_BASE}/series/${series.id}/groups`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await fetch(`${API_BASE}/series/${series.id}/groups`, { headers: { 'Authorization': `Bearer ${token}` } });
                     if (res.ok) {
                         const groups = await res.json();
-                        groups.slice(0, 2).forEach(g => {
-                            recentGroups.push({
-                                ...g,
-                                seriesName: series.name,
-                                seriesId: series.id
-                            });
-                        });
+                        groups.slice(0, 2).forEach(g => { recentGroups.push({ ...g, seriesName: series.name, seriesId: series.id }); });
                     }
-                } catch (e) {
-                    console.error('Failed to load groups:', e);
-                }
+                } catch (e) { console.error('Failed to load groups:', e); }
             }
-            
             if (recentGroups.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📋</div>
-                        <h3 class="empty-title">尚無單期團</h3>
-                        <p class="empty-desc">管理員開新期後會顯示在這裡</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無單期團</h3><p class="empty-desc">管理員開新期後會顯示在這裡</p></div>`;
                 return;
             }
-            
-            const statusText = {
-                collecting: '集資中',
-                locked: '已鎖定',
-                purchased: '已購買',
-                drawn: '已開獎',
-                settled: '已結算'
-            };
-            
+            const statusText = { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' };
             container.innerHTML = recentGroups.slice(0, 5).map(g => `
                 <a href="/group/${g.id}" class="activity-item">
                     <div class="activity-info">
@@ -896,18 +438,8 @@
             `).join('');
         }
         
-        function logout() {
-            if (confirm('確定要登出嗎?')) {
-                localStorage.removeItem('access_token');
-                window.location.href = '/';
-            }
-        }
-        
-        // Close modal on click outside
-        document.getElementById('join-modal').addEventListener('click', function(e) {
-            if (e.target === this) closeJoinModal();
-        });
-        
+        function logout() { if (confirm('確定要登出嗎?')) { localStorage.removeItem('access_token'); window.location.href = '/'; } }
+        document.getElementById('join-modal').addEventListener('click', function(e) { if (e.target === this) closeJoinModal(); });
         checkAuth();
     </script>
 </body>
