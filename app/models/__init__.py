@@ -12,6 +12,7 @@ from app.models.ledger import (
     EventLog, EventCategory, ActorType,
     PeriodSnapshot
 )
+from app.models.lottery_draw import LotteryDraw  # Step 4-2: 開獎記錄
 
 __all__ = [
     # User
@@ -36,4 +37,7 @@ __all__ = [
     "UserLedger", "AccountType", "TransactionType",
     "EventLog", "EventCategory", "ActorType",
     "PeriodSnapshot",
+    
+    # LotteryDraw (Step 4-2)
+    "LotteryDraw",
 ]
