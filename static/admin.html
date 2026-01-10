@@ -424,6 +424,37 @@
             } catch (e) {
                 document.getElementById('series-list').innerHTML = '<div class="loading">載入失敗</div>';
             }
+            
+            // 🔄 自動同步開獎資料（每天一次）
+            autoSyncLottery(token);
+        }
+        
+        // 自動同步開獎資料
+        async function autoSyncLottery(token) {
+            const lastSync = localStorage.getItem('lottery_last_sync');
+            const today = new Date().toDateString();
+            
+            // 今天已經同步過就跳過
+            if (lastSync === today) {
+                console.log('📅 今日已同步過開獎資料');
+                return;
+            }
+            
+            try {
+                console.log('🔄 自動同步開獎資料...');
+                const response = await fetch(`${API_BASE}/lottery/sync`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    localStorage.setItem('lottery_last_sync', today);
+                    console.log('✅ 自動同步完成:', result.message);
+                }
+            } catch (e) {
+                console.warn('⚠️ 自動同步失敗:', e);
+            }
         }
         
         function formatMoney(amount) {
