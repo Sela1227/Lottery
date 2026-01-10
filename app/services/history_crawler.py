@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 class HistoryCrawler:
     """歷史開獎資料爬蟲"""
     
-    # 樂透雲歷史資料頁面
+    # 正確的 URL
     HISTORY_URLS = {
-        "power": "https://www.lotto-8.com/listltosuperlotto638.asp",      # 威力彩
-        "super": "https://www.lotto-8.com/listltobig.asp",                 # 大樂透
-        "daily539": "https://www.lotto-8.com/listltodailycash.asp",       # 今彩539
+        "power": "https://www.lotto-8.com/Taiwan/listlto.asp",         # 威力彩
+        "super": "https://www.lotto-8.com/Taiwan/listltobig.asp",      # 大樂透
+        "daily539": "https://www.lotto-8.com/Taiwan/listlto539.asp",   # 今彩539
     }
     
     HEADERS = {
@@ -44,99 +44,123 @@ class HistoryCrawler:
             return None
     
     def _parse_date(self, date_str: str) -> Optional[date]:
-        """解析日期字串"""
+        """
+        解析日期字串
+        格式: DD/MM YY(星期) -> 例如 08/01 26(四) = 2026-01-08
+        """
         if not date_str:
             return None
         
-        # 清理字串
-        date_str = date_str.strip()
+        try:
+            # 移除星期部分
+            date_str = re.sub(r'\([一二三四五六日]\)', '', date_str).strip()
+            
+            # 解析 DD/MM YY 格式
+            match = re.match(r'(\d{1,2})/(\d{1,2})\s+(\d{2})', date_str)
+            if match:
+                day = int(match.group(1))
+                month = int(match.group(2))
+                year = 2000 + int(match.group(3))  # 26 -> 2026
+                return date(year, month, day)
+            
+            return None
+        except Exception as e:
+            logger.debug(f"日期解析失敗: {date_str} - {e}")
+            return None
+    
+    def _parse_numbers(self, num_str: str) -> List[int]:
+        """
+        解析號碼字串
+        格式: 07, 17, 25, 26, 27, 33
+        """
+        numbers = []
+        if not num_str:
+            return numbers
         
-        for fmt in ['%Y/%m/%d', '%Y-%m-%d', '%Y.%m.%d']:
-            try:
-                return datetime.strptime(date_str, fmt).date()
-            except ValueError:
-                continue
-        return None
+        # 用逗號或空格分割
+        parts = re.split(r'[,\s]+', num_str.strip())
+        for part in parts:
+            part = part.strip()
+            if part.isdigit():
+                numbers.append(int(part))
+        
+        return numbers
     
     def fetch_power_history(self, limit: int = 50) -> List[Dict[str, Any]]:
         """
         爬取威力彩歷史資料
         
         威力彩: 6個主號 (1-38) + 1個第二區 (1-8)
+        表格格式: 日期 | 開獎號碼 | 第2區
         """
         results = []
         html = self._fetch_page(self.HISTORY_URLS["power"])
         if not html:
+            logger.error("無法取得威力彩頁面")
             return results
         
         try:
             soup = BeautifulSoup(html, "html.parser")
             
-            # 找到資料表格 - 通常是 class 包含 "ltotable" 或 id 包含某些關鍵字
-            table = soup.find("table", {"class": re.compile(r".*tab.*", re.I)})
-            if not table:
-                tables = soup.find_all("table")
-                for t in tables:
-                    if t.find("tr") and len(t.find_all("tr")) > 5:
-                        table = t
+            # 找到資料表格
+            tables = soup.find_all("table")
+            
+            for table in tables:
+                rows = table.find_all("tr")
+                
+                for row in rows:
+                    if len(results) >= limit:
                         break
-            
-            if not table:
-                logger.warning("找不到威力彩歷史資料表格")
-                return results
-            
-            rows = table.find_all("tr")
-            count = 0
-            
-            for row in rows:
-                if count >= limit:
-                    break
-                
-                cells = row.find_all("td")
-                if len(cells) < 8:  # 需要至少: 期數、日期、6個號碼、1個第二區
-                    continue
-                
-                try:
-                    # 第一欄通常是期數，第二欄是日期
-                    term_text = cells[0].get_text(strip=True)
-                    date_text = cells[1].get_text(strip=True)
+                    
+                    cells = row.find_all("td")
+                    if len(cells) < 3:
+                        continue
+                    
+                    # 取得各欄位文字
+                    date_text = cells[0].get_text(strip=True)
+                    numbers_text = cells[1].get_text(strip=True)
+                    second_zone_text = cells[2].get_text(strip=True)
+                    
+                    # 跳過標題列
+                    if "日期" in date_text or "開獎" in date_text:
+                        continue
                     
                     # 解析日期
                     draw_date = self._parse_date(date_text)
                     if not draw_date:
                         continue
                     
-                    # 解析號碼 - 從剩餘的欄位取得
-                    numbers = []
-                    for cell in cells[2:]:
-                        num_text = cell.get_text(strip=True)
-                        if num_text.isdigit():
-                            numbers.append(int(num_text))
+                    # 解析號碼
+                    first_zone = self._parse_numbers(numbers_text)
+                    if len(first_zone) != 6:
+                        continue
                     
-                    if len(numbers) >= 7:
-                        # 期數格式: power_YYYY-MM-DD
-                        draw_term = f"power_{draw_date.isoformat()}"
-                        
-                        results.append({
-                            "lottery_type": "power",
-                            "draw_term": draw_term,
-                            "draw_date": draw_date,
-                            "numbers": {
-                                "first_zone": sorted(numbers[:6]),
-                                "second_zone": numbers[6]
-                            },
-                            "jackpot": None  # 歷史資料通常沒有獎金
-                        })
-                        count += 1
-                        logger.info(f"威力彩 {draw_date}: {numbers[:6]} + {numbers[6]}")
-                
-                except Exception as e:
-                    logger.debug(f"解析威力彩列失敗: {e}")
-                    continue
+                    # 解析第二區
+                    second_zone = None
+                    if second_zone_text.isdigit():
+                        second_zone = int(second_zone_text)
+                    
+                    if second_zone is None:
+                        continue
+                    
+                    draw_term = f"power_{draw_date.isoformat()}"
+                    
+                    results.append({
+                        "lottery_type": "power",
+                        "draw_term": draw_term,
+                        "draw_date": draw_date,
+                        "numbers": {
+                            "first_zone": first_zone,
+                            "second_zone": second_zone
+                        },
+                        "jackpot": None
+                    })
+                    logger.info(f"威力彩 {draw_date}: {first_zone} + {second_zone}")
         
         except Exception as e:
             logger.error(f"解析威力彩歷史頁面失敗: {e}")
         
+        logger.info(f"威力彩共爬取 {len(results)} 筆")
         return results
     
     def fetch_super_history(self, limit: int = 50) -> List[Dict[str, Any]]:
@@ -144,76 +168,70 @@ class HistoryCrawler:
         爬取大樂透歷史資料
         
         大樂透: 6個主號 (1-49) + 1個特別號
+        表格格式: 日期 | 開獎號碼 | 特
         """
         results = []
         html = self._fetch_page(self.HISTORY_URLS["super"])
         if not html:
+            logger.error("無法取得大樂透頁面")
             return results
         
         try:
             soup = BeautifulSoup(html, "html.parser")
+            tables = soup.find_all("table")
             
-            # 找表格
-            table = soup.find("table", {"class": re.compile(r".*tab.*", re.I)})
-            if not table:
-                tables = soup.find_all("table")
-                for t in tables:
-                    if t.find("tr") and len(t.find_all("tr")) > 5:
-                        table = t
+            for table in tables:
+                rows = table.find_all("tr")
+                
+                for row in rows:
+                    if len(results) >= limit:
                         break
-            
-            if not table:
-                logger.warning("找不到大樂透歷史資料表格")
-                return results
-            
-            rows = table.find_all("tr")
-            count = 0
-            
-            for row in rows:
-                if count >= limit:
-                    break
-                
-                cells = row.find_all("td")
-                if len(cells) < 8:
-                    continue
-                
-                try:
-                    term_text = cells[0].get_text(strip=True)
-                    date_text = cells[1].get_text(strip=True)
+                    
+                    cells = row.find_all("td")
+                    if len(cells) < 3:
+                        continue
+                    
+                    date_text = cells[0].get_text(strip=True)
+                    numbers_text = cells[1].get_text(strip=True)
+                    special_text = cells[2].get_text(strip=True)
+                    
+                    # 跳過標題列
+                    if "日期" in date_text or "開獎" in date_text:
+                        continue
                     
                     draw_date = self._parse_date(date_text)
                     if not draw_date:
                         continue
                     
-                    numbers = []
-                    for cell in cells[2:]:
-                        num_text = cell.get_text(strip=True)
-                        if num_text.isdigit():
-                            numbers.append(int(num_text))
+                    main_numbers = self._parse_numbers(numbers_text)
+                    if len(main_numbers) != 6:
+                        continue
                     
-                    if len(numbers) >= 7:
-                        draw_term = f"super_{draw_date.isoformat()}"
-                        
-                        results.append({
-                            "lottery_type": "super",
-                            "draw_term": draw_term,
-                            "draw_date": draw_date,
-                            "numbers": {
-                                "main": sorted(numbers[:6]),
-                                "special": numbers[6]
-                            },
-                            "jackpot": None
-                        })
-                        count += 1
-                        logger.info(f"大樂透 {draw_date}: {numbers[:6]} + {numbers[6]}")
-                
-                except Exception as e:
-                    logger.debug(f"解析大樂透列失敗: {e}")
-                    continue
+                    special = None
+                    if special_text.isdigit():
+                        special = int(special_text)
+                    
+                    if special is None:
+                        continue
+                    
+                    draw_term = f"super_{draw_date.isoformat()}"
+                    
+                    results.append({
+                        "lottery_type": "super",
+                        "draw_term": draw_term,
+                        "draw_date": draw_date,
+                        "numbers": {
+                            "main": main_numbers,
+                            "special": special
+                        },
+                        "jackpot": None
+                    })
+                    logger.info(f"大樂透 {draw_date}: {main_numbers} + {special}")
         
         except Exception as e:
             logger.error(f"解析大樂透歷史頁面失敗: {e}")
         
+        logger.info(f"大樂透共爬取 {len(results)} 筆")
         return results
     
     def fetch_daily539_history(self, limit: int = 50) -> List[Dict[str, Any]]:
@@ -221,75 +239,61 @@ class HistoryCrawler:
         爬取今彩539歷史資料
         
         今彩539: 5個號碼 (1-39)
+        表格格式: 日期 | 開獎號碼
         """
         results = []
         html = self._fetch_page(self.HISTORY_URLS["daily539"])
         if not html:
+            logger.error("無法取得今彩539頁面")
             return results
         
         try:
             soup = BeautifulSoup(html, "html.parser")
+            tables = soup.find_all("table")
             
-            # 找表格
-            table = soup.find("table", {"class": re.compile(r".*tab.*", re.I)})
-            if not table:
-                tables = soup.find_all("table")
-                for t in tables:
-                    if t.find("tr") and len(t.find_all("tr")) > 5:
-                        table = t
+            for table in tables:
+                rows = table.find_all("tr")
+                
+                for row in rows:
+                    if len(results) >= limit:
                         break
-            
-            if not table:
-                logger.warning("找不到今彩539歷史資料表格")
-                return results
-            
-            rows = table.find_all("tr")
-            count = 0
-            
-            for row in rows:
-                if count >= limit:
-                    break
-                
-                cells = row.find_all("td")
-                if len(cells) < 7:  # 期數、日期、5個號碼
-                    continue
-                
-                try:
-                    term_text = cells[0].get_text(strip=True)
-                    date_text = cells[1].get_text(strip=True)
+                    
+                    cells = row.find_all("td")
+                    if len(cells) < 2:
+                        continue
+                    
+                    date_text = cells[0].get_text(strip=True)
+                    numbers_text = cells[1].get_text(strip=True)
+                    
+                    # 跳過標題列
+                    if "日期" in date_text or "開獎" in date_text:
+                        continue
                     
                     draw_date = self._parse_date(date_text)
                     if not draw_date:
                         continue
                     
-                    numbers = []
-                    for cell in cells[2:]:
-                        num_text = cell.get_text(strip=True)
-                        if num_text.isdigit():
-                            numbers.append(int(num_text))
+                    numbers = self._parse_numbers(numbers_text)
+                    if len(numbers) != 5:
+                        continue
                     
-                    if len(numbers) >= 5:
-                        draw_term = f"daily539_{draw_date.isoformat()}"
-                        
-                        results.append({
-                            "lottery_type": "daily539",
-                            "draw_term": draw_term,
-                            "draw_date": draw_date,
-                            "numbers": {
-                                "numbers": sorted(numbers[:5])
-                            },
-                            "jackpot": None  # 歷史資料沒有當期獎金
-                        })
-                        count += 1
-                        logger.info(f"今彩539 {draw_date}: {numbers[:5]}")
-                
-                except Exception as e:
-                    logger.debug(f"解析今彩539列失敗: {e}")
-                    continue
+                    draw_term = f"daily539_{draw_date.isoformat()}"
+                    
+                    results.append({
+                        "lottery_type": "daily539",
+                        "draw_term": draw_term,
+                        "draw_date": draw_date,
+                        "numbers": {
+                            "numbers": numbers
+                        },
+                        "jackpot": None
+                    })
+                    logger.info(f"今彩539 {draw_date}: {numbers}")
         
         except Exception as e:
             logger.error(f"解析今彩539歷史頁面失敗: {e}")
         
+        logger.info(f"今彩539共爬取 {len(results)} 筆")
         return results
     
     def fetch_all_history(self, limit: int = 30) -> Dict[str, List[Dict[str, Any]]]:
