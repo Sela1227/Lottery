@@ -1,102 +1,114 @@
-# SELA 樂透一路發 - 自動對獎功能
+# SELA 樂透一路發 - 自動對獎與結算功能
 
 ## 🎯 功能說明
 
-新增自動對獎功能，管理員同步開獎資料後會自動對獎所有待對獎的團。
+新增自動對獎與結算功能：
+1. 管理員同步開獎資料後自動對獎所有待對獎的團
+2. 支援對獎後自動結算，或手動分開執行
 
 ## 📦 檔案清單
 
 ```
 app/
 ├── api/v1/
-│   ├── check.py      # 新增：對獎 API 端點
-│   └── lottery.py    # 更新：sync 後自動對獎
+│   ├── check.py       # 新增：對獎與結算 API 端點
+│   └── lottery.py     # 更新：sync 後自動對獎
 ├── services/
-│   └── auto_check.py # 新增：自動對獎服務
-└── main.py           # 更新：加入 check_router
+│   ├── auto_check.py  # 新增：自動對獎服務
+│   └── auto_settle.py # 新增：自動結算服務
+└── main.py            # 更新：加入 check_router
 ```
 
-## 🔧 部署步驟
+## 🚀 部署步驟
 
 ```bash
 cd /Users/sela/Documents/Python/線上威力彩
-unzip -o ~/Downloads/step11_auto_check.zip
+unzip -o ~/Downloads/step11_auto_check_settle.zip
 git add .
-git commit -m "feat: 自動對獎功能"
+git commit -m "feat: 自動對獎與結算功能"
 git push
 ```
 
-## 🚀 API 端點
+## 🔧 API 端點
 
-### 1. 手動對獎單一團
-```
-POST /api/v1/check/group
-Body: {"group_id": 123}
-```
+### 對獎 API
 
-### 2. 依彩種對獎
-```
-POST /api/v1/check/by-lottery
-Body: {
-  "lottery_type": "power",
-  "draw_term": "power_2026-01-10"  // 或 "draw_date": "2026-01-10"
-}
-```
+| 端點 | 說明 |
+|------|------|
+| `POST /api/v1/check/group` | 對獎單一團（可選自動結算） |
+| `POST /api/v1/check/auto?auto_settle=true` | 自動對獎所有待對獎團 |
+| `POST /api/v1/check/by-lottery` | 依彩種對獎 |
+| `GET /api/v1/check/pending?status=purchased` | 查看待對獎團 |
 
-### 3. 自動對獎所有待對獎團
-```
-POST /api/v1/check/auto
-```
+### 結算 API
 
-### 4. 查看待對獎團
-```
-GET /api/v1/check/pending?lottery_type=power
-```
+| 端點 | 說明 |
+|------|------|
+| `POST /api/v1/check/settle/group` | 結算單一團 |
+| `POST /api/v1/check/settle/auto` | 自動結算所有已開獎團 |
+| `POST /api/v1/check/settle/series/{id}` | 結算指定系列所有期 |
+| `GET /api/v1/check/pending?status=drawn` | 查看待結算團 |
 
-### 5. 對獎統計
+### 統計 API
+
 ```
 GET /api/v1/check/stats
 ```
+回傳：待對獎數、待結算數、已結算數、總獎金
 
 ## ⚙️ 運作流程
 
-1. **管理員同步開獎** (`POST /api/v1/lottery/sync`)
-   - 從 lotto-8.com 抓取最新開獎號碼
-   - 儲存到 `lottery_draws` 表
-   - **自動觸發對獎**（掃描所有 `PURCHASED` 狀態的團）
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  PURCHASED  │ ──▶ │   DRAWN     │ ──▶ │  SETTLED    │
+│   已購買     │     │   已開獎     │     │   已結算     │
+└─────────────┘     └─────────────┘     └─────────────┘
+       │                   │                   │
+       ▼                   ▼                   ▼
+    自動對獎            自動結算           獎金分配
+```
 
-2. **對獎流程**
-   - 根據 Group 的 `draw_term` 或 `draw_date` 查找對應的開獎號碼
-   - 對每張彩券的每一注進行比對
-   - 更新 `Ticket.prize_results` 和 `Ticket.prize_amount`
-   - 更新 Group 狀態為 `DRAWN`
-   - 計算扣稅後總獎金
+### 方式一：分開執行
 
-## 📊 對獎邏輯
+1. **同步開獎** → 自動對獎 → 狀態變 `DRAWN`
+2. **手動結算** → 分配獎金 → 狀態變 `SETTLED`
 
-### 威力彩
-- 第一區 6 碼 + 第二區 1 碼
-- 頭獎：6+1（累積獎金）
-- 貳獎：6+0 = 150,000
-- ...
-
-### 大樂透
-- 主號 6 碼 + 特別號
-- 頭獎：6+0（累積獎金）
-- 貳獎：5+特 = 150,000
-- ...
-
-### 今彩539
-- 5 碼選號
-- 頭獎：5 中 = 8,000,000
-- 貳獎：4 中 = 20,000
-- ...
-
-## 🔍 狀態流程
+### 方式二：一鍵完成
 
 ```
-COLLECTING → LOCKED → PURCHASED → DRAWN → SETTLED
-     集資中      已鎖定     已購買     已開獎    已結算
-                                      ↑
-                                  自動對獎
+POST /api/v1/check/auto?auto_settle=true
 ```
+對獎後直接結算，一步到位
+
+## 📊 結算邏輯
+
+1. **計算有效貢獻**
+   - 有效貢獻 = 份額 × (實際花費 / 總資金池)
+   
+2. **計算貢獻比例**
+   - 比例 = 個人有效貢獻 / 總有效貢獻
+
+3. **分配獎金**
+   - 獎金份額 = 總獎金(扣稅後) × 比例
+   - 滾入金額 = 份額 - 有效貢獻
+   - 結算後份額 = 滾入 + 獎金
+
+4. **記錄帳本**
+   - 購買扣除 (`POOL_PURCHASE`)
+   - 獎金分配 (`POOL_PRIZE`)
+
+## 🔍 狀態說明
+
+| 狀態 | 說明 | 下一步 |
+|------|------|--------|
+| `collecting` | 集資中 | 鎖定 |
+| `locked` | 已鎖定 | 購買 |
+| `purchased` | 已購買 | **對獎** |
+| `drawn` | 已開獎 | **結算** |
+| `settled` | 已結算 | 完成 |
+
+## 💡 使用建議
+
+- **日常運營**：使用 `POST /api/v1/check/auto?auto_settle=true` 一鍵完成
+- **需要審核**：先對獎，確認結果後再手動結算
+- **批量處理**：使用 `/settle/series/{id}` 處理整個系列

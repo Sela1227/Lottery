@@ -13,6 +13,13 @@ from app.models.lottery_type import LotteryType
 from app.models.lottery_draw import LotteryDraw
 from app.services.group_service import PrizeChecker
 
+# 嘗試導入自動結算服務
+try:
+    from app.services.auto_settle import auto_settle_service
+    HAS_AUTO_SETTLE = True
+except ImportError:
+    HAS_AUTO_SETTLE = False
+
 
 class AutoCheckService:
     """自動對獎服務"""
@@ -59,7 +66,9 @@ class AutoCheckService:
         cls,
         db: Session,
         group: Group,
-        winning_numbers: Optional[dict] = None
+        winning_numbers: Optional[dict] = None,
+        auto_settle: bool = False,
+        admin_user_id: int = 1
     ) -> Dict[str, Any]:
         """
         對獎單一 Group
@@ -68,6 +77,8 @@ class AutoCheckService:
             db: 資料庫 Session
             group: 要對獎的 Group
             winning_numbers: 開獎號碼（可選，若未提供則自動查詢）
+            auto_settle: 對獎後是否自動結算
+            admin_user_id: 執行結算的管理員 ID
         
         Returns:
             對獎結果
@@ -128,15 +139,29 @@ class AutoCheckService:
             tickets = db.query(Ticket).filter(Ticket.group_id == group.id).all()
             winning_tickets = [t for t in tickets if t.prize_amount and t.prize_amount > 0]
             
-            return {
+            result = {
                 "success": True,
                 "group_id": group.id,
                 "message": "對獎完成",
                 "tickets_checked": len(tickets),
                 "winning_tickets": len(winning_tickets),
                 "total_prize": float(total_prize),
-                "winning_numbers": winning_numbers
+                "winning_numbers": winning_numbers,
+                "settled": False
             }
+            
+            # 自動結算
+            if auto_settle and HAS_AUTO_SETTLE:
+                try:
+                    settle_result = auto_settle_service.settle_group(db, group, admin_user_id)
+                    result["settled"] = settle_result.get("success", False)
+                    result["settle_result"] = settle_result
+                    if settle_result.get("success"):
+                        result["message"] = "對獎並結算完成"
+                except Exception as e:
+                    result["settle_error"] = str(e)
+            
+            return result
             
         except Exception as e:
             db.rollback()
@@ -244,12 +269,22 @@ class AutoCheckService:
         }
     
     @classmethod
-    def auto_check_all_pending(cls, db: Session) -> Dict[str, Any]:
+    def auto_check_all_pending(
+        cls,
+        db: Session,
+        auto_settle: bool = False,
+        admin_user_id: int = 1
+    ) -> Dict[str, Any]:
         """
         自動對獎所有待對獎的 Group
         
         掃描所有狀態為 PURCHASED 的 Group，
         嘗試從 LotteryDraw 取得對應的開獎號碼並對獎
+        
+        Args:
+            db: 資料庫 Session
+            auto_settle: 對獎後是否自動結算
+            admin_user_id: 執行結算的管理員 ID
         """
         # 查詢所有待對獎的 Group
         groups = db.query(Group).filter(
@@ -266,14 +301,17 @@ class AutoCheckService:
         results = []
         total_checked = 0
         total_success = 0
+        total_settled = 0
         total_prize = Decimal("0")
         
         for group in groups:
-            result = cls.check_group(db, group)
+            result = cls.check_group(db, group, auto_settle=auto_settle, admin_user_id=admin_user_id)
             
             if result["success"]:
                 total_success += 1
                 total_prize += Decimal(str(result["total_prize"]))
+                if result.get("settled"):
+                    total_settled += 1
                 results.append(result)
             elif "找不到開獎號碼" not in result["message"]:
                 # 只記錄非「找不到開獎號碼」的錯誤
@@ -281,11 +319,16 @@ class AutoCheckService:
             
             total_checked += 1
         
+        message = f"掃描完成：{total_success}/{total_checked} 團對獎成功"
+        if auto_settle and total_settled > 0:
+            message += f"，{total_settled} 團已結算"
+        
         return {
             "success": True,
-            "message": f"掃描完成：{total_success}/{total_checked} 團對獎成功",
+            "message": message,
             "groups_checked": total_checked,
             "groups_success": total_success,
+            "groups_settled": total_settled,
             "groups_pending": total_checked - total_success,
             "total_prize": float(total_prize),
             "details": results
