@@ -27,7 +27,6 @@ cloudinary>=1.38.0
 
 # Web Scraping (彩券開獎爬蟲)
 beautifulsoup4>=4.12.0
-taiwanlottery>=1.5.0
 
 # Utilities
 python-dotenv>=1.0.0
