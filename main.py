@@ -135,7 +135,7 @@ async def stats_page():
 @main_app.get("/profile")
 async def profile_page():
     """個人頁面"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    return FileResponse(STATIC_DIR / "settings.html")
 
 
 # ==================== 靜態檔案 ====================
