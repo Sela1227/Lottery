@@ -86,6 +86,32 @@ async def admin_lottery():
     return FileResponse(STATIC_DIR / "admin_lottery.html")
 
 
+# ==================== 未來頁面(Step 3+) ====================
+
+@main_app.get("/statistics")
+async def statistics():
+    """統計報表(Step 3)"""
+    return FileResponse(STATIC_DIR / "coming-soon.html")
+
+
+@main_app.get("/wallet")
+async def wallet():
+    """錢包(Step 3)"""
+    return FileResponse(STATIC_DIR / "coming-soon.html")
+
+
+@main_app.get("/personal")
+async def personal():
+    """個人彩券(Step 3)"""
+    return FileResponse(STATIC_DIR / "coming-soon.html")
+
+
+@main_app.get("/settings")
+async def user_settings():
+    """設定(Step 4)"""
+    return FileResponse(STATIC_DIR / "coming-soon.html")
+
+
 # ==================== 靜態檔案 ====================
 
 # 掛載靜態檔案(最後掛載,避免覆蓋其他路由)
