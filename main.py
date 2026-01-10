@@ -73,26 +73,22 @@ async def group_detail(group_id: int):
 
 
 @main_app.get("/groups")
-async def groups_list():
-    """集資列表"""
+async def groups_redirect():
+    """團購列表(重導向到系列團)"""
     return FileResponse(STATIC_DIR / "series.html")
 
 
-# ==================== 管理員頁面 ====================
-
 @main_app.get("/admin")
-async def admin_dashboard():
+async def admin():
     """管理員後台"""
     return FileResponse(STATIC_DIR / "admin.html")
 
 
 @main_app.get("/admin/lottery")
 async def admin_lottery():
-    """開獎資訊同步"""
+    """彩券資料管理"""
     return FileResponse(STATIC_DIR / "admin_lottery.html")
 
-
-# ==================== Step 3 功能頁面 ====================
 
 @main_app.get("/statistics")
 async def statistics():
@@ -112,8 +108,6 @@ async def personal():
     return FileResponse(STATIC_DIR / "personal.html")
 
 
-# ==================== Step 4 功能頁面 ====================
-
 @main_app.get("/settings")
 async def user_settings():
     """設定"""
@@ -121,32 +115,23 @@ async def user_settings():
 
 
 @main_app.get("/lottery")
-async def lottery_page():
-    """開獎專區"""
+async def lottery():
+    """開獎資訊"""
     return FileResponse(STATIC_DIR / "lottery.html")
 
 
 @main_app.get("/stats")
-async def stats_page():
-    """號碼統計"""
+async def stats():
+    """成就統計"""
     return FileResponse(STATIC_DIR / "stats.html")
 
 
 @main_app.get("/profile")
-async def profile_page():
-    """個人頁面"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+async def profile():
+    """個人資料 → 重導向到設定頁"""
+    return FileResponse(STATIC_DIR / "settings.html")
 
 
-# ==================== 靜態檔案 ====================
-
-# 掛載靜態檔案(最後掛載,避免覆蓋其他路由)
-main_app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-
-
-# ==================== 開發用啟動 ====================
-
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(main_app, host="0.0.0.0", port=port)
+# 掛載靜態檔案
+if STATIC_DIR.exists():
+    main_app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
