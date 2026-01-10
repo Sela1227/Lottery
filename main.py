@@ -100,13 +100,13 @@ async def wallet():
     return FileResponse(STATIC_DIR / "wallet.html")
 
 
-# ==================== 待開發頁面 (Step 3+4) ====================
-
 @main_app.get("/personal")
 async def personal():
-    """個人彩券(Step 3)"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    """個人彩券"""
+    return FileResponse(STATIC_DIR / "personal.html")
 
+
+# ==================== Step 4 待開發頁面 ====================
 
 @main_app.get("/settings")
 async def user_settings():

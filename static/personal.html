@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <title>個人彩券 - SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --sela-orange: #F26522;
+            --sela-dark: #1a1a2e;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #FF9800;
+            --info: #2196F3;
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            padding: 4px;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* Main */
+        .main {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Stats Card */
+        .stats-card {
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .stats-title { font-size: 14px; opacity: 0.9; }
+        .stats-value { font-size: 28px; font-weight: 900; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item { text-align: center; }
+        .stat-item-value { font-size: 18px; font-weight: 700; }
+        .stat-item-label { font-size: 11px; opacity: 0.8; }
+        
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--sela-orange);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab.active {
+            background: var(--sela-orange);
+            color: white;
+            border-color: var(--sela-orange);
+        }
+        
+        /* Ticket List */
+        .ticket-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .ticket-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .ticket-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ticket-type-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .ticket-type-icon.power { background: #FFEBEE; }
+        .ticket-type-icon.super { background: #E3F2FD; }
+        .ticket-type-icon.daily { background: #E8F5E9; }
+        
+        .ticket-type-name { font-weight: 600; font-size: 14px; }
+        .ticket-date { font-size: 12px; color: var(--text-secondary); }
+        
+        .ticket-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .ticket-status.pending { background: #FFF3E0; color: #E65100; }
+        .ticket-status.won { background: #E8F5E9; color: #2E7D32; }
+        .ticket-status.lost { background: #FAFAFA; color: #9E9E9E; }
+        
+        .ticket-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .number-ball {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--sela-orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        
+        .number-ball.special {
+            background: var(--info);
+        }
+        
+        .number-ball.matched {
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+        
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .ticket-cost { font-size: 13px; color: var(--text-secondary); }
+        .ticket-prize { font-size: 16px; font-weight: 700; color: var(--success); }
+        
+        .ticket-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .ticket-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .ticket-action.check {
+            background: var(--info);
+            color: white;
+        }
+        
+        .ticket-action.delete {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-text { font-size: 14px; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title { font-size: 16px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; }
+        
+        .modal-body { padding: 20px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .number-input-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .number-btn {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .number-btn:hover { background: #f5f5f5; }
+        
+        .number-btn.selected {
+            background: var(--sela-orange);
+            color: white;
+            border-color: var(--sela-orange);
+        }
+        
+        .number-btn.special-selected {
+            background: var(--info);
+            color: white;
+            border-color: var(--info);
+        }
+        
+        .selected-numbers {
+            display: flex;
+            gap: 6px;
+            min-height: 40px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-footer .btn { flex: 1; }
+        
+        /* Achievement Preview */
+        .achievements-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .achievements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .achievements-title { font-weight: 600; font-size: 14px; }
+        .achievements-link { font-size: 13px; color: var(--sela-orange); text-decoration: none; }
+        
+        .achievement-badges {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .achievement-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .achievement-badge.unlocked {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+        }
+        
+        .achievement-badge.locked {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show { opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--info); }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/dashboard" class="back-btn">←</a>
+        <h1 class="page-title">🎫 個人彩券</h1>
+    </header>
+    
+    <main class="main">
+        <!-- Stats Card -->
+        <div class="stats-card">
+            <div class="stats-header">
+                <div>
+                    <div class="stats-title">累計盈虧</div>
+                    <div class="stats-value" id="total-profit">$0</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="stats-title">勝率</div>
+                    <div class="stats-value" id="win-rate">0%</div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-item-value" id="total-tickets">0</div>
+                    <div class="stat-item-label">總彩券數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-value" id="total-cost">$0</div>
+                    <div class="stat-item-label">總花費</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item-value" id="total-prize">$0</div>
+                    <div class="stat-item-label">總獎金</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Achievements Preview -->
+        <div class="achievements-preview">
+            <div class="achievements-header">
+                <span class="achievements-title">🏆 我的成就</span>
+                <a href="#" class="achievements-link" onclick="showAchievements(); return false;">查看全部 →</a>
+            </div>
+            <div class="achievement-badges" id="achievement-badges">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+        
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="showAddModal()">
+                ➕ 新增彩券
+            </button>
+            <button class="btn btn-secondary" onclick="showCheckModal()">
+                🔍 批次對獎
+            </button>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">全部</button>
+            <button class="filter-tab" data-filter="pending">待開獎</button>
+            <button class="filter-tab" data-filter="won">已中獎</button>
+            <button class="filter-tab" data-filter="lost">未中獎</button>
+        </div>
+        
+        <!-- Ticket List -->
+        <div class="ticket-list" id="ticket-list">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    </main>
+    
+    <!-- Add Modal -->
+    <div class="modal-overlay" id="add-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">新增彩券</h2>
+                <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">彩種</label>
+                    <select class="form-select" id="lottery-type" onchange="updateNumberGrid()">
+                        <option value="">請選擇</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">期別 (選填)</label>
+                    <input type="text" class="form-input" id="draw-term" placeholder="例如: 113000001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">主號碼</label>
+                    <div class="selected-numbers" id="selected-main"></div>
+                    <div class="number-input-grid" id="main-numbers"></div>
+                </div>
+                <div class="form-group" id="special-group" style="display: none;">
+                    <label class="form-label">特別號 (第二區)</label>
+                    <div class="selected-numbers" id="selected-special"></div>
+                    <div class="number-input-grid" id="special-numbers"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">購買金額</label>
+                    <input type="number" class="form-input" id="ticket-cost" value="100" min="50" step="50">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">備註 (選填)</label>
+                    <input type="text" class="form-input" id="ticket-note" placeholder="例如: 生日號碼">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('add-modal')">取消</button>
+                <button class="btn btn-primary" onclick="createTicket()">新增</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Check Modal -->
+    <div class="modal-overlay" id="check-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">對獎</h2>
+                <button class="modal-close" onclick="closeModal('check-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">開獎號碼 (逗號分隔)</label>
+                    <input type="text" class="form-input" id="winning-numbers" placeholder="例如: 1,5,12,23,34,38">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">特別號 (選填)</label>
+                    <input type="number" class="form-input" id="winning-special" placeholder="例如: 5">
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                    將對選中的待開獎彩券進行對獎
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('check-modal')">取消</button>
+                <button class="btn btn-primary" onclick="checkTickets()">對獎</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Achievements Modal -->
+    <div class="modal-overlay" id="achievements-modal">
+        <div class="modal" style="max-height: 90vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">🏆 成就系統</h2>
+                <button class="modal-close" onclick="closeModal('achievements-modal')">✕</button>
+            </div>
+            <div class="modal-body" id="achievements-content">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        const API_BASE = '/api/v1';
+        let currentFilter = 'all';
+        let lotteryTypes = [];
+        let selectedMainNumbers = [];
+        let selectedSpecialNumber = null;
+        let selectedTicketId = null;
+        
+        // Lottery configs
+        const LOTTERY_CONFIGS = {
+            'super_lotto': { name: '威力彩', icon: '🔴', mainCount: 6, mainMax: 38, hasSpecial: true, specialMax: 8 },
+            'lotto649': { name: '大樂透', icon: '🔵', mainCount: 6, mainMax: 49, hasSpecial: false },
+            'daily_cash': { name: '今彩539', icon: '🟢', mainCount: 5, mainMax: 39, hasSpecial: false }
+        };
+        
+        // Auth Check
+        async function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+        
+        // API Helpers
+        async function apiGet(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return null;
+                }
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        async function apiPost(url, data) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        async function apiDelete(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+        }
+        
+        // Load Stats
+        async function loadStats() {
+            try {
+                const stats = await apiGet('/personal/stats');
+                if (!stats) return;
+                
+                document.getElementById('total-profit').textContent = 
+                    `${stats.profit >= 0 ? '+' : ''}$${Number(stats.profit).toLocaleString()}`;
+                document.getElementById('win-rate').textContent = `${stats.win_rate}%`;
+                document.getElementById('total-tickets').textContent = stats.total_tickets;
+                document.getElementById('total-cost').textContent = `$${Number(stats.total_cost).toLocaleString()}`;
+                document.getElementById('total-prize').textContent = `$${Number(stats.total_prize).toLocaleString()}`;
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+        }
+        
+        // Load Tickets
+        async function loadTickets() {
+            try {
+                const statusParam = currentFilter !== 'all' ? `?status=${currentFilter}` : '';
+                const data = await apiGet(`/personal/tickets${statusParam}`);
+                if (!data) return;
+                
+                const container = document.getElementById('ticket-list');
+                
+                if (data.tickets.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🎫</div>
+                            <p class="empty-text">還沒有彩券記錄<br>點擊「新增彩券」開始記錄</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.tickets.map(t => {
+                    const config = LOTTERY_CONFIGS[t.lottery_type_code] || { icon: '🎰', name: t.lottery_type_name };
+                    return `
+                        <div class="ticket-card">
+                            <div class="ticket-header">
+                                <div class="ticket-type">
+                                    <div class="ticket-type-icon ${t.lottery_type_code}">${config.icon}</div>
+                                    <div>
+                                        <div class="ticket-type-name">${t.lottery_type_name}</div>
+                                        <div class="ticket-date">${t.draw_term || formatDate(t.created_at)}</div>
+                                    </div>
+                                </div>
+                                <span class="ticket-status ${t.status}">${getStatusText(t.status)}</span>
+                            </div>
+                            <div class="ticket-numbers">
+                                ${t.numbers.map(n => `<div class="number-ball">${String(n).padStart(2, '0')}</div>`).join('')}
+                                ${t.special_number ? `<div class="number-ball special">${String(t.special_number).padStart(2, '0')}</div>` : ''}
+                            </div>
+                            <div class="ticket-footer">
+                                <span class="ticket-cost">花費: $${Number(t.cost).toLocaleString()}</span>
+                                ${t.prize > 0 ? `<span class="ticket-prize">+$${Number(t.prize).toLocaleString()}</span>` : ''}
+                                <div class="ticket-actions">
+                                    ${t.status === 'pending' ? `<button class="ticket-action check" onclick="showSingleCheck(${t.id})">對獎</button>` : ''}
+                                    <button class="ticket-action delete" onclick="deleteTicket(${t.id})">刪除</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Failed to load tickets:', e);
+            }
+        }
+        
+        // Load Lottery Types
+        async function loadLotteryTypes() {
+            try {
+                const types = await apiGet('/lottery-types/');
+                if (!types) return;
+                
+                lotteryTypes = types;
+                const select = document.getElementById('lottery-type');
+                select.innerHTML = '<option value="">請選擇</option>' + 
+                    types.map(t => `<option value="${t.id}" data-code="${t.code}">${t.name}</option>`).join('');
+            } catch (e) {
+                console.error('Failed to load lottery types:', e);
+            }
+        }
+        
+        // Load Achievements
+        async function loadAchievements() {
+            try {
+                const data = await apiGet('/achievements/');
+                if (!data) return;
+                
+                const container = document.getElementById('achievement-badges');
+                const unlocked = data.achievements.filter(a => a.is_unlocked).slice(0, 6);
+                const locked = data.achievements.filter(a => !a.is_unlocked).slice(0, 6 - unlocked.length);
+                
+                container.innerHTML = [...unlocked, ...locked].map(a => `
+                    <div class="achievement-badge ${a.is_unlocked ? 'unlocked' : 'locked'}" title="${a.name}">
+                        ${a.icon}
+                    </div>
+                `).join('');
+                
+                if (data.achievements.length === 0) {
+                    container.innerHTML = '<span style="color: var(--text-secondary); font-size: 13px;">暫無成就</span>';
+                }
+            } catch (e) {
+                console.error('Failed to load achievements:', e);
+            }
+        }
+        
+        // Show Achievements Modal
+        async function showAchievements() {
+            document.getElementById('achievements-modal').classList.add('active');
+            
+            try {
+                const data = await apiGet('/achievements/');
+                if (!data) return;
+                
+                const content = document.getElementById('achievements-content');
+                content.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 32px; font-weight: 900; color: var(--sela-orange);">${data.total_points}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">總點數</div>
+                        <div style="margin-top: 8px; font-size: 12px;">已解鎖 ${data.unlocked_count} / ${data.total_count}</div>
+                    </div>
+                    ${data.achievements.map(a => `
+                        <div style="display: flex; gap: 12px; padding: 12px; background: ${a.is_unlocked ? '#FFF8E1' : '#f5f5f5'}; border-radius: 8px; margin-bottom: 8px;">
+                            <div style="font-size: 28px; ${a.is_unlocked ? '' : 'filter: grayscale(1); opacity: 0.5;'}">${a.icon}</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 14px;">${a.name}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">${a.description}</div>
+                                <div style="font-size: 11px; margin-top: 4px;">
+                                    進度: ${a.progress} / ${a.threshold}
+                                    ${a.is_unlocked ? `<span style="color: var(--success);">✓ +${a.points}點</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } catch (e) {
+                document.getElementById('achievements-content').innerHTML = '<p style="color: var(--danger);">載入失敗</p>';
+            }
+        }
+        
+        // Update Number Grid
+        function updateNumberGrid() {
+            const select = document.getElementById('lottery-type');
+            const option = select.options[select.selectedIndex];
+            const code = option?.dataset?.code;
+            const config = LOTTERY_CONFIGS[code];
+            
+            selectedMainNumbers = [];
+            selectedSpecialNumber = null;
+            
+            if (!config) {
+                document.getElementById('main-numbers').innerHTML = '';
+                document.getElementById('special-group').style.display = 'none';
+                return;
+            }
+            
+            // Main numbers
+            const mainGrid = document.getElementById('main-numbers');
+            mainGrid.innerHTML = Array.from({length: config.mainMax}, (_, i) => i + 1)
+                .map(n => `<button class="number-btn" onclick="toggleMainNumber(${n})">${n}</button>`)
+                .join('');
+            
+            // Special numbers
+            if (config.hasSpecial) {
+                document.getElementById('special-group').style.display = 'block';
+                const specialGrid = document.getElementById('special-numbers');
+                specialGrid.innerHTML = Array.from({length: config.specialMax}, (_, i) => i + 1)
+                    .map(n => `<button class="number-btn" onclick="toggleSpecialNumber(${n})">${n}</button>`)
+                    .join('');
+            } else {
+                document.getElementById('special-group').style.display = 'none';
+            }
+            
+            updateSelectedDisplay();
+        }
+        
+        function toggleMainNumber(n) {
+            const select = document.getElementById('lottery-type');
+            const option = select.options[select.selectedIndex];
+            const code = option?.dataset?.code;
+            const config = LOTTERY_CONFIGS[code];
+            
+            const idx = selectedMainNumbers.indexOf(n);
+            if (idx >= 0) {
+                selectedMainNumbers.splice(idx, 1);
+            } else if (selectedMainNumbers.length < config.mainCount) {
+                selectedMainNumbers.push(n);
+            }
+            
+            updateSelectedDisplay();
+        }
+        
+        function toggleSpecialNumber(n) {
+            selectedSpecialNumber = selectedSpecialNumber === n ? null : n;
+            updateSelectedDisplay();
+        }
+        
+        function updateSelectedDisplay() {
+            // Update main display
+            document.getElementById('selected-main').innerHTML = selectedMainNumbers.length > 0
+                ? selectedMainNumbers.sort((a,b) => a-b).map(n => `<div class="number-ball" style="width: 28px; height: 28px; font-size: 11px;">${n}</div>`).join('')
+                : '<span style="color: var(--text-secondary); font-size: 12px;">請選擇號碼</span>';
+            
+            // Update main buttons
+            document.querySelectorAll('#main-numbers .number-btn').forEach(btn => {
+                btn.classList.toggle('selected', selectedMainNumbers.includes(parseInt(btn.textContent)));
+            });
+            
+            // Update special display
+            if (selectedSpecialNumber) {
+                document.getElementById('selected-special').innerHTML = 
+                    `<div class="number-ball special" style="width: 28px; height: 28px; font-size: 11px;">${selectedSpecialNumber}</div>`;
+            } else {
+                document.getElementById('selected-special').innerHTML = 
+                    '<span style="color: var(--text-secondary); font-size: 12px;">請選擇特別號</span>';
+            }
+            
+            // Update special buttons
+            document.querySelectorAll('#special-numbers .number-btn').forEach(btn => {
+                btn.classList.toggle('special-selected', parseInt(btn.textContent) === selectedSpecialNumber);
+            });
+        }
+        
+        // Create Ticket
+        async function createTicket() {
+            const select = document.getElementById('lottery-type');
+            const option = select.options[select.selectedIndex];
+            
+            if (!option.value) {
+                showToast('請選擇彩種', 'error');
+                return;
+            }
+            
+            const code = option.dataset.code;
+            const config = LOTTERY_CONFIGS[code];
+            
+            if (selectedMainNumbers.length !== config.mainCount) {
+                showToast(`請選擇 ${config.mainCount} 個號碼`, 'error');
+                return;
+            }
+            
+            if (config.hasSpecial && !selectedSpecialNumber) {
+                showToast('請選擇特別號', 'error');
+                return;
+            }
+            
+            try {
+                await apiPost('/personal/tickets', {
+                    lottery_type_id: parseInt(option.value),
+                    numbers: selectedMainNumbers.sort((a,b) => a-b),
+                    special_number: selectedSpecialNumber,
+                    draw_term: document.getElementById('draw-term').value || null,
+                    cost: parseInt(document.getElementById('ticket-cost').value) || 100,
+                    note: document.getElementById('ticket-note').value || null
+                });
+                
+                showToast('彩券新增成功', 'success');
+                closeModal('add-modal');
+                loadTickets();
+                loadStats();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // Delete Ticket
+        async function deleteTicket(id) {
+            if (!confirm('確定要刪除這張彩券嗎？')) return;
+            
+            try {
+                await apiDelete(`/personal/tickets/${id}`);
+                showToast('已刪除', 'success');
+                loadTickets();
+                loadStats();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // Show Single Check
+        function showSingleCheck(id) {
+            selectedTicketId = id;
+            document.getElementById('check-modal').classList.add('active');
+        }
+        
+        // Check Tickets
+        async function checkTickets() {
+            const numbersStr = document.getElementById('winning-numbers').value;
+            const special = document.getElementById('winning-special').value;
+            
+            if (!numbersStr) {
+                showToast('請輸入開獎號碼', 'error');
+                return;
+            }
+            
+            const numbers = numbersStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            
+            if (numbers.length < 5) {
+                showToast('號碼數量不足', 'error');
+                return;
+            }
+            
+            try {
+                const params = new URLSearchParams();
+                numbers.forEach(n => params.append('winning_numbers', n));
+                if (special) params.append('special_number', special);
+                
+                const result = await apiPost(`/personal/tickets/${selectedTicketId}/check?${params.toString()}`, {});
+                
+                if (result.prize > 0) {
+                    showToast(`恭喜中獎！${result.prize_tier} $${result.prize.toLocaleString()}`, 'success');
+                } else {
+                    showToast('未中獎，下次好運！', 'info');
+                }
+                
+                closeModal('check-modal');
+                loadTickets();
+                loadStats();
+                loadAchievements();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // Helpers
+        function getStatusText(status) {
+            const map = { pending: '待開獎', won: '已中獎', lost: '未中獎' };
+            return map[status] || status;
+        }
+        
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getMonth() + 1}/${d.getDate()}`;
+        }
+        
+        function showAddModal() {
+            selectedMainNumbers = [];
+            selectedSpecialNumber = null;
+            document.getElementById('lottery-type').value = '';
+            document.getElementById('draw-term').value = '';
+            document.getElementById('ticket-cost').value = '100';
+            document.getElementById('ticket-note').value = '';
+            document.getElementById('main-numbers').innerHTML = '';
+            document.getElementById('selected-main').innerHTML = '<span style="color: var(--text-secondary); font-size: 12px;">請先選擇彩種</span>';
+            document.getElementById('special-group').style.display = 'none';
+            document.getElementById('add-modal').classList.add('active');
+        }
+        
+        function showCheckModal() {
+            // Find first pending ticket
+            selectedTicketId = null;
+            document.getElementById('winning-numbers').value = '';
+            document.getElementById('winning-special').value = '';
+            document.getElementById('check-modal').classList.add('active');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                loadTickets();
+            });
+        });
+        
+        // Click outside to close modal
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', e => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+        
+        // Init
+        async function init() {
+            if (!await checkAuth()) return;
+            
+            await loadLotteryTypes();
+            loadStats();
+            loadTickets();
+            loadAchievements();
+        }
+        
+        init();
+    </script>
+</body>
+</html>

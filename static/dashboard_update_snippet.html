@@ -1,0 +1,51 @@
+<!-- 
+SELA Dashboard 快速操作區塊更新
+在 dashboard.html 中找到 <div class="actions"> 區塊，替換為以下內容
+-->
+
+<h2 class="section-title">⚡ 快速操作</h2>
+<div class="actions">
+    <a href="/series" class="action-btn primary">
+        <div class="action-icon">🎰</div>
+        <div class="action-title">我的系列團</div>
+        <div class="action-desc">查看與管理團購</div>
+    </a>
+    <a href="/wallet" class="action-btn wallet">
+        <div class="action-icon">💰</div>
+        <div class="action-title">我的錢包</div>
+        <div class="action-desc">查看資產與記錄</div>
+    </a>
+    <a href="/statistics" class="action-btn stats">
+        <div class="action-icon">📊</div>
+        <div class="action-title">統計報表</div>
+        <div class="action-desc">查看投資報酬</div>
+    </a>
+    <a href="/personal" class="action-btn personal">
+        <div class="action-icon">🎫</div>
+        <div class="action-title">個人彩券</div>
+        <div class="action-desc">記錄與對獎</div>
+    </a>
+    <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
+        <div class="action-icon">🎟</div>
+        <div class="action-title">加入系列團</div>
+        <div class="action-desc">使用邀請碼</div>
+    </a>
+    <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">
+        <div class="action-icon">🔧</div>
+        <div class="action-title">管理後台</div>
+        <div class="action-desc">系統管理</div>
+    </a>
+</div>
+
+<!-- 
+需要在 <style> 區塊中加入以下 CSS：
+-->
+
+<style>
+.action-btn.personal {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    border: none; color: #fff; box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+}
+.action-btn.personal:hover { box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4); }
+.action-btn.personal .action-desc { color: rgba(255,255,255,0.85); }
+</style>
