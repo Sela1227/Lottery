@@ -478,7 +478,7 @@
         <!-- Pool Shares -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">🎰 系列團份額</span>
+                <span class="section-title">🎰 集資份額</span>
                 <a href="/series" class="section-action">查看全部</a>
             </div>
             <div class="pool-list" id="pool-list">
@@ -581,7 +581,7 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">🎰</div>
-                            <p class="empty-text">尚未參與任何系列團</p>
+                            <p class="empty-text">尚未參與任何集資</p>
                         </div>
                     `;
                     return;
@@ -703,27 +703,3 @@
             if (diff < 604800000) return `${Math.floor(diff / 86400000)} 天前`;
             
             return `${d.getMonth() + 1}/${d.getDate()}`;
-        }
-        
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? '#DC2626' : type === 'success' ? '#16A34A' : '#333';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-        
-        // Init
-        async function init() {
-            if (!await checkAuth()) return;
-            
-            loadOverview();
-            loadSummary();
-            loadPoolShares();
-            loadTransactions();
-        }
-        
-        init();
-    </script>
-</body>
-</html>

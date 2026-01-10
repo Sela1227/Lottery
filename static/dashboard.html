@@ -393,7 +393,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
-                    <span class="stat-card-title">參與團數</span>
+                    <span class="stat-card-title">參與集資</span>
                     <span class="stat-card-icon">🎰</span>
                 </div>
                 <div class="stat-card-value blue" id="series-count">0</div>
@@ -411,7 +411,7 @@
         <div class="actions">
             <a href="/series" class="action-btn primary">
                 <div class="action-icon">🎰</div>
-                <div class="action-title">我的系列團</div>
+                <div class="action-title">我的集資</div>
                 <div class="action-desc">查看與管理集資</div>
             </a>
             <a href="/wallet" class="action-btn wallet">
@@ -441,7 +441,7 @@
             </a>
             <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
                 <div class="action-icon">🎫</div>
-                <div class="action-title">加入系列團</div>
+                <div class="action-title">加入集資</div>
                 <div class="action-desc">使用邀請碼</div>
             </a>
             <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">
@@ -460,7 +460,7 @@
                 <div class="empty-state">
                     <div class="empty-icon">📋</div>
                     <h3 class="empty-title">尚無活動</h3>
-                    <p class="empty-desc">加入或建立系列團開始吧!</p>
+                    <p class="empty-desc">加入或建立集資開始吧!</p>
                 </div>
             </div>
         </div>
@@ -471,8 +471,8 @@
         <div style="background: #fff; border-radius: 24px; width: 90%; max-width: 380px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <div style="background: linear-gradient(135deg, #F26522, #ff8a50); padding: 32px 24px; text-align: center; color: white;">
                 <div style="font-size: 48px; margin-bottom: 12px;">🎉</div>
-                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">歡迎加入 SELA！</h2>
-                <p style="font-size: 14px; opacity: 0.9;">設定您的暱稱，讓夥伴更容易認識您</p>
+                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">歡迎加入 SELA!</h2>
+                <p style="font-size: 14px; opacity: 0.9;">設定您的暱稱,讓夥伴更容易認識您</p>
             </div>
             <div style="padding: 24px;">
                 <div style="margin-bottom: 20px;">
@@ -495,7 +495,7 @@
         </div>
     </div>
     
-    <!-- 加入系列團彈窗 -->
+    <!-- 加入集資彈窗 -->
     <div class="modal-overlay" id="join-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: #fff; border-radius: 20px; width: 90%; max-width: 400px; padding: 24px;">
             <h3 style="margin-bottom: 20px; font-size: 18px;">使用邀請碼加入</h3>
@@ -538,7 +538,7 @@
                 });
                 if (!res.ok) { const err = await res.json(); throw new Error(err.detail || '加入失敗'); }
                 closeJoinModal();
-                showToast('成功加入系列團!', 'success');
+                showToast('成功加入集資!', 'success');
                 loadDashboardData();
             } catch (e) { showToast(e.message, 'error'); }
         }
@@ -565,7 +565,7 @@
         
         function skipWelcome() {
             closeWelcomeModal();
-            showToast('歡迎加入！隨時可在設定中修改暱稱', 'success');
+            showToast('歡迎加入!隨時可在設定中修改暱稱', 'success');
         }
         
         async function saveWelcomeNickname() {
@@ -587,7 +587,7 @@
                 document.getElementById('welcome-name').textContent = displayName;
                 
                 closeWelcomeModal();
-                showToast(`歡迎 ${displayName}！祝您好運 🍀`, 'success');
+                showToast(`歡迎 ${displayName}!祝您好運 🍀`, 'success');
             } catch (e) { showToast(e.message, 'error'); }
         }
         
@@ -803,3 +803,5 @@
     </script>
 </body>
 </html>
+```
+
