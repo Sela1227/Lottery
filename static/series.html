@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#F26522">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>SELA 樂透一路發 - 我的系列團</title>
+    <title>SELA 樂透一路發 - 我的集資團</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -494,7 +494,7 @@
     <header class="header">
         <div class="header-left">
             <a href="/dashboard" class="back-btn">←</a>
-            <h1 class="page-title">我的系列團</h1>
+            <h1 class="page-title">我的集資團</h1>
         </div>
         <div class="header-right">
             <div class="user-avatar" id="user-avatar"></div>
@@ -506,7 +506,7 @@
         <!-- Action Bar -->
         <div class="action-bar">
             <button class="btn btn-primary" onclick="showCreateModal()">
-                ➕ 建立系列團
+                ➕ 建立集資團
             </button>
             <button class="btn btn-secondary" onclick="showJoinModal()">
                 🎫 使用邀請碼加入
@@ -525,12 +525,12 @@
     <div class="modal-overlay" id="create-modal">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">建立系列團</h2>
+                <h2 class="modal-title">建立集資團</h2>
                 <button class="modal-close" onclick="closeModal('create-modal')">✕</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">系列團名稱</label>
+                    <label class="form-label">集資團名稱</label>
                     <input type="text" class="form-input" id="series-name" placeholder="例如:家族樂透團">
                 </div>
                 <div class="form-group">
@@ -676,8 +676,8 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">🎰</div>
-                            <h3 class="empty-title">還沒有加入任何系列團</h3>
-                            <p class="empty-desc">建立一個新的系列團,或使用邀請碼加入</p>
+                            <h3 class="empty-title">還沒有加入任何集資團</h3>
+                            <p class="empty-desc">建立一個新的集資團,或使用邀請碼加入</p>
                         </div>
                     `;
                     return;
@@ -750,7 +750,7 @@
             const selectedTypes = [...document.querySelectorAll('input[name="lottery_type"]:checked')].map(el => el.value);
             
             if (!name) {
-                showToast('請輸入系列團名稱', 'error');
+                showToast('請輸入集資團名稱', 'error');
                 return;
             }
             
@@ -773,7 +773,7 @@
                 });
                 
                 closeModal('create-modal');
-                showToast('系列團建立成功!', 'success');
+                showToast('集資團建立成功!', 'success');
                 loadSeriesList();
                 
                 // Reset form
@@ -807,7 +807,7 @@
                 });
                 
                 closeModal('join-modal');
-                showToast('成功加入系列團!', 'success');
+                showToast('成功加入集資團!', 'success');
                 loadSeriesList();
                 
                 // Reset form
