@@ -16,7 +16,7 @@ from app.api.v1.wallet import router as wallet_router
 from app.api.v1.personal import router as personal_router
 from app.api.v1.achievements import router as achievements_router
 from app.api.v1.stats import router as stats_router
-from app.api.v1.notify import router as notify_router
+# from app.api.v1.notify import router as notify_router  # 暫時停用，需先執行資料庫遷移
 
 
 def create_api_app() -> FastAPI:
@@ -51,7 +51,7 @@ def create_api_app() -> FastAPI:
     app.include_router(personal_router, prefix="/v1")
     app.include_router(achievements_router, prefix="/v1")
     app.include_router(stats_router, prefix="/v1")
-    app.include_router(notify_router, prefix="/v1")  # Web Push 通知
+    # app.include_router(notify_router, prefix="/v1")  # 暫時停用
     
     return app
 

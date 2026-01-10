@@ -2,7 +2,7 @@
 SELA 樂透一路發 - 用戶模型
 """
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Numeric, DateTime, Enum as SQLEnum, Boolean
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, Enum as SQLEnum
 from sqlalchemy.sql import func
 import enum
 
@@ -56,11 +56,6 @@ class User(Base):
         nullable=False,
         default=0
     )
-    
-    # 通知設定 (Web Push)
-    notify_draw_reminder = Column(Boolean, default=True, nullable=True)
-    notify_win_alert = Column(Boolean, default=True, nullable=True)
-    notify_settlement = Column(Boolean, default=True, nullable=True)
     
     # 時間戳記
     created_at = Column(
