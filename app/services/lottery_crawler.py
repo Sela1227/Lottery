@@ -16,22 +16,29 @@ logger = logging.getLogger(__name__)
 class LotteryCrawler:
     """彩券開獎資訊爬蟲"""
     
-    # 資料來源 - 首頁有累積獎金，list.asp 有開獎號碼
+    # 資料來源
+    # 台彩官網：累積獎金（精確）
+    # pilio：開獎號碼
+    MAIN_PAGE = "https://www.pilio.idv.tw/"
+    
+    # 台彩官網 - 累積獎金
+    TAIWANLOTTERY_URLS = {
+        "power": "https://www.taiwanlottery.com/lotto/result/super_lotto638",
+        "super": "https://www.taiwanlottery.com/lotto/result/lotto649",
+    }
+    
     SOURCES = {
         "super_lotto": {
-            "home_url": "https://www.pilio.idv.tw/lto/",
             "list_url": "https://www.pilio.idv.tw/lto/list.asp",
             "name": "威力彩",
             "code": "power"
         },
         "lotto649": {
-            "home_url": "https://www.pilio.idv.tw/ltobig/",
             "list_url": "https://www.pilio.idv.tw/ltobig/list.asp",
             "name": "大樂透",
             "code": "super"
         },
         "daily_cash": {
-            "home_url": "https://www.pilio.idv.tw/lto539/",
             "list_url": "https://www.pilio.idv.tw/lto539/list.asp",
             "name": "今彩539",
             "code": "daily539"
@@ -66,12 +73,13 @@ class LotteryCrawler:
             text = soup.get_text()
             
             # 嘗試多種格式匹配
+            # pilio 首頁格式: "頭彩累積金額NT: 4.8億" 或 "頭彩累積金額 NT: 1 億元"
             patterns = [
-                r'累積金額[：:\s]*NT[：:\s]*([\d.]+)\s*億',
-                r'頭彩累積[：:\s]*([\d.]+)\s*億',
-                r'累積[：:\s]*([\d.]+)\s*億',
-                r'([\d.]+)\s*億元',
-                r'NT[：:\s]*([\d.]+)\s*億',
+                r'頭彩累積金額\s*NT[：:]\s*([\d.]+)\s*億',  # 格式1
+                r'累積金額\s*NT[：:]\s*([\d.]+)\s*億',       # 格式2
+                r'NT[：:]\s*([\d.]+)\s*億',                  # 簡化格式
+                r'([\d.]+)\s*億元',                          # 最簡格式
+                r'([\d.]+)億',                               # 無空格格式
             ]
             
             for pattern in patterns:
@@ -81,7 +89,7 @@ class LotteryCrawler:
                     return int(amount * 100000000)  # 轉換為元
             
             # 嘗試匹配萬元格式
-            match = re.search(r'累積[：:\s]*([\d,]+)\s*萬', text)
+            match = re.search(r'([\d,]+)\s*萬元', text)
             if match:
                 amount_str = match.group(1).replace(',', '')
                 return int(float(amount_str) * 10000)
@@ -90,6 +98,66 @@ class LotteryCrawler:
         except Exception as e:
             logger.error(f"解析累積獎金失敗: {e}")
             return None
+    
+    def fetch_jackpot_from_taiwanlottery(self, lottery_type: str) -> Optional[int]:
+        """從台彩官網抓取累積獎金"""
+        if lottery_type not in self.TAIWANLOTTERY_URLS:
+            return None
+        
+        try:
+            url = self.TAIWANLOTTERY_URLS[lottery_type]
+            response = self.session.get(url, timeout=self.timeout)
+            response.encoding = "utf-8"
+            html = response.text
+            
+            soup = BeautifulSoup(html, "html.parser")
+            text = soup.get_text()
+            
+            # 台彩官網格式: "$0,445,667,415" 或 "$ 0,445,667,415"
+            # 尋找 $ 後面的數字
+            match = re.search(r'\$\s*([\d,]+)', text)
+            if match:
+                amount_str = match.group(1).replace(',', '')
+                amount = int(amount_str)
+                if amount > 0:
+                    return amount
+            
+            # 備用：尋找「目前頭獎預估金額」後的數字
+            match = re.search(r'目前頭獎預估金額.*?([\d,]+)', text, re.DOTALL)
+            if match:
+                amount_str = match.group(1).replace(',', '')
+                return int(amount_str)
+            
+            return None
+        except Exception as e:
+            logger.error(f"從台彩官網抓取累積獎金失敗: {e}")
+            return None
+    
+    def parse_all_jackpots_from_main(self, html: str) -> Dict[str, Optional[int]]:
+        """從 pilio 主頁解析所有彩種的累積獎金"""
+        jackpots = {
+            "power": None,
+            "super": None,
+        }
+        
+        try:
+            soup = BeautifulSoup(html, "html.parser")
+            text = soup.get_text()
+            
+            # 威力彩格式: "威力彩開獎號碼...頭彩累積金額NT: 4.8億"
+            power_match = re.search(r'威力彩.*?頭彩累積金額\s*NT[：:]\s*([\d.]+)\s*億', text, re.DOTALL)
+            if power_match:
+                jackpots["power"] = int(float(power_match.group(1)) * 100000000)
+            
+            # 大樂透格式: "大樂透開獎號碼...頭彩累積金額NT: 1億"
+            super_match = re.search(r'大樂透.*?頭彩累積金額\s*NT[：:]\s*([\d.]+)\s*億', text, re.DOTALL)
+            if super_match:
+                jackpots["super"] = int(float(super_match.group(1)) * 100000000)
+            
+        except Exception as e:
+            logger.error(f"解析主頁累積獎金失敗: {e}")
+        
+        return jackpots
     
     def parse_numbers_from_list(self, html: str, lottery_type: str) -> List[Dict]:
         """從 list.asp 解析開獎號碼"""
@@ -164,19 +232,14 @@ class LotteryCrawler:
         
         return draws
     
-    def fetch_super_lotto(self) -> Optional[Dict[str, Any]]:
+    def fetch_super_lotto(self, jackpots: Dict[str, Optional[int]] = None) -> Optional[Dict[str, Any]]:
         """抓取威力彩"""
         result = {
             "lottery_type": "power",
             "lottery_name": "威力彩",
-            "jackpot": None,
+            "jackpot": jackpots.get("power") if jackpots else None,
             "draws": []
         }
-        
-        # 從首頁抓累積獎金
-        home_html = self.fetch_page(self.SOURCES["super_lotto"]["home_url"])
-        if home_html:
-            result["jackpot"] = self.parse_jackpot_from_home(home_html)
         
         # 從 list.asp 抓開獎號碼
         list_html = self.fetch_page(self.SOURCES["super_lotto"]["list_url"])
@@ -185,19 +248,14 @@ class LotteryCrawler:
         
         return result if result["draws"] else None
     
-    def fetch_lotto649(self) -> Optional[Dict[str, Any]]:
+    def fetch_lotto649(self, jackpots: Dict[str, Optional[int]] = None) -> Optional[Dict[str, Any]]:
         """抓取大樂透"""
         result = {
             "lottery_type": "super",
             "lottery_name": "大樂透",
-            "jackpot": None,
+            "jackpot": jackpots.get("super") if jackpots else None,
             "draws": []
         }
-        
-        # 從首頁抓累積獎金
-        home_html = self.fetch_page(self.SOURCES["lotto649"]["home_url"])
-        if home_html:
-            result["jackpot"] = self.parse_jackpot_from_home(home_html)
         
         # 從 list.asp 抓開獎號碼
         list_html = self.fetch_page(self.SOURCES["lotto649"]["list_url"])
@@ -224,19 +282,47 @@ class LotteryCrawler:
     
     def fetch_all(self) -> Dict[str, Any]:
         """抓取所有彩種"""
+        # 優先從台彩官網抓取累積獎金（更精確）
+        jackpots = {
+            "power": self.fetch_jackpot_from_taiwanlottery("power"),
+            "super": self.fetch_jackpot_from_taiwanlottery("super"),
+        }
+        
+        # 如果台彩官網失敗，備用 pilio 主頁
+        if not jackpots["power"] or not jackpots["super"]:
+            main_html = self.fetch_page(self.MAIN_PAGE)
+            if main_html:
+                pilio_jackpots = self.parse_all_jackpots_from_main(main_html)
+                if not jackpots["power"]:
+                    jackpots["power"] = pilio_jackpots.get("power")
+                if not jackpots["super"]:
+                    jackpots["super"] = pilio_jackpots.get("super")
+        
         return {
             "updated_at": datetime.now().isoformat(),
-            "super_lotto": self.fetch_super_lotto(),
-            "lotto649": self.fetch_lotto649(),
+            "super_lotto": self.fetch_super_lotto(jackpots),
+            "lotto649": self.fetch_lotto649(jackpots),
             "daily_cash": self.fetch_daily_cash()
         }
     
     def get_latest(self, lottery_type: str) -> Optional[Dict[str, Any]]:
         """取得特定彩種最新一期"""
+        # 優先從台彩官網抓取累積獎金
+        jackpots = {}
+        if lottery_type in ["power", "super"]:
+            jackpots[lottery_type] = self.fetch_jackpot_from_taiwanlottery(lottery_type)
+            
+            # 備用 pilio
+            if not jackpots.get(lottery_type):
+                main_html = self.fetch_page(self.MAIN_PAGE)
+                if main_html:
+                    pilio_jackpots = self.parse_all_jackpots_from_main(main_html)
+                    jackpots[lottery_type] = pilio_jackpots.get(lottery_type)
+        
         if lottery_type == "power":
-            data = self.fetch_super_lotto()
+            data = self.fetch_super_lotto(jackpots)
         elif lottery_type == "super":
-            data = self.fetch_lotto649()
+            data = self.fetch_lotto649(jackpots)
         elif lottery_type == "daily539":
             data = self.fetch_daily_cash()
         else:
