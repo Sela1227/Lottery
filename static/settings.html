@@ -24,20 +24,21 @@
             --text-primary: #1a1a2e;
             --text-secondary: #666;
             --border-color: #e0e0e0;
+            --line-green: #06C755;
         }
         
         body {
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
-            color: var(--text-primary);
             min-height: 100vh;
+            color: var(--text-primary);
         }
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
-            color: white;
+            background: linear-gradient(135deg, var(--sela-orange), #D85A1E);
             padding: 16px 20px;
+            color: #fff;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -47,45 +48,55 @@
         }
         
         .back-btn {
-            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            font-size: 24px;
-            padding: 4px;
         }
         
-        .page-title {
+        .header-title {
             font-size: 18px;
             font-weight: 700;
         }
         
-        /* Main */
-        .main {
+        /* Main Content */
+        main {
             padding: 20px;
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
+            padding-bottom: 40px;
         }
         
         /* Profile Card */
         .profile-card {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 16px;
             padding: 24px;
-            text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .profile-avatar {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            background: linear-gradient(135deg, var(--sela-orange), #FF8547);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            color: white;
             margin: 0 auto 12px;
+            font-size: 32px;
+            color: #fff;
+            font-weight: 700;
             overflow: hidden;
         }
         
@@ -104,34 +115,37 @@
         .profile-role {
             font-size: 13px;
             color: var(--text-secondary);
+            padding: 4px 12px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: inline-block;
         }
         
         .profile-role.admin {
+            background: #FFF3E0;
             color: var(--sela-orange);
-            font-weight: 600;
         }
         
         /* Section */
         .section {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 16px;
-            overflow: hidden;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .section-header {
             padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            font-size: 15px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
+            border-bottom: 1px solid var(--border-color);
         }
         
-        .section-body {
-            padding: 16px 20px;
+        .section-content {
+            padding: 20px;
         }
         
         /* Form */
@@ -139,31 +153,26 @@
             margin-bottom: 16px;
         }
         
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-        
         .form-label {
             display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
             margin-bottom: 6px;
+            color: var(--text-primary);
         }
         
         .form-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 12px 16px;
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.2s;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
         
         .form-input:focus {
             outline: none;
             border-color: var(--sela-orange);
-            box-shadow: 0 0 0 3px rgba(242, 101, 34, 0.1);
         }
         
         .form-input:disabled {
@@ -179,53 +188,63 @@
         
         /* Button */
         .btn {
-            width: 100%;
-            padding: 14px;
+            padding: 14px 24px;
             border-radius: 12px;
-            border: none;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            width: 100%;
         }
         
         .btn-primary {
-            background: var(--sela-orange);
-            color: white;
+            background: linear-gradient(135deg, var(--sela-orange), #D85A1E);
+            color: #fff;
         }
         
         .btn-primary:hover {
-            background: #d85a1e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
         }
         
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .btn-line {
+            background: var(--line-green);
+            color: #fff;
         }
         
-        .btn-secondary {
-            background: white;
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+        .btn-line:hover {
+            background: #05B54D;
         }
         
         .btn-danger {
-            background: #FFEBEE;
-            color: var(--danger);
+            background: var(--danger);
+            color: #fff;
         }
         
-        /* Menu Items */
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-sm {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+        
+        /* Menu Item */
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 14px 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.3s;
             text-decoration: none;
             color: inherit;
         }
@@ -239,8 +258,20 @@
         }
         
         .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 20px;
-            margin-right: 12px;
+            margin-right: 14px;
+        }
+        
+        .menu-icon.line {
+            background: var(--line-green);
+            color: #fff;
         }
         
         .menu-content {
@@ -248,31 +279,106 @@
         }
         
         .menu-title {
-            font-weight: 500;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 15px;
         }
         
         .menu-desc {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
-        }
-        
-        .menu-arrow {
-            color: var(--text-secondary);
+            margin-top: 2px;
         }
         
         .menu-value {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             margin-right: 8px;
         }
         
-        /* Version */
-        .version-info {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            font-size: 12px;
+        .menu-value.connected {
+            color: var(--success);
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+            font-size: 18px;
+        }
+        
+        /* Toggle Switch */
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .toggle-item:last-child {
+            border-bottom: none;
+        }
+        
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toggle-icon {
+            font-size: 20px;
+        }
+        
+        .toggle-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--sela-orange);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+        
+        .toggle-switch input:disabled + .toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         /* Toast */
@@ -280,67 +386,99 @@
             position: fixed;
             bottom: 20px;
             left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-size: 14px;
-            z-index: 2000;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
+            z-index: 2000;
+            max-width: 90%;
+            text-align: center;
         }
         
-        .toast.show { opacity: 1; }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
-        .toast.info { background: var(--info); }
+        .toast.warning { background: var(--warning); }
         
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
         
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--sela-orange);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+        .status-badge.connected {
+            background: #E8F5E9;
+            color: var(--success);
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .status-badge.disconnected {
+            background: #f5f5f5;
+            color: var(--text-secondary);
+        }
+        
+        /* Alert Box */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .alert.success {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+        
+        .alert.error {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+        
+        .alert.info {
+            background: #E3F2FD;
+            color: var(--info);
         }
     </style>
 </head>
 <body>
     <header class="header">
         <a href="/dashboard" class="back-btn">←</a>
-        <h1 class="page-title">⚙️ 設定</h1>
+        <h1 class="header-title">⚙️ 設定</h1>
     </header>
     
-    <main class="main">
+    <main>
+        <!-- Alert Messages -->
+        <div id="alert-container"></div>
+        
         <!-- Profile Card -->
         <div class="profile-card">
-            <div class="profile-avatar" id="profile-avatar"></div>
+            <div class="profile-avatar" id="profile-avatar">
+                <span>?</span>
+            </div>
             <div class="profile-name" id="profile-name">載入中...</div>
-            <div class="profile-role" id="profile-role"></div>
+            <span class="profile-role" id="profile-role">會員</span>
         </div>
         
-        <!-- 個人資料設定 -->
+        <!-- 個人資料 -->
         <div class="section">
             <div class="section-header">
                 <span>👤</span>
                 <span>個人資料</span>
             </div>
-            <div class="section-body">
+            <div class="section-content">
                 <div class="form-group">
                     <label class="form-label">LINE 名稱</label>
                     <input type="text" class="form-input" id="display-name" disabled>
-                    <p class="form-hint">此為 LINE 帳號名稱，無法修改</p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">暱稱</label>
@@ -361,36 +499,63 @@
             </div>
         </div>
         
-        <!-- 通知設定 (Step 4 預留) -->
+        <!-- 通知設定 -->
         <div class="section">
             <div class="section-header">
                 <span>🔔</span>
                 <span>通知設定</span>
             </div>
-            <div class="menu-item" onclick="showToast('LINE Notify 功能即將推出', 'info')">
-                <span class="menu-icon">📱</span>
+            
+            <!-- LINE Notify 連結 -->
+            <div class="menu-item" id="line-notify-item" onclick="handleLineNotify()">
+                <span class="menu-icon line">📱</span>
                 <div class="menu-content">
                     <div class="menu-title">LINE Notify</div>
-                    <div class="menu-desc">連結 LINE 接收通知</div>
+                    <div class="menu-desc" id="line-notify-desc">連結 LINE 接收通知</div>
                 </div>
-                <span class="menu-value">未連結</span>
+                <span class="status-badge disconnected" id="line-notify-status">未連結</span>
                 <span class="menu-arrow">›</span>
             </div>
-            <div class="menu-item" onclick="showToast('即將推出', 'info')">
-                <span class="menu-icon">🎰</span>
-                <div class="menu-content">
-                    <div class="menu-title">開獎提醒</div>
-                    <div class="menu-desc">開獎前自動提醒</div>
+            
+            <!-- 通知開關 -->
+            <div id="notify-toggles" style="display: none;">
+                <div class="toggle-item">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🎰</span>
+                        <span class="toggle-text">開獎提醒</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-draw" checked onchange="updateNotifySettings()">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                <span class="menu-arrow">›</span>
-            </div>
-            <div class="menu-item" onclick="showToast('即將推出', 'info')">
-                <span class="menu-icon">🎉</span>
-                <div class="menu-content">
-                    <div class="menu-title">中獎通知</div>
-                    <div class="menu-desc">中獎時立即通知</div>
+                <div class="toggle-item">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">🎉</span>
+                        <span class="toggle-text">中獎通知</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-win" checked onchange="updateNotifySettings()">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                <span class="menu-arrow">›</span>
+                <div class="toggle-item">
+                    <div class="toggle-label">
+                        <span class="toggle-icon">💰</span>
+                        <span class="toggle-text">結算通知</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notify-settlement" checked onchange="updateNotifySettings()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <!-- 測試通知按鈕 -->
+                <div style="padding: 16px 20px;">
+                    <button class="btn btn-outline btn-sm" onclick="sendTestNotify()">
+                        🔔 發送測試通知
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -404,7 +569,7 @@
                 <span class="menu-icon">🎫</span>
                 <div class="menu-content">
                     <div class="menu-title">個人彩券</div>
-                    <div class="menu-desc">查看我的彩券記錄</div>
+                    <div class="menu-desc">管理個人購買的彩券</div>
                 </div>
                 <span class="menu-arrow">›</span>
             </a>
@@ -412,32 +577,45 @@
                 <span class="menu-icon">📊</span>
                 <div class="menu-content">
                     <div class="menu-title">統計報表</div>
-                    <div class="menu-desc">查看投資報酬</div>
+                    <div class="menu-desc">查看投資報酬率</div>
                 </div>
                 <span class="menu-arrow">›</span>
             </a>
             <div class="menu-item" onclick="logout()">
-                <span class="menu-icon">🚪</span>
+                <span class="menu-icon" style="background: #FFEBEE;">🚪</span>
                 <div class="menu-content">
                     <div class="menu-title" style="color: var(--danger);">登出</div>
                     <div class="menu-desc">登出此帳號</div>
                 </div>
+                <span class="menu-arrow">›</span>
             </div>
-        </div>
-        
-        <!-- Version -->
-        <div class="version-info">
-            SELA 樂透一路發 v2.0.0<br>
-            © 2026 SELA Team
         </div>
     </main>
     
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
     
     <script>
         const API_BASE = '/api/v1';
         let userData = null;
+        let notifySettings = null;
+        
+        // 檢查 URL 參數顯示提示
+        function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const container = document.getElementById('alert-container');
+            
+            if (params.get('notify_success') === '1') {
+                container.innerHTML = '<div class="alert success">✅ LINE Notify 連結成功！</div>';
+                // 清除 URL 參數
+                window.history.replaceState({}, '', '/settings');
+            }
+            
+            if (params.get('notify_error')) {
+                const error = params.get('notify_error');
+                container.innerHTML = `<div class="alert error">❌ 連結失敗：${error}</div>`;
+                window.history.replaceState({}, '', '/settings');
+            }
+        }
         
         // Auth Check
         async function checkAuth() {
@@ -460,8 +638,7 @@
                     window.location.href = '/';
                     return null;
                 }
-                const err = await res.json();
-                throw new Error(err.detail || 'API Error');
+                throw new Error((await res.json()).detail || 'API Error');
             }
             return res.json();
         }
@@ -477,8 +654,23 @@
                 body: JSON.stringify(data)
             });
             if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.detail || 'API Error');
+                throw new Error((await res.json()).detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        async function apiPost(url, data = {}) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) {
+                throw new Error((await res.json()).detail || 'API Error');
             }
             return res.json();
         }
@@ -494,7 +686,7 @@
                 if (userData.picture_url) {
                     avatarEl.innerHTML = `<img src="${userData.picture_url}" alt="avatar">`;
                 } else {
-                    avatarEl.textContent = (userData.nickname || userData.display_name).charAt(0);
+                    avatarEl.innerHTML = `<span>${(userData.nickname || userData.display_name).charAt(0)}</span>`;
                 }
                 
                 document.getElementById('profile-name').textContent = 
@@ -517,6 +709,94 @@
             } catch (e) {
                 console.error('Failed to load profile:', e);
                 showToast('載入失敗', 'error');
+            }
+        }
+        
+        // Load Notify Settings
+        async function loadNotifySettings() {
+            try {
+                notifySettings = await apiGet('/notify/settings');
+                if (!notifySettings) return;
+                
+                const statusEl = document.getElementById('line-notify-status');
+                const descEl = document.getElementById('line-notify-desc');
+                const togglesEl = document.getElementById('notify-toggles');
+                
+                if (notifySettings.line_notify_connected) {
+                    statusEl.textContent = '已連結';
+                    statusEl.className = 'status-badge connected';
+                    descEl.textContent = '點擊管理或解除連結';
+                    togglesEl.style.display = 'block';
+                    
+                    // 設定開關狀態
+                    document.getElementById('notify-draw').checked = notifySettings.notify_draw_reminder;
+                    document.getElementById('notify-win').checked = notifySettings.notify_win_alert;
+                    document.getElementById('notify-settlement').checked = notifySettings.notify_settlement;
+                } else {
+                    statusEl.textContent = '未連結';
+                    statusEl.className = 'status-badge disconnected';
+                    descEl.textContent = '連結 LINE 接收通知';
+                    togglesEl.style.display = 'none';
+                }
+                
+                if (!notifySettings.line_notify_enabled) {
+                    statusEl.textContent = '未啟用';
+                    descEl.textContent = 'LINE Notify 功能尚未啟用';
+                    document.getElementById('line-notify-item').style.opacity = '0.5';
+                    document.getElementById('line-notify-item').style.pointerEvents = 'none';
+                }
+                
+            } catch (e) {
+                console.error('Failed to load notify settings:', e);
+            }
+        }
+        
+        // Handle LINE Notify
+        function handleLineNotify() {
+            if (!notifySettings) return;
+            
+            if (notifySettings.line_notify_connected) {
+                // 已連結，詢問是否解除
+                if (confirm('確定要解除 LINE Notify 連結嗎？\n解除後將不再收到通知。')) {
+                    disconnectLineNotify();
+                }
+            } else {
+                // 未連結，跳轉授權
+                window.location.href = `${API_BASE}/notify/line/connect`;
+            }
+        }
+        
+        // Disconnect LINE Notify
+        async function disconnectLineNotify() {
+            try {
+                await apiPost('/notify/line/disconnect');
+                showToast('已解除 LINE Notify 連結', 'success');
+                loadNotifySettings();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // Update Notify Settings
+        async function updateNotifySettings() {
+            try {
+                await apiPut('/notify/settings', {
+                    notify_draw_reminder: document.getElementById('notify-draw').checked,
+                    notify_win_alert: document.getElementById('notify-win').checked,
+                    notify_settlement: document.getElementById('notify-settlement').checked
+                });
+            } catch (e) {
+                console.error('Failed to update notify settings:', e);
+            }
+        }
+        
+        // Send Test Notify
+        async function sendTestNotify() {
+            try {
+                await apiPost('/notify/test');
+                showToast('測試通知已發送，請查看 LINE', 'success');
+            } catch (e) {
+                showToast(e.message, 'error');
             }
         }
         
@@ -566,8 +846,10 @@
         
         // Init
         async function init() {
+            checkUrlParams();
             if (!await checkAuth()) return;
-            loadProfile();
+            await loadProfile();
+            await loadNotifySettings();
         }
         
         init();
