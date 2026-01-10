@@ -13,6 +13,13 @@ class UserRole(str, Enum):
     ADMIN = "admin"
 
 
+class UserStatus(str, Enum):
+    """用戶狀態（向下相容）"""
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    SUSPENDED = "suspended"
+
+
 class User(Base):
     """用戶資料表"""
     __tablename__ = "users"
@@ -32,10 +39,6 @@ class User(Base):
     # 角色與狀態
     role = Column(SQLEnum(UserRole), default=UserRole.MEMBER, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    
-    # LINE Notify
-    line_notify_token = Column(String(255), nullable=True)
-    line_notify_connected_at = Column(DateTime, nullable=True)
     
     # 通知設定
     notify_draw_reminder = Column(Boolean, default=True, nullable=False)
