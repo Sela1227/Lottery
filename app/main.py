@@ -51,7 +51,7 @@ def create_api_app() -> FastAPI:
     app.include_router(personal_router, prefix="/v1")
     app.include_router(achievements_router, prefix="/v1")
     app.include_router(stats_router, prefix="/v1")
-    app.include_router(notify_router, prefix="/v1")  # LINE Notify
+    app.include_router(notify_router, prefix="/v1")  # Web Push 通知
     
     return app
 

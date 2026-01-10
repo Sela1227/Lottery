@@ -33,9 +33,10 @@ class Settings(BaseSettings):
     cloudinary_api_key: str = Field(default="")
     cloudinary_api_secret: str = Field(default="")
     
-    # LINE Notify (Step 4)
-    line_notify_client_id: str = Field(default="")
-    line_notify_client_secret: str = Field(default="")
+    # Web Push (VAPID)
+    vapid_public_key: str = Field(default="")
+    vapid_private_key: str = Field(default="")
+    vapid_email: str = Field(default="admin@example.com")
     
     class Config:
         env_file = ".env"
@@ -59,11 +60,10 @@ class Settings(BaseSettings):
         return int(expires)
 
 
-@lru_cache
+@lru_cache()
 def get_settings() -> Settings:
-    """取得設定(快取)"""
+    """取得設定（快取）"""
     return Settings()
 
 
-# 全域設定實例
 settings = get_settings()

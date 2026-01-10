@@ -24,7 +24,6 @@
             --text-primary: #1a1a2e;
             --text-secondary: #666;
             --border-color: #e0e0e0;
-            --line-green: #06C755;
         }
         
         body {
@@ -212,13 +211,9 @@
             box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
         }
         
-        .btn-line {
-            background: var(--line-green);
+        .btn-success {
+            background: var(--success);
             color: #fff;
-        }
-        
-        .btn-line:hover {
-            background: #05B54D;
         }
         
         .btn-danger {
@@ -235,6 +230,11 @@
         .btn-sm {
             padding: 10px 16px;
             font-size: 14px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         /* Menu Item */
@@ -269,8 +269,8 @@
             margin-right: 14px;
         }
         
-        .menu-icon.line {
-            background: var(--line-green);
+        .menu-icon.push {
+            background: var(--sela-orange);
             color: #fff;
         }
         
@@ -293,10 +293,6 @@
             font-size: 14px;
             color: var(--text-secondary);
             margin-right: 8px;
-        }
-        
-        .menu-value.connected {
-            color: var(--success);
         }
         
         .menu-arrow {
@@ -381,6 +377,29 @@
             cursor: not-allowed;
         }
         
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-badge.enabled {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+        
+        .status-badge.disabled {
+            background: #f5f5f5;
+            color: var(--text-secondary);
+        }
+        
+        .status-badge.unsupported {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+        
         /* Toast */
         .toast {
             position: fixed;
@@ -408,45 +427,62 @@
         .toast.error { background: var(--danger); }
         .toast.warning { background: var(--warning); }
         
-        /* Status Badge */
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-badge.connected {
-            background: #E8F5E9;
-            color: var(--success);
-        }
-        
-        .status-badge.disconnected {
-            background: #f5f5f5;
-            color: var(--text-secondary);
-        }
-        
-        /* Alert Box */
-        .alert {
-            padding: 14px 16px;
+        /* Push Info Box */
+        .push-info {
+            background: #FFF3E0;
             border-radius: 10px;
-            margin-bottom: 16px;
+            padding: 14px 16px;
+            margin: 16px 20px;
+            font-size: 13px;
+            color: #E65100;
+        }
+        
+        .push-info.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        /* Device List */
+        .device-list {
+            padding: 0 20px 20px;
+        }
+        
+        .device-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .device-icon {
+            font-size: 20px;
+        }
+        
+        .device-name {
+            font-weight: 500;
             font-size: 14px;
         }
         
-        .alert.success {
-            background: #E8F5E9;
-            color: var(--success);
+        .device-date {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
         
-        .alert.error {
-            background: #FFEBEE;
+        .device-remove {
             color: var(--danger);
-        }
-        
-        .alert.info {
-            background: #E3F2FD;
-            color: var(--info);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -457,9 +493,6 @@
     </header>
     
     <main>
-        <!-- Alert Messages -->
-        <div id="alert-container"></div>
-        
         <!-- Profile Card -->
         <div class="profile-card">
             <div class="profile-avatar" id="profile-avatar">
@@ -503,18 +536,32 @@
         <div class="section">
             <div class="section-header">
                 <span>🔔</span>
-                <span>通知設定</span>
+                <span>推播通知</span>
             </div>
             
-            <!-- LINE Notify 連結 -->
-            <div class="menu-item" id="line-notify-item" onclick="handleLineNotify()">
-                <span class="menu-icon line">📱</span>
+            <!-- 推播狀態 -->
+            <div class="menu-item" id="push-status-item">
+                <span class="menu-icon push">📱</span>
                 <div class="menu-content">
-                    <div class="menu-title">LINE Notify</div>
-                    <div class="menu-desc" id="line-notify-desc">連結 LINE 接收通知</div>
+                    <div class="menu-title">推播通知</div>
+                    <div class="menu-desc" id="push-desc">檢查中...</div>
                 </div>
-                <span class="status-badge disconnected" id="line-notify-status">未連結</span>
-                <span class="menu-arrow">›</span>
+                <span class="status-badge disabled" id="push-status">載入中</span>
+            </div>
+            
+            <!-- 訂閱/取消按鈕 -->
+            <div style="padding: 16px 20px;" id="push-action-container">
+                <button class="btn btn-success" id="subscribe-btn" onclick="subscribePush()" style="display: none;">
+                    🔔 啟用推播通知
+                </button>
+                <button class="btn btn-outline" id="unsubscribe-btn" onclick="unsubscribePush()" style="display: none;">
+                    🔕 關閉推播通知
+                </button>
+            </div>
+            
+            <!-- 不支援提示 -->
+            <div class="push-info" id="push-unsupported" style="display: none;">
+                ⚠️ 您的瀏覽器不支援推播通知，請使用 Chrome、Firefox、Edge 或 Safari。
             </div>
             
             <!-- 通知開關 -->
@@ -598,26 +645,11 @@
         const API_BASE = '/api/v1';
         let userData = null;
         let notifySettings = null;
+        let swRegistration = null;
+        let pushSubscription = null;
         
-        // 檢查 URL 參數顯示提示
-        function checkUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            const container = document.getElementById('alert-container');
-            
-            if (params.get('notify_success') === '1') {
-                container.innerHTML = '<div class="alert success">✅ LINE Notify 連結成功！</div>';
-                // 清除 URL 參數
-                window.history.replaceState({}, '', '/settings');
-            }
-            
-            if (params.get('notify_error')) {
-                const error = params.get('notify_error');
-                container.innerHTML = `<div class="alert error">❌ 連結失敗：${error}</div>`;
-                window.history.replaceState({}, '', '/settings');
-            }
-        }
+        // ========== Auth & API ==========
         
-        // Auth Check
         async function checkAuth() {
             const token = localStorage.getItem('access_token');
             if (!token) {
@@ -627,7 +659,6 @@
             return true;
         }
         
-        // API Helpers
         async function apiGet(url) {
             const token = localStorage.getItem('access_token');
             const res = await fetch(`${API_BASE}${url}`, {
@@ -675,13 +706,25 @@
             return res.json();
         }
         
-        // Load User Profile
+        async function apiDelete(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                throw new Error((await res.json()).detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        // ========== Profile ==========
+        
         async function loadProfile() {
             try {
                 userData = await apiGet('/users/me');
                 if (!userData) return;
                 
-                // Update UI
                 const avatarEl = document.getElementById('profile-avatar');
                 if (userData.picture_url) {
                     avatarEl.innerHTML = `<img src="${userData.picture_url}" alt="avatar">`;
@@ -700,7 +743,6 @@
                     roleEl.textContent = '一般會員';
                 }
                 
-                // Fill form
                 document.getElementById('display-name').value = userData.display_name;
                 document.getElementById('nickname').value = userData.nickname || '';
                 document.getElementById('email').value = userData.email || '';
@@ -712,95 +754,6 @@
             }
         }
         
-        // Load Notify Settings
-        async function loadNotifySettings() {
-            try {
-                notifySettings = await apiGet('/notify/settings');
-                if (!notifySettings) return;
-                
-                const statusEl = document.getElementById('line-notify-status');
-                const descEl = document.getElementById('line-notify-desc');
-                const togglesEl = document.getElementById('notify-toggles');
-                
-                if (notifySettings.line_notify_connected) {
-                    statusEl.textContent = '已連結';
-                    statusEl.className = 'status-badge connected';
-                    descEl.textContent = '點擊管理或解除連結';
-                    togglesEl.style.display = 'block';
-                    
-                    // 設定開關狀態
-                    document.getElementById('notify-draw').checked = notifySettings.notify_draw_reminder;
-                    document.getElementById('notify-win').checked = notifySettings.notify_win_alert;
-                    document.getElementById('notify-settlement').checked = notifySettings.notify_settlement;
-                } else {
-                    statusEl.textContent = '未連結';
-                    statusEl.className = 'status-badge disconnected';
-                    descEl.textContent = '連結 LINE 接收通知';
-                    togglesEl.style.display = 'none';
-                }
-                
-                if (!notifySettings.line_notify_enabled) {
-                    statusEl.textContent = '未啟用';
-                    descEl.textContent = 'LINE Notify 功能尚未啟用';
-                    document.getElementById('line-notify-item').style.opacity = '0.5';
-                    document.getElementById('line-notify-item').style.pointerEvents = 'none';
-                }
-                
-            } catch (e) {
-                console.error('Failed to load notify settings:', e);
-            }
-        }
-        
-        // Handle LINE Notify
-        function handleLineNotify() {
-            if (!notifySettings) return;
-            
-            if (notifySettings.line_notify_connected) {
-                // 已連結，詢問是否解除
-                if (confirm('確定要解除 LINE Notify 連結嗎？\n解除後將不再收到通知。')) {
-                    disconnectLineNotify();
-                }
-            } else {
-                // 未連結，跳轉授權
-                window.location.href = `${API_BASE}/notify/line/connect`;
-            }
-        }
-        
-        // Disconnect LINE Notify
-        async function disconnectLineNotify() {
-            try {
-                await apiPost('/notify/line/disconnect');
-                showToast('已解除 LINE Notify 連結', 'success');
-                loadNotifySettings();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-        
-        // Update Notify Settings
-        async function updateNotifySettings() {
-            try {
-                await apiPut('/notify/settings', {
-                    notify_draw_reminder: document.getElementById('notify-draw').checked,
-                    notify_win_alert: document.getElementById('notify-win').checked,
-                    notify_settlement: document.getElementById('notify-settlement').checked
-                });
-            } catch (e) {
-                console.error('Failed to update notify settings:', e);
-            }
-        }
-        
-        // Send Test Notify
-        async function sendTestNotify() {
-            try {
-                await apiPost('/notify/test');
-                showToast('測試通知已發送，請查看 LINE', 'success');
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-        
-        // Save Profile
         async function saveProfile() {
             const btn = document.getElementById('save-btn');
             btn.disabled = true;
@@ -815,7 +768,6 @@
                 
                 userData = await apiPut('/users/me', data);
                 
-                // Update display
                 document.getElementById('profile-name').textContent = 
                     userData.nickname || userData.display_name;
                 
@@ -828,7 +780,196 @@
             }
         }
         
-        // Logout
+        // ========== Web Push ==========
+        
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+        
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+        
+        async function initPushNotifications() {
+            const statusEl = document.getElementById('push-status');
+            const descEl = document.getElementById('push-desc');
+            const unsupportedEl = document.getElementById('push-unsupported');
+            const subscribeBtnEl = document.getElementById('subscribe-btn');
+            const unsubscribeBtnEl = document.getElementById('unsubscribe-btn');
+            const togglesEl = document.getElementById('notify-toggles');
+            
+            // 檢查瀏覽器支援
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                statusEl.textContent = '不支援';
+                statusEl.className = 'status-badge unsupported';
+                descEl.textContent = '您的瀏覽器不支援推播通知';
+                unsupportedEl.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // 取得通知設定
+                notifySettings = await apiGet('/notify/settings');
+                
+                if (!notifySettings.push_enabled) {
+                    statusEl.textContent = '未啟用';
+                    statusEl.className = 'status-badge disabled';
+                    descEl.textContent = '系統尚未啟用推播功能';
+                    return;
+                }
+                
+                // 註冊 Service Worker
+                swRegistration = await navigator.serviceWorker.register('/static/sw.js');
+                console.log('Service Worker registered');
+                
+                // 檢查現有訂閱
+                pushSubscription = await swRegistration.pushManager.getSubscription();
+                
+                if (pushSubscription && notifySettings.subscribed) {
+                    // 已訂閱
+                    statusEl.textContent = '已啟用';
+                    statusEl.className = 'status-badge enabled';
+                    descEl.textContent = `已在 ${notifySettings.subscription_count} 個裝置上啟用`;
+                    unsubscribeBtnEl.style.display = 'block';
+                    togglesEl.style.display = 'block';
+                    
+                    // 設定開關狀態
+                    document.getElementById('notify-draw').checked = notifySettings.notify_draw_reminder;
+                    document.getElementById('notify-win').checked = notifySettings.notify_win_alert;
+                    document.getElementById('notify-settlement').checked = notifySettings.notify_settlement;
+                } else {
+                    // 未訂閱
+                    statusEl.textContent = '未啟用';
+                    statusEl.className = 'status-badge disabled';
+                    descEl.textContent = '點擊下方按鈕啟用推播通知';
+                    subscribeBtnEl.style.display = 'block';
+                }
+                
+            } catch (e) {
+                console.error('Push init error:', e);
+                statusEl.textContent = '錯誤';
+                statusEl.className = 'status-badge unsupported';
+                descEl.textContent = '初始化推播功能時發生錯誤';
+            }
+        }
+        
+        async function subscribePush() {
+            const btn = document.getElementById('subscribe-btn');
+            btn.disabled = true;
+            btn.textContent = '啟用中...';
+            
+            try {
+                // 請求通知權限
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    showToast('請允許通知權限', 'warning');
+                    btn.disabled = false;
+                    btn.textContent = '🔔 啟用推播通知';
+                    return;
+                }
+                
+                // 訂閱推播
+                const subscription = await swRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(notifySettings.vapid_public_key)
+                });
+                
+                // 發送到伺服器
+                const p256dh = arrayBufferToBase64(subscription.getKey('p256dh'));
+                const auth = arrayBufferToBase64(subscription.getKey('auth'));
+                
+                await apiPost('/notify/subscribe', {
+                    endpoint: subscription.endpoint,
+                    p256dh: p256dh,
+                    auth: auth,
+                    device_name: getDeviceName()
+                });
+                
+                pushSubscription = subscription;
+                showToast('推播通知已啟用！', 'success');
+                
+                // 重新載入狀態
+                await initPushNotifications();
+                
+            } catch (e) {
+                console.error('Subscribe error:', e);
+                showToast('啟用失敗：' + e.message, 'error');
+                btn.disabled = false;
+                btn.textContent = '🔔 啟用推播通知';
+            }
+        }
+        
+        async function unsubscribePush() {
+            if (!confirm('確定要關閉推播通知嗎？')) return;
+            
+            const btn = document.getElementById('unsubscribe-btn');
+            btn.disabled = true;
+            btn.textContent = '處理中...';
+            
+            try {
+                if (pushSubscription) {
+                    await apiDelete(`/notify/subscribe?endpoint=${encodeURIComponent(pushSubscription.endpoint)}`);
+                    await pushSubscription.unsubscribe();
+                    pushSubscription = null;
+                }
+                
+                showToast('已關閉推播通知', 'success');
+                await initPushNotifications();
+                
+            } catch (e) {
+                console.error('Unsubscribe error:', e);
+                showToast('關閉失敗', 'error');
+                btn.disabled = false;
+                btn.textContent = '🔕 關閉推播通知';
+            }
+        }
+        
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            if (/iPhone|iPad|iPod/.test(ua)) return 'iPhone/iPad';
+            if (/Android/.test(ua)) return 'Android';
+            if (/Windows/.test(ua)) return 'Windows';
+            if (/Mac/.test(ua)) return 'Mac';
+            return '未知裝置';
+        }
+        
+        async function updateNotifySettings() {
+            try {
+                await apiPut('/notify/settings', {
+                    notify_draw_reminder: document.getElementById('notify-draw').checked,
+                    notify_win_alert: document.getElementById('notify-win').checked,
+                    notify_settlement: document.getElementById('notify-settlement').checked
+                });
+            } catch (e) {
+                console.error('Failed to update notify settings:', e);
+            }
+        }
+        
+        async function sendTestNotify() {
+            try {
+                const result = await apiPost('/notify/test');
+                showToast(result.message, 'success');
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        // ========== Utils ==========
+        
         function logout() {
             if (confirm('確定要登出嗎？')) {
                 localStorage.removeItem('access_token');
@@ -836,7 +977,6 @@
             }
         }
         
-        // Toast
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -844,12 +984,12 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
         
-        // Init
+        // ========== Init ==========
+        
         async function init() {
-            checkUrlParams();
             if (!await checkAuth()) return;
             await loadProfile();
-            await loadNotifySettings();
+            await initPushNotifications();
         }
         
         init();
