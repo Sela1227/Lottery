@@ -21,6 +21,13 @@ try:
 except ImportError:
     HAS_HISTORY_CRAWLER = False
 
+# 嘗試導入自動對獎服務
+try:
+    from app.services.auto_check import auto_check_service
+    HAS_AUTO_CHECK = True
+except ImportError:
+    HAS_AUTO_CHECK = False
+
 
 router = APIRouter(prefix="/lottery", tags=["Lottery"])
 
@@ -267,7 +274,8 @@ async def sync_lottery_data(
     """
     同步所有彩種開獎資訊（僅管理員）
     
-    從外部來源抓取最新開獎號碼並儲存到資料庫
+    從外部來源抓取最新開獎號碼並儲存到資料庫，
+    同步完成後自動對獎所有待對獎的團
     """
     try:
         data = lottery_crawler.fetch_all()
@@ -315,11 +323,25 @@ async def sync_lottery_data(
         
         db.commit()
         
+        # === 自動對獎 ===
+        auto_check_result = None
+        if HAS_AUTO_CHECK and synced:
+            try:
+                auto_check_result = auto_check_service.auto_check_all_pending(db)
+                if auto_check_result.get("groups_success", 0) > 0:
+                    synced.append(f"對獎 {auto_check_result['groups_success']} 團")
+            except Exception as e:
+                print(f"⚠️ 自動對獎失敗: {e}")
+        # === 自動對獎結束 ===
+        
         return SyncResult(
             success=True,
             message=f"成功同步: {', '.join(synced)}" if synced else "無新資料",
             updated_at=datetime.now().isoformat(),
-            data={"synced_types": synced}
+            data={
+                "synced_types": synced,
+                "auto_check": auto_check_result
+            }
         )
     except Exception as e:
         db.rollback()
