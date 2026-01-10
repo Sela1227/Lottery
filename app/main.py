@@ -21,7 +21,7 @@ from app.api.v1.stats import router as stats_router
 
 def create_api_app() -> FastAPI:
     """創建 API FastAPI 應用"""
-    app = FastAPI(
+    application = FastAPI(
         title="SELA 樂透一路發 API",
         description="線上彩券集資系統 API",
         version="1.0.0",
@@ -30,7 +30,7 @@ def create_api_app() -> FastAPI:
     )
     
     # CORS
-    app.add_middleware(
+    application.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
         allow_credentials=True,
@@ -39,21 +39,25 @@ def create_api_app() -> FastAPI:
     )
     
     # 註冊路由
-    app.include_router(health_router, prefix="/v1")
-    app.include_router(auth_router, prefix="/v1")
-    app.include_router(users_router, prefix="/v1")
-    app.include_router(series_router, prefix="/v1")
-    app.include_router(groups_router, prefix="/v1")
-    app.include_router(admin_router, prefix="/v1")
-    app.include_router(lottery_router, prefix="/v1")
-    app.include_router(statistics_router, prefix="/v1")
-    app.include_router(wallet_router, prefix="/v1")
-    app.include_router(personal_router, prefix="/v1")
-    app.include_router(achievements_router, prefix="/v1")
-    app.include_router(stats_router, prefix="/v1")
-    # app.include_router(notify_router, prefix="/v1")  # 暫時停用
+    application.include_router(health_router, prefix="/v1")
+    application.include_router(auth_router, prefix="/v1")
+    application.include_router(users_router, prefix="/v1")
+    application.include_router(series_router, prefix="/v1")
+    application.include_router(groups_router, prefix="/v1")
+    application.include_router(admin_router, prefix="/v1")
+    application.include_router(lottery_router, prefix="/v1")
+    application.include_router(statistics_router, prefix="/v1")
+    application.include_router(wallet_router, prefix="/v1")
+    application.include_router(personal_router, prefix="/v1")
+    application.include_router(achievements_router, prefix="/v1")
+    application.include_router(stats_router, prefix="/v1")
+    # application.include_router(notify_router, prefix="/v1")  # 暫時停用
     
-    return app
+    return application
 
 
-api_app = create_api_app()
+# 匯出為 app（根目錄 main.py 期望這個名稱）
+app = create_api_app()
+
+# 也保留 api_app 作為別名
+api_app = app
