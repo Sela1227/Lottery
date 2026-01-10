@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>開獎資訊同步 - SELA 樂透一路發</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        .lottery-card { transition: all 0.3s ease; }
+        .lottery-card:hover { transform: translateY(-2px); }
+        .number-ball {
+            width: 36px; height: 36px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: bold; margin: 2px;
+        }
+        .ball-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .ball-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .ball-green { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+        .ball-yellow { background: linear-gradient(135deg, #eab308, #ca8a04); color: white; }
+        .jackpot-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #fbbf24, 0 0 10px #fbbf24; }
+            to { text-shadow: 0 0 10px #f59e0b, 0 0 20px #f59e0b; }
+        }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- 頂部導航 -->
+    <nav class="bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-lg">
+        <div class="max-w-4xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">🎰</span>
+                    <h1 class="text-xl font-bold">開獎資訊同步</h1>
+                </div>
+                <a href="/static/admin.html" class="flex items-center space-x-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition">
+                    <span>←</span>
+                    <span>返回管理</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-6">
+        <!-- 同步按鈕區 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">即時同步開獎資訊</h2>
+                    <p class="text-sm text-gray-500 mt-1">從 pilio.idv.tw 抓取最新開獎號碼與累積獎金</p>
+                </div>
+                <button id="syncBtn" onclick="syncLotteryData()" 
+                    class="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
+                    <span id="syncIcon">🔄</span>
+                    <span id="syncText">立即同步</span>
+                </button>
+            </div>
+            
+            <!-- 同步狀態 -->
+            <div id="syncStatus" class="hidden mt-4 p-4 rounded-lg"></div>
+            
+            <!-- 上次同步時間 -->
+            <div id="lastSync" class="mt-4 text-center text-sm text-gray-400"></div>
+        </div>
+
+        <!-- 彩種資訊卡片 -->
+        <div class="grid gap-4">
+            <!-- 威力彩 -->
+            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden" id="card-power">
+                <div class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-3xl">🔴</span>
+                            <div>
+                                <h3 class="text-xl font-bold">威力彩</h3>
+                                <p class="text-red-100 text-sm">每週一、四開獎</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-red-100">頭獎累積</p>
+                            <p id="jackpot-power" class="text-2xl font-bold jackpot-glow">載入中...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">最新開獎</span>
+                        <span id="date-power" class="text-sm font-medium text-gray-700">--</span>
+                    </div>
+                    <div id="numbers-power" class="flex flex-wrap items-center gap-1">
+                        <span class="text-gray-400">尚未載入</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 大樂透 -->
+            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden" id="card-super">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-3xl">🔵</span>
+                            <div>
+                                <h3 class="text-xl font-bold">大樂透</h3>
+                                <p class="text-blue-100 text-sm">每週二、五開獎</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-blue-100">頭獎累積</p>
+                            <p id="jackpot-super" class="text-2xl font-bold jackpot-glow">載入中...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">最新開獎</span>
+                        <span id="date-super" class="text-sm font-medium text-gray-700">--</span>
+                    </div>
+                    <div id="numbers-super" class="flex flex-wrap items-center gap-1">
+                        <span class="text-gray-400">尚未載入</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今彩539 -->
+            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden" id="card-daily539">
+                <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-3xl">🟢</span>
+                            <div>
+                                <h3 class="text-xl font-bold">今彩539</h3>
+                                <p class="text-green-100 text-sm">每天開獎</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-green-100">頭獎獎金</p>
+                            <p id="jackpot-daily539" class="text-2xl font-bold">800 萬</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-500">最新開獎</span>
+                        <span id="date-daily539" class="text-sm font-medium text-gray-700">--</span>
+                    </div>
+                    <div id="numbers-daily539" class="flex flex-wrap items-center gap-1">
+                        <span class="text-gray-400">尚未載入</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 說明區 -->
+        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div class="flex items-start space-x-3">
+                <span class="text-xl">💡</span>
+                <div class="text-sm text-amber-800">
+                    <p class="font-bold mb-1">使用說明</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>點擊「立即同步」可從網路抓取最新開獎資訊</li>
+                        <li>資料來源：pilio.idv.tw（非官方，僅供參考）</li>
+                        <li>威力彩、大樂透會顯示累積獎金</li>
+                        <li>建議在開獎後 10-30 分鐘再進行同步</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = '/api/v1';
+        
+        // 檢查登入
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/static/login.html';
+                return null;
+            }
+            return token;
+        }
+        
+        // API 請求
+        async function apiRequest(endpoint, options = {}) {
+            const token = checkAuth();
+            if (!token) return null;
+            
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            
+            if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/static/login.html';
+                return null;
+            }
+            
+            return response;
+        }
+        
+        // 格式化日期
+        function formatDate(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            const weekday = weekdays[date.getDay()];
+            return `${month}/${day} (${weekday})`;
+        }
+        
+        // 渲染號碼球
+        function renderPowerNumbers(numbers) {
+            if (!numbers) return '<span class="text-gray-400">無資料</span>';
+            
+            let html = '';
+            // 第一區
+            if (numbers.first_zone) {
+                numbers.first_zone.forEach(n => {
+                    html += `<span class="number-ball ball-red">${n.toString().padStart(2, '0')}</span>`;
+                });
+            }
+            // 第二區
+            if (numbers.second_zone !== undefined) {
+                html += `<span class="mx-2 text-gray-400">+</span>`;
+                html += `<span class="number-ball ball-yellow">${numbers.second_zone.toString().padStart(2, '0')}</span>`;
+            }
+            return html;
+        }
+        
+        function renderSuperNumbers(numbers) {
+            if (!numbers) return '<span class="text-gray-400">無資料</span>';
+            
+            let html = '';
+            // 主號
+            if (numbers.main) {
+                numbers.main.forEach(n => {
+                    html += `<span class="number-ball ball-blue">${n.toString().padStart(2, '0')}</span>`;
+                });
+            }
+            // 特別號
+            if (numbers.special !== undefined) {
+                html += `<span class="mx-2 text-gray-400">特</span>`;
+                html += `<span class="number-ball ball-yellow">${numbers.special.toString().padStart(2, '0')}</span>`;
+            }
+            return html;
+        }
+        
+        function renderDailyNumbers(numbers) {
+            if (!numbers || !Array.isArray(numbers)) return '<span class="text-gray-400">無資料</span>';
+            
+            let html = '';
+            numbers.forEach(n => {
+                html += `<span class="number-ball ball-green">${n.toString().padStart(2, '0')}</span>`;
+            });
+            return html;
+        }
+        
+        // 更新卡片資料
+        function updateCard(type, data) {
+            const jackpotEl = document.getElementById(`jackpot-${type}`);
+            const dateEl = document.getElementById(`date-${type}`);
+            const numbersEl = document.getElementById(`numbers-${type}`);
+            
+            if (!data) {
+                jackpotEl.textContent = '無法取得';
+                dateEl.textContent = '--';
+                numbersEl.innerHTML = '<span class="text-gray-400">同步失敗</span>';
+                return;
+            }
+            
+            // 更新獎金
+            if (data.jackpot_display) {
+                jackpotEl.textContent = data.jackpot_display;
+            }
+            
+            // 更新日期和號碼
+            if (data.latest_draw) {
+                dateEl.textContent = formatDate(data.latest_draw.draw_date);
+                
+                if (type === 'power') {
+                    numbersEl.innerHTML = renderPowerNumbers(data.latest_draw.numbers);
+                } else if (type === 'super') {
+                    numbersEl.innerHTML = renderSuperNumbers(data.latest_draw.numbers);
+                } else if (type === 'daily539') {
+                    numbersEl.innerHTML = renderDailyNumbers(data.latest_draw.numbers);
+                }
+            }
+        }
+        
+        // 顯示同步狀態
+        function showSyncStatus(success, message) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+            
+            if (success) {
+                statusEl.classList.add('bg-green-100', 'text-green-800');
+                statusEl.innerHTML = `<span class="font-bold">✓ 同步成功！</span> ${message}`;
+            } else {
+                statusEl.classList.add('bg-red-100', 'text-red-800');
+                statusEl.innerHTML = `<span class="font-bold">✗ 同步失敗</span> ${message}`;
+            }
+        }
+        
+        // 同步開獎資料
+        async function syncLotteryData() {
+            const btn = document.getElementById('syncBtn');
+            const icon = document.getElementById('syncIcon');
+            const text = document.getElementById('syncText');
+            
+            // 禁用按鈕
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            icon.innerHTML = '<svg class="w-5 h-5 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            text.textContent = '同步中...';
+            
+            try {
+                const response = await apiRequest('/lottery/sync', { method: 'POST' });
+                
+                if (!response) return;
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSyncStatus(true, result.message);
+                    
+                    // 更新上次同步時間
+                    document.getElementById('lastSync').textContent = 
+                        `上次同步：${new Date(result.updated_at).toLocaleString('zh-TW')}`;
+                    
+                    // 重新載入資料
+                    await loadLotteryData();
+                } else {
+                    showSyncStatus(false, result.message);
+                }
+            } catch (error) {
+                console.error('同步失敗:', error);
+                showSyncStatus(false, error.message);
+            } finally {
+                // 恢復按鈕
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                icon.textContent = '🔄';
+                text.textContent = '立即同步';
+            }
+        }
+        
+        // 載入開獎資料
+        async function loadLotteryData() {
+            try {
+                const response = await apiRequest('/lottery/latest');
+                if (!response) return;
+                
+                const data = await response.json();
+                
+                if (data.lotteries) {
+                    updateCard('power', data.lotteries.power);
+                    updateCard('super', data.lotteries.super);
+                    updateCard('daily539', data.lotteries.daily539);
+                }
+                
+                // 更新時間
+                document.getElementById('lastSync').textContent = 
+                    `資料時間：${new Date(data.updated_at).toLocaleString('zh-TW')}`;
+                    
+            } catch (error) {
+                console.error('載入失敗:', error);
+            }
+        }
+        
+        // 頁面載入
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadLotteryData();
+        });
+    </script>
+</body>
+</html>

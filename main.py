@@ -72,65 +72,29 @@ async def group_detail(group_id: int):
     return FileResponse(STATIC_DIR / "group-detail.html")
 
 
-# ==================== 管理員後台 ====================
+# ==================== 管理員頁面 ====================
 
 @main_app.get("/admin")
-async def admin_panel():
+async def admin_dashboard():
     """管理員後台"""
     return FileResponse(STATIC_DIR / "admin.html")
 
 
-# ==================== Step 3 功能 ====================
-
-@main_app.get("/wallet")
-async def wallet():
-    """錢包"""
-    return FileResponse(STATIC_DIR / "wallet.html")
+@main_app.get("/admin/lottery")
+async def admin_lottery():
+    """開獎資訊同步"""
+    return FileResponse(STATIC_DIR / "admin_lottery.html")
 
 
-@main_app.get("/statistics")
-async def statistics():
-    """統計報表"""
-    return FileResponse(STATIC_DIR / "statistics.html")
+# ==================== 靜態檔案 ====================
+
+# 掛載靜態檔案(最後掛載,避免覆蓋其他路由)
+main_app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
-@main_app.get("/personal")
-async def personal():
-    """個人彩券"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
-
-
-# ==================== Step 4 功能 ====================
-
-@main_app.get("/settings")
-async def user_settings():
-    """設定"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
-
-
-# 掛載靜態檔案(放在路由之後)
-if STATIC_DIR.exists():
-    main_app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
+# ==================== 開發用啟動 ====================
 
 if __name__ == "__main__":
     import uvicorn
-    
     port = int(os.environ.get("PORT", 8000))
-    
-    print(f"""
-    ╔══════════════════════════════════════╗
-    ║   🎰 SELA 樂透一路發                 ║
-    ║   ─────────────────────────────      ║
-    ║   環境: {settings.app_env:<28}║
-    ║   URL:  http://localhost:{port:<13}║
-    ║   API:  http://localhost:{port}/api/docs  ║
-    ╚══════════════════════════════════════╝
-    """)
-    
-    uvicorn.run(
-        "main:main_app",
-        host="0.0.0.0",
-        port=port,
-        reload=not settings.is_production,
-    )
+    uvicorn.run(main_app, host="0.0.0.0", port=port)
