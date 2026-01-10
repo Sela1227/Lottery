@@ -1,4 +1,4 @@
-# 🎰 SELA 樂透一路發 - Step 4-1 設定頁面與首次登入
+# 🎰 SELA 樂透一路發 - Step 4-1 設定頁面、首次登入、開獎資訊
 
 ## 📦 本次更新內容
 
@@ -8,6 +8,7 @@
 |------|------|------|
 | **設定頁面** | 個人資料設定（暱稱、Email、電話） | `/settings` |
 | **首次登入引導** | 新用戶登入後彈出設定暱稱對話框 | Dashboard 彈窗 |
+| **開獎資訊小卡** | Dashboard 最上方顯示威力彩、大樂透最新開獎 | Dashboard |
 
 ---
 
@@ -21,7 +22,8 @@ sela_step4_settings.zip
 ├── static/
 │   ├── index.html             # 登入頁 (處理 new 參數)
 │   ├── settings.html          # 設定頁面 (全新)
-│   └── dashboard_welcome_patch.html  # Dashboard 更新說明
+│   ├── dashboard_welcome_patch.html       # Dashboard 首次登入補丁
+│   └── dashboard_lottery_cards_patch.html # Dashboard 開獎卡片補丁
 └── docs/
     └── STEP4_SETTINGS_20260110.md    # 本說明檔
 ```
@@ -170,16 +172,82 @@ git push
 
 ---
 
-## 🔧 功能說明
+## 🎯 新功能說明
 
-### 設定頁面 `/settings`
+### 1. 開獎資訊小卡片
+
+在 Dashboard 最上方顯示威力彩和大樂透最新開獎號碼。
+
+#### 部署方式
+
+開啟 `static/dashboard.html`，按照 `dashboard_lottery_cards_patch.html` 說明：
+
+**2.5 新增開獎卡片 HTML（在 `<main>` 後、`.hero` 前）**
+
+```html
+<!-- 最新開獎資訊 -->
+<div class="lottery-cards" id="lottery-cards">
+    <div class="lottery-card power loading-card">
+        <div class="lottery-card-header">
+            <span class="lottery-icon">🎯</span>
+            <span class="lottery-name">威力彩</span>
+        </div>
+        <div class="lottery-numbers">載入中...</div>
+    </div>
+    <div class="lottery-card super loading-card">
+        <div class="lottery-card-header">
+            <span class="lottery-icon">🎰</span>
+            <span class="lottery-name">大樂透</span>
+        </div>
+        <div class="lottery-numbers">載入中...</div>
+    </div>
+</div>
+```
+
+**2.6 新增 CSS（完整樣式見 patch 檔案）**
+
+**2.7 新增 JavaScript 函數**
+
+```javascript
+// 載入最新開獎資訊
+async function loadLotteryInfo() { ... }
+
+// 渲染開獎卡片
+function renderLotteryCards(lotteries) { ... }
+
+// 渲染號碼球
+function renderLotteryNumbers(numbers, type) { ... }
+```
+
+**2.8 修改 checkAuth() 加入 loadLotteryInfo()**
+
+```javascript
+updateUI(user);
+checkFirstLogin(user);
+loadLotteryInfo();  // <-- 新增
+loadDashboardData();
+```
+
+#### 顯示效果
+
+```
+┌──────────────────┐  ┌──────────────────┐
+│ 🎯 威力彩  01/09 │  │ 🎰 大樂透  01/09 │
+│ ⚪⚪⚪⚪⚪⚪ | 🔴 │  │ ⚪⚪⚪⚪⚪⚪ | 🟡 │
+│ 💰 頭獎   3.2 億 │  │ 💰 頭獎   1.5 億 │
+└──────────────────┘  └──────────────────┘
+```
+
+---
+
+### 2. 設定頁面 `/settings`
 
 - 顯示用戶頭像與角色
 - 修改暱稱、Email、電話
 - 通知設定預留（LINE Notify 待實作）
 - 登出功能
 
-### 首次登入流程
+### 3. 首次登入流程
 
 ```
 LINE 登入 → auth callback (is_new=1) → index.html (儲存標記) 
@@ -211,17 +279,18 @@ LINE 登入 → auth callback (is_new=1) → index.html (儲存標記)
 | Step 1: 核心基礎設施 | ✅ 完成 | 100% |
 | Step 2: 團購流程 | ✅ 完成 | 100% |
 | Step 3: 統計與錢包 | ✅ 完成 | 100% |
-| Step 4: 進階功能 | 🔄 進行中 | 25% |
+| Step 4: 進階功能 | 🔄 進行中 | 40% |
 
 ### Step 4 進度
 
 - [x] 設定頁面
 - [x] 首次登入引導
+- [x] Dashboard 開獎資訊卡片
 - [ ] LINE Notify 整合
 - [ ] 開獎提醒通知
 - [ ] 中獎通知推播
 
-**整體進度：約 88%**
+**整體進度：約 90%**
 
 ---
 
