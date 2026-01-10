@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#F26522">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>SELA 樂透一路發 - 我的集資團</title>
+    <title>SELA 樂透一路發 - 我的集資</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -389,30 +389,47 @@
             margin-top: 6px;
         }
         
-        .checkbox-group {
+        .radio-group {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
         
-        .checkbox-item {
+        .radio-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 16px;
-            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
         }
         
-        .checkbox-item:has(input:checked) {
+        .radio-item:has(input:checked) {
             background: var(--bg-secondary);
             border-color: var(--sela-orange);
         }
         
-        .checkbox-item input {
+        .radio-item input {
             accent-color: var(--sela-orange);
+        }
+        
+        .radio-item .lottery-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .radio-item .lottery-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .radio-item .lottery-price {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
         
         .modal-footer {
@@ -486,6 +503,14 @@
             .btn {
                 justify-content: center;
             }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-item {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -494,7 +519,7 @@
     <header class="header">
         <div class="header-left">
             <a href="/dashboard" class="back-btn">←</a>
-            <h1 class="page-title">我的集資團</h1>
+            <h1 class="page-title">我的集資</h1>
         </div>
         <div class="header-right">
             <div class="user-avatar" id="user-avatar"></div>
@@ -506,7 +531,7 @@
         <!-- Action Bar -->
         <div class="action-bar">
             <button class="btn btn-primary" onclick="showCreateModal()">
-                ➕ 建立集資團
+                ➕ 建立集資
             </button>
             <button class="btn btn-secondary" onclick="showJoinModal()">
                 🎫 使用邀請碼加入
@@ -525,24 +550,24 @@
     <div class="modal-overlay" id="create-modal">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">建立集資團</h2>
+                <h2 class="modal-title">建立集資</h2>
                 <button class="modal-close" onclick="closeModal('create-modal')">✕</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">集資團名稱</label>
+                    <label class="form-label">集資名稱</label>
                     <input type="text" class="form-input" id="series-name" placeholder="例如:家族樂透團">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">允許的彩種</label>
-                    <div class="checkbox-group" id="lottery-types">
+                    <label class="form-label">選擇彩種</label>
+                    <div class="radio-group" id="lottery-types">
                         <!-- 動態載入 -->
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">初始份額(元)</label>
-                    <input type="number" class="form-input" id="initial-pool" value="500" min="50" step="50">
-                    <p class="form-hint">建議 500~2000 元,可隨時加碼</p>
+                    <input type="number" class="form-input" id="initial-pool" value="500" min="100" step="100">
+                    <p class="form-hint" id="pool-hint">請先選擇彩種</p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">備註(選填)</label>
@@ -587,6 +612,14 @@
     <script>
         const API_BASE = '/api/v1';
         let lotteryTypes = [];
+        let selectedLotteryType = null;
+        
+        // 彩種價格對應
+        const LOTTERY_PRICES = {
+            'power': 100,      // 威力彩 100 元
+            'super': 50,       // 大樂透 50 元
+            'daily539': 50     // 今彩539 50 元
+        };
         
         // Auth Check
         async function checkAuth() {
@@ -649,20 +682,41 @@
         async function loadLotteryTypes() {
             try {
                 lotteryTypes = await apiGet('/lottery-types');
-                renderLotteryTypeCheckboxes();
+                renderLotteryTypeRadios();
             } catch (e) {
                 console.error('Failed to load lottery types:', e);
             }
         }
         
-        function renderLotteryTypeCheckboxes() {
+        function renderLotteryTypeRadios() {
             const container = document.getElementById('lottery-types');
             container.innerHTML = lotteryTypes.map(lt => `
-                <label class="checkbox-item">
-                    <input type="checkbox" name="lottery_type" value="${lt.code}" checked>
-                    ${lt.name}
+                <label class="radio-item">
+                    <input type="radio" name="lottery_type" value="${lt.code}" onchange="onLotteryTypeChange('${lt.code}')">
+                    <div class="lottery-info">
+                        <span class="lottery-name">${lt.name}</span>
+                        <span class="lottery-price">每注 ${lt.price_per_bet} 元</span>
+                    </div>
                 </label>
             `).join('');
+        }
+        
+        // 當選擇彩種時更新份額設定
+        function onLotteryTypeChange(code) {
+            selectedLotteryType = code;
+            const price = LOTTERY_PRICES[code] || 50;
+            const poolInput = document.getElementById('initial-pool');
+            const hintEl = document.getElementById('pool-hint');
+            
+            // 更新輸入框設定
+            poolInput.min = price;
+            poolInput.step = price;
+            poolInput.value = price * 5;  // 預設 5 注
+            
+            // 更新提示文字
+            const lt = lotteryTypes.find(t => t.code === code);
+            const ltName = lt ? lt.name : code;
+            hintEl.textContent = `${ltName}每注 ${price} 元，建議 ${price * 5}~${price * 20} 元`;
         }
         
         // Load Series List
@@ -676,8 +730,8 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">🎰</div>
-                            <h3 class="empty-title">還沒有加入任何集資團</h3>
-                            <p class="empty-desc">建立一個新的集資團,或使用邀請碼加入</p>
+                            <h3 class="empty-title">還沒有加入任何集資</h3>
+                            <p class="empty-desc">建立一個新的集資,或使用邀請碼加入</p>
                         </div>
                     `;
                     return;
@@ -731,6 +785,16 @@
         
         // Modal Functions
         function showCreateModal() {
+            // 重置表單
+            selectedLotteryType = null;
+            document.getElementById('series-name').value = '';
+            document.getElementById('series-description').value = '';
+            document.getElementById('initial-pool').value = '500';
+            document.getElementById('pool-hint').textContent = '請先選擇彩種';
+            
+            // 清除 radio 選擇
+            document.querySelectorAll('input[name="lottery_type"]').forEach(el => el.checked = false);
+            
             document.getElementById('create-modal').classList.add('active');
         }
         
@@ -747,20 +811,28 @@
             const name = document.getElementById('series-name').value.trim();
             const initialPool = parseFloat(document.getElementById('initial-pool').value);
             const description = document.getElementById('series-description').value.trim();
-            const selectedTypes = [...document.querySelectorAll('input[name="lottery_type"]:checked')].map(el => el.value);
+            const selectedType = document.querySelector('input[name="lottery_type"]:checked');
             
             if (!name) {
-                showToast('請輸入集資團名稱', 'error');
+                showToast('請輸入集資名稱', 'error');
                 return;
             }
             
-            if (selectedTypes.length === 0) {
-                showToast('請至少選擇一種彩種', 'error');
+            if (!selectedType) {
+                showToast('請選擇一種彩種', 'error');
                 return;
             }
             
-            if (initialPool < 50) {
-                showToast('初始份額至少 50 元', 'error');
+            const lotteryCode = selectedType.value;
+            const price = LOTTERY_PRICES[lotteryCode] || 50;
+            
+            if (initialPool < price) {
+                showToast(`初始份額至少 ${price} 元`, 'error');
+                return;
+            }
+            
+            if (initialPool % price !== 0) {
+                showToast(`份額必須是 ${price} 的倍數`, 'error');
                 return;
             }
             
@@ -769,17 +841,12 @@
                     name,
                     initial_pool_share: initialPool,
                     description: description || null,
-                    allowed_lottery_types: selectedTypes
+                    allowed_lottery_types: [lotteryCode]  // 只傳一種彩種
                 });
                 
                 closeModal('create-modal');
-                showToast('集資團建立成功!', 'success');
+                showToast('集資建立成功!', 'success');
                 loadSeriesList();
-                
-                // Reset form
-                document.getElementById('series-name').value = '';
-                document.getElementById('series-description').value = '';
-                document.getElementById('initial-pool').value = '500';
             } catch (e) {
                 showToast(e.message, 'error');
             }
@@ -807,7 +874,7 @@
                 });
                 
                 closeModal('join-modal');
-                showToast('成功加入集資團!', 'success');
+                showToast('成功加入集資!', 'success');
                 loadSeriesList();
                 
                 // Reset form
