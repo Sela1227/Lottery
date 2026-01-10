@@ -16,20 +16,23 @@ logger = logging.getLogger(__name__)
 class LotteryCrawler:
     """彩券開獎資訊爬蟲"""
     
-    # 資料來源
+    # 資料來源 - 首頁有累積獎金，list.asp 有開獎號碼
     SOURCES = {
         "super_lotto": {
-            "url": "https://www.pilio.idv.tw/lto/list.asp",
+            "home_url": "https://www.pilio.idv.tw/lto/",
+            "list_url": "https://www.pilio.idv.tw/lto/list.asp",
             "name": "威力彩",
             "code": "power"
         },
         "lotto649": {
-            "url": "https://www.pilio.idv.tw/ltobig/list.asp",
+            "home_url": "https://www.pilio.idv.tw/ltobig/",
+            "list_url": "https://www.pilio.idv.tw/ltobig/list.asp",
             "name": "大樂透",
             "code": "super"
         },
         "daily_cash": {
-            "url": "https://www.pilio.idv.tw/lto539/list.asp",
+            "home_url": "https://www.pilio.idv.tw/lto539/",
+            "list_url": "https://www.pilio.idv.tw/lto539/list.asp",
             "name": "今彩539",
             "code": "daily539"
         }
@@ -56,120 +59,45 @@ class LotteryCrawler:
             logger.error(f"抓取網頁失敗: {url}, 錯誤: {e}")
             return None
     
-    def parse_jackpot(self, soup: BeautifulSoup) -> Optional[int]:
-        """解析累積獎金"""
+    def parse_jackpot_from_home(self, html: str) -> Optional[int]:
+        """從首頁解析累積獎金"""
         try:
-            # 尋找包含「頭彩獎金累積」的文字
+            soup = BeautifulSoup(html, "html.parser")
             text = soup.get_text()
-            match = re.search(r'頭彩獎金累積[：:]\s*([\d.]+)\s*億', text)
+            
+            # 嘗試多種格式匹配
+            patterns = [
+                r'累積金額[：:\s]*NT[：:\s]*([\d.]+)\s*億',
+                r'頭彩累積[：:\s]*([\d.]+)\s*億',
+                r'累積[：:\s]*([\d.]+)\s*億',
+                r'([\d.]+)\s*億元',
+                r'NT[：:\s]*([\d.]+)\s*億',
+            ]
+            
+            for pattern in patterns:
+                match = re.search(pattern, text)
+                if match:
+                    amount = float(match.group(1))
+                    return int(amount * 100000000)  # 轉換為元
+            
+            # 嘗試匹配萬元格式
+            match = re.search(r'累積[：:\s]*([\d,]+)\s*萬', text)
             if match:
-                amount = float(match.group(1))
-                return int(amount * 100000000)  # 轉換為元
+                amount_str = match.group(1).replace(',', '')
+                return int(float(amount_str) * 10000)
+            
             return None
         except Exception as e:
             logger.error(f"解析累積獎金失敗: {e}")
             return None
     
-    def parse_super_lotto(self, html: str) -> Dict[str, Any]:
-        """解析威力彩"""
-        soup = BeautifulSoup(html, "html.parser")
-        result = {
-            "lottery_type": "power",
-            "lottery_name": "威力彩",
-            "jackpot": self.parse_jackpot(soup),
-            "draws": []
-        }
-        
+    def parse_numbers_from_list(self, html: str, lottery_type: str) -> List[Dict]:
+        """從 list.asp 解析開獎號碼"""
+        draws = []
         try:
+            soup = BeautifulSoup(html, "html.parser")
+            
             # 找到開獎號碼表格
-            tables = soup.find_all("table")
-            for table in tables:
-                rows = table.find_all("tr")
-                for row in rows:
-                    cells = row.find_all("td")
-                    if len(cells) >= 3:
-                        date_text = cells[0].get_text(strip=True)
-                        numbers_text = cells[1].get_text(strip=True)
-                        second_zone = cells[2].get_text(strip=True)
-                        
-                        # 解析日期 (格式: 01/08 26(四))
-                        date_match = re.match(r'(\d{2})/(\d{2})\s*(\d{2})', date_text)
-                        if date_match and numbers_text:
-                            month = int(date_match.group(1))
-                            day = int(date_match.group(2))
-                            year = 2000 + int(date_match.group(3))
-                            
-                            # 解析號碼
-                            numbers = [int(n.strip()) for n in numbers_text.split(",") if n.strip().isdigit()]
-                            second = int(second_zone) if second_zone.isdigit() else None
-                            
-                            if numbers and second is not None:
-                                result["draws"].append({
-                                    "draw_date": f"{year}-{month:02d}-{day:02d}",
-                                    "numbers": {
-                                        "first_zone": numbers,
-                                        "second_zone": second
-                                    }
-                                })
-        except Exception as e:
-            logger.error(f"解析威力彩失敗: {e}")
-        
-        return result
-    
-    def parse_lotto649(self, html: str) -> Dict[str, Any]:
-        """解析大樂透"""
-        soup = BeautifulSoup(html, "html.parser")
-        result = {
-            "lottery_type": "super",
-            "lottery_name": "大樂透",
-            "jackpot": self.parse_jackpot(soup),
-            "draws": []
-        }
-        
-        try:
-            tables = soup.find_all("table")
-            for table in tables:
-                rows = table.find_all("tr")
-                for row in rows:
-                    cells = row.find_all("td")
-                    if len(cells) >= 3:
-                        date_text = cells[0].get_text(strip=True)
-                        numbers_text = cells[1].get_text(strip=True)
-                        special = cells[2].get_text(strip=True)
-                        
-                        date_match = re.match(r'(\d{2})/(\d{2})\s*(\d{2})', date_text)
-                        if date_match and numbers_text:
-                            month = int(date_match.group(1))
-                            day = int(date_match.group(2))
-                            year = 2000 + int(date_match.group(3))
-                            
-                            numbers = [int(n.strip()) for n in numbers_text.split(",") if n.strip().isdigit()]
-                            special_num = int(special) if special.isdigit() else None
-                            
-                            if numbers and special_num is not None:
-                                result["draws"].append({
-                                    "draw_date": f"{year}-{month:02d}-{day:02d}",
-                                    "numbers": {
-                                        "main": numbers,
-                                        "special": special_num
-                                    }
-                                })
-        except Exception as e:
-            logger.error(f"解析大樂透失敗: {e}")
-        
-        return result
-    
-    def parse_daily_cash(self, html: str) -> Dict[str, Any]:
-        """解析今彩539"""
-        soup = BeautifulSoup(html, "html.parser")
-        result = {
-            "lottery_type": "daily539",
-            "lottery_name": "今彩539",
-            "jackpot": 8000000,  # 固定頭獎 800 萬
-            "draws": []
-        }
-        
-        try:
             tables = soup.find_all("table")
             for table in tables:
                 rows = table.find_all("tr")
@@ -179,44 +107,120 @@ class LotteryCrawler:
                         date_text = cells[0].get_text(strip=True)
                         numbers_text = cells[1].get_text(strip=True)
                         
+                        # 解析日期 (格式: 01/08 26(四) 或 01/08/26)
                         date_match = re.match(r'(\d{2})/(\d{2})\s*(\d{2})', date_text)
+                        if not date_match:
+                            date_match = re.match(r'(\d{2})/(\d{2})/(\d{2})', date_text)
+                        
                         if date_match and numbers_text:
                             month = int(date_match.group(1))
                             day = int(date_match.group(2))
                             year = 2000 + int(date_match.group(3))
                             
-                            numbers = [int(n.strip()) for n in numbers_text.split(",") if n.strip().isdigit()]
+                            # 解析號碼
+                            numbers = [int(n.strip()) for n in re.findall(r'\d+', numbers_text)]
                             
-                            if numbers:
-                                result["draws"].append({
-                                    "draw_date": f"{year}-{month:02d}-{day:02d}",
-                                    "numbers": numbers
-                                })
+                            if lottery_type == "power" and len(cells) >= 3:
+                                # 威力彩: 6個主號 + 1個第二區
+                                main_nums = numbers[:6] if len(numbers) >= 6 else numbers
+                                second_text = cells[2].get_text(strip=True)
+                                second_match = re.search(r'\d+', second_text)
+                                second = int(second_match.group()) if second_match else None
+                                
+                                if main_nums and second is not None:
+                                    draws.append({
+                                        "draw_date": f"{year}-{month:02d}-{day:02d}",
+                                        "numbers": {
+                                            "first_zone": main_nums,
+                                            "second_zone": second
+                                        }
+                                    })
+                            
+                            elif lottery_type == "super" and len(cells) >= 3:
+                                # 大樂透: 6個主號 + 1個特別號
+                                main_nums = numbers[:6] if len(numbers) >= 6 else numbers
+                                special_text = cells[2].get_text(strip=True)
+                                special_match = re.search(r'\d+', special_text)
+                                special = int(special_match.group()) if special_match else None
+                                
+                                if main_nums and special is not None:
+                                    draws.append({
+                                        "draw_date": f"{year}-{month:02d}-{day:02d}",
+                                        "numbers": {
+                                            "main": main_nums,
+                                            "special": special
+                                        }
+                                    })
+                            
+                            elif lottery_type == "daily539":
+                                # 今彩539: 5個號碼
+                                if len(numbers) >= 5:
+                                    draws.append({
+                                        "draw_date": f"{year}-{month:02d}-{day:02d}",
+                                        "numbers": numbers[:5]
+                                    })
         except Exception as e:
-            logger.error(f"解析今彩539失敗: {e}")
+            logger.error(f"解析開獎號碼失敗: {e}")
         
-        return result
+        return draws
     
     def fetch_super_lotto(self) -> Optional[Dict[str, Any]]:
         """抓取威力彩"""
-        html = self.fetch_page(self.SOURCES["super_lotto"]["url"])
-        if html:
-            return self.parse_super_lotto(html)
-        return None
+        result = {
+            "lottery_type": "power",
+            "lottery_name": "威力彩",
+            "jackpot": None,
+            "draws": []
+        }
+        
+        # 從首頁抓累積獎金
+        home_html = self.fetch_page(self.SOURCES["super_lotto"]["home_url"])
+        if home_html:
+            result["jackpot"] = self.parse_jackpot_from_home(home_html)
+        
+        # 從 list.asp 抓開獎號碼
+        list_html = self.fetch_page(self.SOURCES["super_lotto"]["list_url"])
+        if list_html:
+            result["draws"] = self.parse_numbers_from_list(list_html, "power")
+        
+        return result if result["draws"] else None
     
     def fetch_lotto649(self) -> Optional[Dict[str, Any]]:
         """抓取大樂透"""
-        html = self.fetch_page(self.SOURCES["lotto649"]["url"])
-        if html:
-            return self.parse_lotto649(html)
-        return None
+        result = {
+            "lottery_type": "super",
+            "lottery_name": "大樂透",
+            "jackpot": None,
+            "draws": []
+        }
+        
+        # 從首頁抓累積獎金
+        home_html = self.fetch_page(self.SOURCES["lotto649"]["home_url"])
+        if home_html:
+            result["jackpot"] = self.parse_jackpot_from_home(home_html)
+        
+        # 從 list.asp 抓開獎號碼
+        list_html = self.fetch_page(self.SOURCES["lotto649"]["list_url"])
+        if list_html:
+            result["draws"] = self.parse_numbers_from_list(list_html, "super")
+        
+        return result if result["draws"] else None
     
     def fetch_daily_cash(self) -> Optional[Dict[str, Any]]:
         """抓取今彩539"""
-        html = self.fetch_page(self.SOURCES["daily_cash"]["url"])
-        if html:
-            return self.parse_daily_cash(html)
-        return None
+        result = {
+            "lottery_type": "daily539",
+            "lottery_name": "今彩539",
+            "jackpot": 8000000,  # 固定頭獎 800 萬
+            "draws": []
+        }
+        
+        # 從 list.asp 抓開獎號碼
+        list_html = self.fetch_page(self.SOURCES["daily_cash"]["list_url"])
+        if list_html:
+            result["draws"] = self.parse_numbers_from_list(list_html, "daily539")
+        
+        return result if result["draws"] else None
     
     def fetch_all(self) -> Dict[str, Any]:
         """抓取所有彩種"""
