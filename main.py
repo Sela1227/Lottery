@@ -114,6 +114,12 @@ async def user_settings():
     return FileResponse(STATIC_DIR / "settings.html")
 
 
+@main_app.get("/lottery")
+async def lottery_page():
+    """開獎專區"""
+    return FileResponse(STATIC_DIR / "lottery.html")
+
+
 # ==================== 靜態檔案 ====================
 
 # 掛載靜態檔案(最後掛載,避免覆蓋其他路由)
