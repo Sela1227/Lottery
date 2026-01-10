@@ -252,38 +252,44 @@ async def sync_lottery_data(
         data = lottery_crawler.fetch_all()
         synced = []
         
+        # 爬蟲返回格式映射
+        # super_lotto -> power (威力彩)
+        # lotto649 -> super (大樂透)  
+        # daily_cash -> daily539 (今彩539)
+        
         # 處理威力彩
-        if data.get("power") and data["power"].get("numbers"):
-            power = data["power"]
-            draw_date = parse_date(power.get("date", ""))
-            draw_term = power.get("term", f"power_{draw_date}")
-            numbers = power["numbers"]
-            if isinstance(numbers, dict):
-                save_to_db(db, "power", draw_term, draw_date, numbers, power.get("jackpot"))
-                synced.append("威力彩")
+        if data.get("super_lotto") and data["super_lotto"].get("draws"):
+            item = data["super_lotto"]
+            draw = item["draws"][0]
+            draw_date = parse_date(draw.get("draw_date", ""))
+            draw_term = f"power_{draw_date}"
+            numbers = draw.get("numbers", {})
+            save_to_db(db, "power", draw_term, draw_date, numbers, item.get("jackpot"))
+            synced.append("威力彩")
         
         # 處理大樂透
-        if data.get("super") and data["super"].get("numbers"):
-            super_lotto = data["super"]
-            draw_date = parse_date(super_lotto.get("date", ""))
-            draw_term = super_lotto.get("term", f"super_{draw_date}")
-            numbers = super_lotto["numbers"]
-            if isinstance(numbers, dict):
-                save_to_db(db, "super", draw_term, draw_date, numbers, super_lotto.get("jackpot"))
-                synced.append("大樂透")
+        if data.get("lotto649") and data["lotto649"].get("draws"):
+            item = data["lotto649"]
+            draw = item["draws"][0]
+            draw_date = parse_date(draw.get("draw_date", ""))
+            draw_term = f"super_{draw_date}"
+            numbers = draw.get("numbers", {})
+            save_to_db(db, "super", draw_term, draw_date, numbers, item.get("jackpot"))
+            synced.append("大樂透")
         
         # 處理今彩539
-        if data.get("daily539") and data["daily539"].get("numbers"):
-            daily = data["daily539"]
-            draw_date = parse_date(daily.get("date", ""))
-            draw_term = daily.get("term", f"daily539_{draw_date}")
-            nums = daily["numbers"]
+        if data.get("daily_cash") and data["daily_cash"].get("draws"):
+            item = data["daily_cash"]
+            draw = item["draws"][0]
+            draw_date = parse_date(draw.get("draw_date", ""))
+            draw_term = f"daily539_{draw_date}"
+            nums = draw.get("numbers", [])
             # 統一格式
             if isinstance(nums, list):
                 numbers = {"numbers": nums}
             else:
                 numbers = nums
-            save_to_db(db, "daily539", draw_term, draw_date, numbers, daily.get("jackpot"))
+            save_to_db(db, "daily539", draw_term, draw_date, numbers, item.get("jackpot"))
             synced.append("今彩539")
         
         db.commit()
