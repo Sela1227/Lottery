@@ -454,3 +454,72 @@ async def import_history_data(
 # 加入 logger
 import logging
 logger = logging.getLogger(__name__)
+
+
+class BatchImportItem(BaseModel):
+    """批量匯入項目"""
+    lottery_type: str
+    draw_term: str
+    draw_date: str  # YYYY-MM-DD
+    numbers: dict
+    jackpot: Optional[int] = None
+
+
+class BatchImportRequest(BaseModel):
+    """批量匯入請求"""
+    items: List[BatchImportItem]
+
+
+@router.post("/batch-import")
+async def batch_import_draws(
+    request: BatchImportRequest,
+    db: Session = Depends(get_db),
+    admin_id: int = Depends(require_admin)
+):
+    """
+    批量匯入開獎資料（僅管理員）
+    
+    用於從本地腳本上傳歷史資料
+    """
+    imported = 0
+    skipped = 0
+    errors = []
+    
+    for item in request.items:
+        try:
+            # 檢查是否已存在
+            existing = db.query(LotteryDraw).filter(
+                LotteryDraw.lottery_type == item.lottery_type,
+                LotteryDraw.draw_term == item.draw_term
+            ).first()
+            
+            if existing:
+                skipped += 1
+                continue
+            
+            # 解析日期
+            draw_date = parse_date(item.draw_date)
+            
+            # 新增記錄
+            new_draw = LotteryDraw(
+                lottery_type=item.lottery_type,
+                draw_term=item.draw_term,
+                draw_date=draw_date,
+                numbers=item.numbers,
+                jackpot=item.jackpot
+            )
+            db.add(new_draw)
+            imported += 1
+            
+        except Exception as e:
+            errors.append(f"{item.draw_term}: {str(e)}")
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "imported": imported,
+        "skipped": skipped,
+        "errors": errors[:10] if errors else [],
+        "message": f"匯入完成：新增 {imported} 筆，略過 {skipped} 筆（已存在）"
+    }
