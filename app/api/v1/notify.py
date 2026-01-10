@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from app.core.database import get_db
 from app.core.security import get_current_user_id
-from app.models.user import User
+from app.models.user import User, UserStatus
 from app.models.push_subscription import PushSubscription
 from app.services.web_push import web_push, templates
 from app.config import settings
@@ -81,9 +81,9 @@ async def get_notify_settings(
         push_enabled=push_enabled,
         subscribed=subscription_count > 0,
         subscription_count=subscription_count,
-        notify_draw_reminder=user.notify_draw_reminder if hasattr(user, 'notify_draw_reminder') else True,
-        notify_win_alert=user.notify_win_alert if hasattr(user, 'notify_win_alert') else True,
-        notify_settlement=user.notify_settlement if hasattr(user, 'notify_settlement') else True,
+        notify_draw_reminder=user.notify_draw_reminder if user.notify_draw_reminder is not None else True,
+        notify_win_alert=user.notify_win_alert if user.notify_win_alert is not None else True,
+        notify_settlement=user.notify_settlement if user.notify_settlement is not None else True,
         vapid_public_key=settings.vapid_public_key if push_enabled else None
     )
 
@@ -100,11 +100,11 @@ async def update_notify_settings(
         raise HTTPException(status_code=404, detail="用戶不存在")
     
     # 更新設定
-    if data.notify_draw_reminder is not None and hasattr(user, 'notify_draw_reminder'):
+    if data.notify_draw_reminder is not None:
         user.notify_draw_reminder = data.notify_draw_reminder
-    if data.notify_win_alert is not None and hasattr(user, 'notify_win_alert'):
+    if data.notify_win_alert is not None:
         user.notify_win_alert = data.notify_win_alert
-    if data.notify_settlement is not None and hasattr(user, 'notify_settlement'):
+    if data.notify_settlement is not None:
         user.notify_settlement = data.notify_settlement
     
     db.commit()
@@ -283,7 +283,7 @@ async def send_draw_reminder(db: Session, lottery_type: str, draw_date: str):
     # 取得所有啟用開獎提醒的用戶訂閱
     subscriptions = db.query(PushSubscription).join(User).filter(
         PushSubscription.is_active == True,
-        User.is_active == True,
+        User.status == UserStatus.ACTIVE,
         User.notify_draw_reminder == True
     ).all()
     
@@ -307,7 +307,7 @@ async def send_win_notification(db: Session, user_id: int, series_name: str, per
     發送中獎通知給特定用戶
     """
     user = db.query(User).filter(User.id == user_id).first()
-    if not user or not getattr(user, 'notify_win_alert', True):
+    if not user or (user.notify_win_alert is not None and not user.notify_win_alert):
         return
     
     template = templates.win_notification(series_name, period, prize)
@@ -329,7 +329,7 @@ async def send_settlement_notification(db: Session, user_id: int, series_name: s
     發送結算通知給特定用戶
     """
     user = db.query(User).filter(User.id == user_id).first()
-    if not user or not getattr(user, 'notify_settlement', True):
+    if not user or (user.notify_settlement is not None and not user.notify_settlement):
         return
     
     template = templates.settlement_notification(series_name, period, share)
@@ -354,11 +354,12 @@ async def send_broadcast(db: Session, message: str, admin_only: bool = False):
     
     query = db.query(PushSubscription).join(User).filter(
         PushSubscription.is_active == True,
-        User.is_active == True
+        User.status == UserStatus.ACTIVE
     )
     
     if admin_only:
-        query = query.filter(User.role == "admin")
+        from app.models.user import UserRole
+        query = query.filter(User.role == UserRole.ADMIN)
     
     subscriptions = query.all()
     
