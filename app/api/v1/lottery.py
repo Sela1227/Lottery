@@ -14,6 +14,13 @@ from app.api.v1.admin import require_admin
 from app.services.lottery_crawler import lottery_crawler
 from app.models.lottery_draw import LotteryDraw
 
+# 嘗試導入歷史爬蟲（可能不存在）
+try:
+    from app.services.history_crawler import history_crawler
+    HAS_HISTORY_CRAWLER = True
+except ImportError:
+    HAS_HISTORY_CRAWLER = False
+
 
 router = APIRouter(prefix="/lottery", tags=["Lottery"])
 
@@ -360,3 +367,90 @@ async def get_draw_history(
             for d in draws
         ]
     }
+
+
+@router.post("/import-history", response_model=SyncResult)
+async def import_history_data(
+    lottery_type: str = Query(None, description="指定彩種 (power/super/daily539)，不指定則全部匯入"),
+    limit: int = Query(30, ge=10, le=100, description="每種彩券匯入筆數"),
+    db: Session = Depends(get_db),
+    admin_id: int = Depends(require_admin)
+):
+    """
+    匯入歷史開獎資料（僅管理員）
+    
+    從外部來源爬取歷史開獎記錄並儲存到資料庫
+    """
+    if not HAS_HISTORY_CRAWLER:
+        return SyncResult(
+            success=False,
+            message="歷史爬蟲服務未安裝",
+            updated_at=datetime.now().isoformat()
+        )
+    
+    try:
+        imported_counts = {"power": 0, "super": 0, "daily539": 0}
+        types_to_import = [lottery_type] if lottery_type else ["power", "super", "daily539"]
+        
+        for ltype in types_to_import:
+            if ltype not in ["power", "super", "daily539"]:
+                continue
+            
+            # 根據彩種呼叫對應的爬蟲
+            if ltype == "power":
+                history_data = history_crawler.fetch_power_history(limit)
+            elif ltype == "super":
+                history_data = history_crawler.fetch_super_history(limit)
+            else:
+                history_data = history_crawler.fetch_daily539_history(limit)
+            
+            # 儲存到資料庫
+            for item in history_data:
+                try:
+                    existing = db.query(LotteryDraw).filter(
+                        LotteryDraw.lottery_type == item["lottery_type"],
+                        LotteryDraw.draw_term == item["draw_term"]
+                    ).first()
+                    
+                    if not existing:
+                        new_draw = LotteryDraw(
+                            lottery_type=item["lottery_type"],
+                            draw_term=item["draw_term"],
+                            draw_date=item["draw_date"],
+                            numbers=item["numbers"],
+                            jackpot=item.get("jackpot")
+                        )
+                        db.add(new_draw)
+                        imported_counts[ltype] += 1
+                except Exception as e:
+                    logger.warning(f"儲存歷史記錄失敗: {e}")
+                    continue
+        
+        db.commit()
+        
+        # 統計結果
+        total_imported = sum(imported_counts.values())
+        details = []
+        for ltype, count in imported_counts.items():
+            if count > 0:
+                details.append(f"{LOTTERY_NAMES[ltype]} {count}筆")
+        
+        return SyncResult(
+            success=True,
+            message=f"成功匯入 {total_imported} 筆: {', '.join(details)}" if total_imported > 0 else "無新資料匯入（可能資料已存在）",
+            updated_at=datetime.now().isoformat(),
+            data={"imported": imported_counts, "total": total_imported}
+        )
+    
+    except Exception as e:
+        db.rollback()
+        return SyncResult(
+            success=False,
+            message=f"匯入失敗: {str(e)}",
+            updated_at=datetime.now().isoformat()
+        )
+
+
+# 加入 logger
+import logging
+logger = logging.getLogger(__name__)

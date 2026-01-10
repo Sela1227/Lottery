@@ -40,7 +40,7 @@
                     <span class="text-2xl">🎰</span>
                     <h1 class="text-xl font-bold">開獎資訊同步</h1>
                 </div>
-                <a href="/static/admin.html" class="flex items-center space-x-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition">
+                <a href="/admin" class="flex items-center space-x-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition">
                     <span>←</span>
                     <span>返回管理</span>
                 </a>
@@ -54,7 +54,7 @@
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-gray-800">即時同步開獎資訊</h2>
-                    <p class="text-sm text-gray-500 mt-1">從 pilio.idv.tw 抓取最新開獎號碼與累積獎金</p>
+                    <p class="text-sm text-gray-500 mt-1">從 lotto-8.com 抓取最新開獎號碼與累積獎金</p>
                 </div>
                 <button id="syncBtn" onclick="syncLotteryData()" 
                     class="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
@@ -68,6 +68,47 @@
             
             <!-- 上次同步時間 -->
             <div id="lastSync" class="mt-4 text-center text-sm text-gray-400"></div>
+        </div>
+
+        <!-- 📥 歷史資料匯入區 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">📥 匯入歷史資料</h2>
+                    <p class="text-sm text-gray-500 mt-1">從 lotto-8.com 爬取過去的開獎記錄</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select id="importLimit" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="30">最近 30 期</option>
+                        <option value="50">最近 50 期</option>
+                        <option value="100">最近 100 期</option>
+                    </select>
+                    <button id="importBtn" onclick="importHistoryData()" 
+                        class="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
+                        <span id="importIcon">📥</span>
+                        <span id="importText">匯入歷史</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 匯入狀態 -->
+            <div id="importStatus" class="hidden mt-4 p-4 rounded-lg"></div>
+            
+            <!-- 資料庫統計 -->
+            <div id="dbStats" class="mt-4 grid grid-cols-3 gap-4 text-center">
+                <div class="bg-red-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-red-600" id="stat-power">-</div>
+                    <div class="text-xs text-gray-500">威力彩</div>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600" id="stat-super">-</div>
+                    <div class="text-xs text-gray-500">大樂透</div>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600" id="stat-daily539">-</div>
+                    <div class="text-xs text-gray-500">今彩539</div>
+                </div>
+            </div>
         </div>
 
         <!-- 彩種資訊卡片 -->
@@ -164,9 +205,9 @@
                 <div class="text-sm text-amber-800">
                     <p class="font-bold mb-1">使用說明</p>
                     <ul class="list-disc list-inside space-y-1">
-                        <li>點擊「立即同步」可從網路抓取最新開獎資訊</li>
-                        <li>資料來源：pilio.idv.tw（非官方，僅供參考）</li>
-                        <li>威力彩、大樂透會顯示累積獎金</li>
+                        <li>「立即同步」可抓取最新開獎資訊</li>
+                        <li>「匯入歷史」可一次匯入多期歷史記錄</li>
+                        <li>資料來源：lotto-8.com（非官方，僅供參考）</li>
                         <li>建議在開獎後 10-30 分鐘再進行同步</li>
                     </ul>
                 </div>
@@ -181,7 +222,7 @@
         function checkAuth() {
             const token = localStorage.getItem('access_token');
             if (!token) {
-                window.location.href = '/static/login.html';
+                window.location.href = '/';
                 return null;
             }
             return token;
@@ -203,7 +244,7 @@
             
             if (response.status === 401) {
                 localStorage.removeItem('access_token');
-                window.location.href = '/static/login.html';
+                window.location.href = '/';
                 return null;
             }
             
@@ -226,13 +267,11 @@
             if (!numbers) return '<span class="text-gray-400">無資料</span>';
             
             let html = '';
-            // 第一區
             if (numbers.first_zone) {
                 numbers.first_zone.forEach(n => {
                     html += `<span class="number-ball ball-red">${n.toString().padStart(2, '0')}</span>`;
                 });
             }
-            // 第二區
             if (numbers.second_zone !== undefined) {
                 html += `<span class="mx-2 text-gray-400">+</span>`;
                 html += `<span class="number-ball ball-yellow">${numbers.second_zone.toString().padStart(2, '0')}</span>`;
@@ -244,13 +283,11 @@
             if (!numbers) return '<span class="text-gray-400">無資料</span>';
             
             let html = '';
-            // 主號
             if (numbers.main) {
                 numbers.main.forEach(n => {
                     html += `<span class="number-ball ball-blue">${n.toString().padStart(2, '0')}</span>`;
                 });
             }
-            // 特別號
             if (numbers.special !== undefined) {
                 html += `<span class="mx-2 text-gray-400">特</span>`;
                 html += `<span class="number-ball ball-yellow">${numbers.special.toString().padStart(2, '0')}</span>`;
@@ -259,10 +296,17 @@
         }
         
         function renderDailyNumbers(numbers) {
-            if (!numbers || !Array.isArray(numbers)) return '<span class="text-gray-400">無資料</span>';
+            if (!numbers) return '<span class="text-gray-400">無資料</span>';
+            
+            // 處理不同格式
+            let numArray = numbers;
+            if (numbers.numbers) {
+                numArray = numbers.numbers;
+            }
+            if (!Array.isArray(numArray)) return '<span class="text-gray-400">無資料</span>';
             
             let html = '';
-            numbers.forEach(n => {
+            numArray.forEach(n => {
                 html += `<span class="number-ball ball-green">${n.toString().padStart(2, '0')}</span>`;
             });
             return html;
@@ -281,12 +325,10 @@
                 return;
             }
             
-            // 更新獎金
             if (data.jackpot_display) {
                 jackpotEl.textContent = data.jackpot_display;
             }
             
-            // 更新日期和號碼
             if (data.latest_draw) {
                 dateEl.textContent = formatDate(data.latest_draw.draw_date);
                 
@@ -314,16 +356,29 @@
             }
         }
         
+        // 顯示匯入狀態
+        function showImportStatus(success, message) {
+            const statusEl = document.getElementById('importStatus');
+            statusEl.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
+            
+            if (success) {
+                statusEl.classList.add('bg-green-100', 'text-green-800');
+                statusEl.innerHTML = `<span class="font-bold">✓ 匯入成功！</span> ${message}`;
+            } else {
+                statusEl.classList.add('bg-red-100', 'text-red-800');
+                statusEl.innerHTML = `<span class="font-bold">✗ 匯入失敗</span> ${message}`;
+            }
+        }
+        
         // 同步開獎資料
         async function syncLotteryData() {
             const btn = document.getElementById('syncBtn');
             const icon = document.getElementById('syncIcon');
             const text = document.getElementById('syncText');
             
-            // 禁用按鈕
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
-            icon.innerHTML = '<svg class="w-5 h-5 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            icon.innerHTML = '<svg class="w-5 h-5 spin inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
             text.textContent = '同步中...';
             
             try {
@@ -335,13 +390,10 @@
                 
                 if (result.success) {
                     showSyncStatus(true, result.message);
-                    
-                    // 更新上次同步時間
                     document.getElementById('lastSync').textContent = 
                         `上次同步：${new Date(result.updated_at).toLocaleString('zh-TW')}`;
-                    
-                    // 重新載入資料
                     await loadLotteryData();
+                    await loadDbStats();
                 } else {
                     showSyncStatus(false, result.message);
                 }
@@ -349,11 +401,63 @@
                 console.error('同步失敗:', error);
                 showSyncStatus(false, error.message);
             } finally {
-                // 恢復按鈕
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 icon.textContent = '🔄';
                 text.textContent = '立即同步';
+            }
+        }
+        
+        // 匯入歷史資料
+        async function importHistoryData() {
+            const btn = document.getElementById('importBtn');
+            const icon = document.getElementById('importIcon');
+            const text = document.getElementById('importText');
+            const limit = document.getElementById('importLimit').value;
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            icon.innerHTML = '<svg class="w-5 h-5 spin inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            text.textContent = '匯入中...';
+            
+            try {
+                const response = await apiRequest(`/lottery/import-history?limit=${limit}`, { method: 'POST' });
+                
+                if (!response) return;
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showImportStatus(true, result.message);
+                    await loadDbStats();
+                } else {
+                    showImportStatus(false, result.message);
+                }
+            } catch (error) {
+                console.error('匯入失敗:', error);
+                showImportStatus(false, error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                icon.textContent = '📥';
+                text.textContent = '匯入歷史';
+            }
+        }
+        
+        // 載入資料庫統計
+        async function loadDbStats() {
+            try {
+                // 分別取得各彩種的歷史記錄數量
+                for (const type of ['power', 'super', 'daily539']) {
+                    const response = await apiRequest(`/lottery/history/${type}?limit=1`);
+                    if (response) {
+                        const data = await response.json();
+                        document.getElementById(`stat-${type}`).textContent = 
+                            data.total_count || 0;
+                    }
+                }
+            } catch (error) {
+                console.error('載入統計失敗:', error);
             }
         }
         
@@ -371,7 +475,6 @@
                     updateCard('daily539', data.lotteries.daily539);
                 }
                 
-                // 更新時間
                 document.getElementById('lastSync').textContent = 
                     `資料時間：${new Date(data.updated_at).toLocaleString('zh-TW')}`;
                     
@@ -384,6 +487,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadLotteryData();
+            loadDbStats();
         });
     </script>
 </body>
