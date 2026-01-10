@@ -90,7 +90,12 @@ async def line_callback(
     
     # 重導向到儀表板,Token 透過 URL 參數傳遞
     # 前端會接收並存入 localStorage
-    return RedirectResponse(url=f"/?token={jwt_token}")
+    # 如果是新用戶，加上 new=1 參數
+    redirect_url = f"/?token={jwt_token}"
+    if is_new:
+        redirect_url += "&new=1"
+    
+    return RedirectResponse(url=redirect_url)
 
 
 @router.get("/line/url")

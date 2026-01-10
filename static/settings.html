@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <title>設定 - SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --sela-orange: #F26522;
+            --sela-dark: #1a1a2e;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #FF9800;
+            --info: #2196F3;
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            padding: 4px;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* Main */
+        .main {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 12px;
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .profile-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .profile-role.admin {
+            color: var(--sela-orange);
+            font-weight: 600;
+        }
+        
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-body {
+            padding: 16px 20px;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--sela-orange);
+            box-shadow: 0 0 0 3px rgba(242, 101, 34, 0.1);
+        }
+        
+        .form-input:disabled {
+            background: #f5f5f5;
+            color: var(--text-secondary);
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--sela-orange);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #d85a1e;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-danger {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+        
+        /* Menu Items */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .menu-content {
+            flex: 1;
+        }
+        
+        .menu-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .menu-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .menu-arrow {
+            color: var(--text-secondary);
+        }
+        
+        .menu-value {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+        
+        /* Version */
+        .version-info {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show { opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--info); }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/dashboard" class="back-btn">←</a>
+        <h1 class="page-title">⚙️ 設定</h1>
+    </header>
+    
+    <main class="main">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar" id="profile-avatar"></div>
+            <div class="profile-name" id="profile-name">載入中...</div>
+            <div class="profile-role" id="profile-role"></div>
+        </div>
+        
+        <!-- 個人資料設定 -->
+        <div class="section">
+            <div class="section-header">
+                <span>👤</span>
+                <span>個人資料</span>
+            </div>
+            <div class="section-body">
+                <div class="form-group">
+                    <label class="form-label">LINE 名稱</label>
+                    <input type="text" class="form-input" id="display-name" disabled>
+                    <p class="form-hint">此為 LINE 帳號名稱，無法修改</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">暱稱</label>
+                    <input type="text" class="form-input" id="nickname" placeholder="設定您的暱稱" maxlength="50">
+                    <p class="form-hint">在系統中顯示的名稱，留空則使用 LINE 名稱</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email" placeholder="選填">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">電話</label>
+                    <input type="tel" class="form-input" id="phone" placeholder="選填">
+                </div>
+                <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">
+                    💾 儲存變更
+                </button>
+            </div>
+        </div>
+        
+        <!-- 通知設定 (Step 4 預留) -->
+        <div class="section">
+            <div class="section-header">
+                <span>🔔</span>
+                <span>通知設定</span>
+            </div>
+            <div class="menu-item" onclick="showToast('LINE Notify 功能即將推出', 'info')">
+                <span class="menu-icon">📱</span>
+                <div class="menu-content">
+                    <div class="menu-title">LINE Notify</div>
+                    <div class="menu-desc">連結 LINE 接收通知</div>
+                </div>
+                <span class="menu-value">未連結</span>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showToast('即將推出', 'info')">
+                <span class="menu-icon">🎰</span>
+                <div class="menu-content">
+                    <div class="menu-title">開獎提醒</div>
+                    <div class="menu-desc">開獎前自動提醒</div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="showToast('即將推出', 'info')">
+                <span class="menu-icon">🎉</span>
+                <div class="menu-content">
+                    <div class="menu-title">中獎通知</div>
+                    <div class="menu-desc">中獎時立即通知</div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </div>
+        </div>
+        
+        <!-- 其他 -->
+        <div class="section">
+            <div class="section-header">
+                <span>ℹ️</span>
+                <span>其他</span>
+            </div>
+            <a href="/personal" class="menu-item">
+                <span class="menu-icon">🎫</span>
+                <div class="menu-content">
+                    <div class="menu-title">個人彩券</div>
+                    <div class="menu-desc">查看我的彩券記錄</div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </a>
+            <a href="/statistics" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <div class="menu-content">
+                    <div class="menu-title">統計報表</div>
+                    <div class="menu-desc">查看投資報酬</div>
+                </div>
+                <span class="menu-arrow">›</span>
+            </a>
+            <div class="menu-item" onclick="logout()">
+                <span class="menu-icon">🚪</span>
+                <div class="menu-content">
+                    <div class="menu-title" style="color: var(--danger);">登出</div>
+                    <div class="menu-desc">登出此帳號</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Version -->
+        <div class="version-info">
+            SELA 樂透一路發 v2.0.0<br>
+            © 2026 SELA Team
+        </div>
+    </main>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        const API_BASE = '/api/v1';
+        let userData = null;
+        
+        // Auth Check
+        async function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+        
+        // API Helpers
+        async function apiGet(url) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return null;
+                }
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        async function apiPut(url, data) {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${API_BASE}${url}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'API Error');
+            }
+            return res.json();
+        }
+        
+        // Load User Profile
+        async function loadProfile() {
+            try {
+                userData = await apiGet('/users/me');
+                if (!userData) return;
+                
+                // Update UI
+                const avatarEl = document.getElementById('profile-avatar');
+                if (userData.picture_url) {
+                    avatarEl.innerHTML = `<img src="${userData.picture_url}" alt="avatar">`;
+                } else {
+                    avatarEl.textContent = (userData.nickname || userData.display_name).charAt(0);
+                }
+                
+                document.getElementById('profile-name').textContent = 
+                    userData.nickname || userData.display_name;
+                
+                const roleEl = document.getElementById('profile-role');
+                if (userData.role === 'admin') {
+                    roleEl.textContent = '👑 系統管理員';
+                    roleEl.classList.add('admin');
+                } else {
+                    roleEl.textContent = '一般會員';
+                }
+                
+                // Fill form
+                document.getElementById('display-name').value = userData.display_name;
+                document.getElementById('nickname').value = userData.nickname || '';
+                document.getElementById('email').value = userData.email || '';
+                document.getElementById('phone').value = userData.phone || '';
+                
+            } catch (e) {
+                console.error('Failed to load profile:', e);
+                showToast('載入失敗', 'error');
+            }
+        }
+        
+        // Save Profile
+        async function saveProfile() {
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerHTML = '儲存中...';
+            
+            try {
+                const data = {
+                    nickname: document.getElementById('nickname').value.trim() || null,
+                    email: document.getElementById('email').value.trim() || null,
+                    phone: document.getElementById('phone').value.trim() || null
+                };
+                
+                userData = await apiPut('/users/me', data);
+                
+                // Update display
+                document.getElementById('profile-name').textContent = 
+                    userData.nickname || userData.display_name;
+                
+                showToast('設定已儲存', 'success');
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '💾 儲存變更';
+            }
+        }
+        
+        // Logout
+        function logout() {
+            if (confirm('確定要登出嗎？')) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/';
+            }
+        }
+        
+        // Toast
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Init
+        async function init() {
+            if (!await checkAuth()) return;
+            loadProfile();
+        }
+        
+        init();
+    </script>
+</body>
+</html>

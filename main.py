@@ -106,12 +106,12 @@ async def personal():
     return FileResponse(STATIC_DIR / "personal.html")
 
 
-# ==================== Step 4 待開發頁面 ====================
+# ==================== Step 4 功能頁面 ====================
 
 @main_app.get("/settings")
 async def user_settings():
-    """設定(Step 4)"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    """設定"""
+    return FileResponse(STATIC_DIR / "settings.html")
 
 
 # ==================== 靜態檔案 ====================

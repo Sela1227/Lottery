@@ -17,131 +17,78 @@
         :root {
             --sela-orange: #F26522;
             --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.15);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
         }
         
         body {
             font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(145deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            background: linear-gradient(180deg, #FFF8F4 0%, #FFE8DB 100%);
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-primary);
-            padding: 20px;
+            flex-direction: column;
         }
         
         .container {
-            text-align: center;
-            padding: 40px 30px;
-            background: var(--bg-card);
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 24px;
             max-width: 400px;
+            margin: 0 auto;
             width: 100%;
-            box-shadow: 
-                0 20px 60px rgba(242, 101, 34, 0.1),
-                0 8px 24px rgba(0,0,0,0.06);
-        }
-        
-        .logo-wrapper {
-            margin-bottom: 20px;
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(242, 101, 34, 0.25);
-            animation: float 3s ease-in-out infinite;
+            width: 120px;
+            height: 120px;
+            border-radius: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 40px rgba(242, 101, 34, 0.25);
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        
-        h1 {
-            font-size: 36px;
-            margin-bottom: 6px;
-            color: var(--sela-orange);
+        .title {
+            font-size: 32px;
             font-weight: 900;
-            letter-spacing: 4px;
+            color: var(--sela-orange);
+            margin-bottom: 8px;
+            text-align: center;
         }
         
         .subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 15px;
-        }
-        
-        .subtitle span {
-            color: var(--sela-orange);
-            font-weight: 500;
-        }
-        
-        .features {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        
-        .feature {
+            font-size: 16px;
+            color: #8B7355;
+            margin-bottom: 48px;
             text-align: center;
-            flex: 1;
-            max-width: 80px;
         }
         
-        .feature-icon {
-            width: 52px;
-            height: 52px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px;
-            font-size: 24px;
-        }
-        
-        .feature-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
+        .login-content {
+            width: 100%;
+            text-align: center;
         }
         
         .login-btn {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 16px 32px;
+            gap: 12px;
+            width: 100%;
+            padding: 16px 24px;
             background: #06C755;
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 14px;
             font-size: 17px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
+            font-weight: 700;
             cursor: pointer;
-            width: 100%;
-            max-width: 280px;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 8px 24px rgba(6, 199, 85, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(6, 199, 85, 0.35);
         }
         
         .login-btn:hover {
-            background: #05b54c;
+            background: #05B34C;
             transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(6, 199, 85, 0.4);
         }
@@ -155,17 +102,18 @@
             height: 24px;
         }
         
-        .footer {
-            margin-top: 32px;
-            color: var(--text-secondary);
-            font-size: 11px;
+        .error-msg {
+            display: none;
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
         }
         
-        .footer .gecko {
-            color: var(--sela-orange);
-        }
-        
-        /* Loading state */
         .loading {
             display: none;
             flex-direction: column;
@@ -176,7 +124,7 @@
         .spinner {
             width: 48px;
             height: 48px;
-            border: 3px solid var(--bg-secondary);
+            border: 4px solid rgba(242, 101, 34, 0.2);
             border-top-color: var(--sela-orange);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -187,132 +135,61 @@
         }
         
         .loading-text {
-            color: var(--text-secondary);
+            color: #8B7355;
             font-size: 14px;
         }
         
-        /* Error message */
-        .error-msg {
-            background: #FEF2F2;
-            border: 1px solid #FECACA;
-            color: #DC2626;
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
+        .footer {
+            padding: 24px;
+            text-align: center;
+            color: #8B7355;
+            font-size: 13px;
         }
         
-        /* 手機優化 */
-        @media (max-width: 480px) {
-            body {
-                padding: 16px;
-                align-items: flex-start;
-                padding-top: 8vh;
-            }
-            
-            .container {
-                padding: 32px 24px;
-            }
-            
-            .logo {
-                width: 88px;
-                height: 88px;
-            }
-            
-            h1 {
-                font-size: 32px;
-            }
-            
-            .subtitle {
-                font-size: 14px;
-                margin-bottom: 28px;
-            }
-            
-            .features {
-                gap: 16px;
-                margin-bottom: 28px;
-            }
-            
-            .feature-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 22px;
-            }
-            
-            .feature-text {
-                font-size: 11px;
-            }
-            
-            .login-btn {
-                max-width: 100%;
-            }
+        .gecko {
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
         }
         
-        /* 小螢幕手機 */
-        @media (max-width: 360px) {
-            .container {
-                padding: 28px 20px;
-            }
-            
-            .logo {
-                width: 76px;
-                height: 76px;
-            }
-            
-            h1 {
-                font-size: 28px;
-                letter-spacing: 2px;
-            }
-            
-            .features {
-                gap: 12px;
-            }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
         
-        /* 大螢幕 */
-        @media (min-width: 768px) {
-            .container {
-                padding: 50px 40px;
-            }
-            
-            .logo {
-                width: 120px;
-                height: 120px;
-            }
-            
-            h1 {
-                font-size: 42px;
-            }
+        .features {
+            display: flex;
+            gap: 24px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .feature {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .feature-text {
+            font-size: 12px;
+            color: #8B7355;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="error-msg" class="error-msg"></div>
+        <img src="/static/logo.jpg" alt="SELA" class="logo">
+        <h1 class="title">樂透一路發</h1>
+        <p class="subtitle">團購彩券 · 一起發財</p>
         
-        <div id="login-content">
-            <div class="logo-wrapper">
-                <img src="/static/logo.jpg" alt="SELA" class="logo">
-            </div>
-            <h1>SELA</h1>
-            <p class="subtitle"><span>樂透一路發</span> - 團購彩券系統</p>
-            
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">👥</div>
-                    <div class="feature-text">團購合買</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">📊</div>
-                    <div class="feature-text">透明分配</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🎯</div>
-                    <div class="feature-text">自動對獎</div>
-                </div>
-            </div>
-            
+        <div class="error-msg" id="error-msg"></div>
+        
+        <div class="login-content" id="login-content">
             <a href="/api/v1/auth/line" class="login-btn" id="login-btn">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
@@ -326,6 +203,21 @@
             <div class="loading-text">正在跳轉到 LINE 登入...</div>
         </div>
         
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎰</div>
+                <div class="feature-text">團購彩券</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <div class="feature-text">自動分帳</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">透明記錄</div>
+            </div>
+        </div>
+        
         <div class="footer">
             <p>© 2024 <span class="gecko">🦎</span> SELA 樂透一路發</p>
         </div>
@@ -334,8 +226,10 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('token');
+        const isNew = urlParams.get('new');
         const error = urlParams.get('error');
         
+        // 顯示錯誤訊息
         if (error) {
             const errorMsg = document.getElementById('error-msg');
             errorMsg.textContent = '登入失敗:' + decodeURIComponent(error);
@@ -343,16 +237,27 @@
             window.history.replaceState({}, '', '/');
         }
         
+        // 處理登入成功
         if (accessToken) {
             localStorage.setItem('access_token', accessToken);
+            
+            // 如果是新用戶，標記到 localStorage
+            if (isNew === '1') {
+                localStorage.setItem('is_new_user', '1');
+            }
+            
+            // 清除 URL 參數並跳轉
+            window.history.replaceState({}, '', '/');
             window.location.href = '/dashboard';
         }
         
+        // 如果已有 token，直接跳轉
         const token = localStorage.getItem('access_token');
         if (token && !error) {
             window.location.href = '/dashboard';
         }
         
+        // 點擊登入按鈕時顯示 loading
         document.getElementById('login-btn').addEventListener('click', function(e) {
             document.getElementById('login-content').style.display = 'none';
             document.getElementById('loading').style.display = 'flex';
