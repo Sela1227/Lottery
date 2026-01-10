@@ -112,7 +112,7 @@ DEFAULT_ACHIEVEMENTS = [
     {
         "code": "period_50",
         "name": "堅持不懈",
-        "description": "參與 50 期團購",
+        "description": "參與 50 期集資",
         "icon": "💪",
         "category": AchievementCategory.PARTICIPATION,
         "threshold": 50,

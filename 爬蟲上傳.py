@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 # ==================== 設定 ====================
 
-API_BASE = "https://lottery-develop.up.railway.app"
+API_BASE = "https://lottery-production-1edd.up.railway.app"
 ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzY4NjQwNzM1LCJpYXQiOjE3NjgwMzU5MzUsImRpc3BsYXlfbmFtZSI6IlNlbGEiLCJyb2xlIjoiYWRtaW4ifQ.c9hZDfd_WwqtpHU6d6cyXwlGgnpG9Su3FtAqNi9tSTc"
 LIMIT = 100
 
