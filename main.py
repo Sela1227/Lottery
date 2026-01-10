@@ -17,7 +17,7 @@ from app.main import app as api_app
 # 建立主應用
 main_app = FastAPI(
     title=settings.app_name,
-    description="團購彩券系統",
+    description="集資彩券系統",
     version="2.0.0",
     docs_url=None,
     redoc_url=None,
@@ -72,6 +72,12 @@ async def group_detail(group_id: int):
     return FileResponse(STATIC_DIR / "group-detail.html")
 
 
+@main_app.get("/groups")
+async def groups_list():
+    """集資列表"""
+    return FileResponse(STATIC_DIR / "series.html")
+
+
 # ==================== 管理員頁面 ====================
 
 @main_app.get("/admin")
@@ -118,6 +124,18 @@ async def user_settings():
 async def lottery_page():
     """開獎專區"""
     return FileResponse(STATIC_DIR / "lottery.html")
+
+
+@main_app.get("/stats")
+async def stats_page():
+    """號碼統計"""
+    return FileResponse(STATIC_DIR / "stats.html")
+
+
+@main_app.get("/profile")
+async def profile_page():
+    """個人頁面"""
+    return FileResponse(STATIC_DIR / "coming-soon.html")
 
 
 # ==================== 靜態檔案 ====================

@@ -185,7 +185,7 @@
     <div class="container">
         <img src="/static/logo.jpg" alt="SELA" class="logo">
         <h1 class="title">樂透一路發</h1>
-        <p class="subtitle">團購彩券 · 一起發財</p>
+        <p class="subtitle">集資彩券 · 一起發財</p>
         
         <div class="error-msg" id="error-msg"></div>
         
@@ -206,7 +206,7 @@
         <div class="features">
             <div class="feature">
                 <div class="feature-icon">🎰</div>
-                <div class="feature-text">團購彩券</div>
+                <div class="feature-text">集資彩券</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">💰</div>
@@ -265,3 +265,69 @@
     </script>
 </body>
 </html>
+```
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <title>個人彩券 - SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --sela-orange: #F26522;
+            --sela-dark: #1a1a2e;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #FF9800;
+            --info: #2196F3;
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            padding: 4px;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* Main */
+        .main {
+            padding: 16px;

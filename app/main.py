@@ -14,16 +14,38 @@ from app.api.v1.series import router as series_router
 from app.api.v1.groups import router as groups_router
 from app.api.v1.admin import router as admin_router
 from app.api.v1.lottery import router as lottery_router
-from app.api.v1.statistics import router as statistics_router
-from app.api.v1.wallet import router as wallet_router
-from app.api.v1.personal import router as personal_router
-from app.api.v1.achievements import router as achievements_router
+from app.api.v1.stats import router as stats_router
+
+# 可選的 router（檔案可能不存在）
+try:
+    from app.api.v1.statistics import router as statistics_router
+    HAS_STATISTICS = True
+except ImportError:
+    HAS_STATISTICS = False
+
+try:
+    from app.api.v1.wallet import router as wallet_router
+    HAS_WALLET = True
+except ImportError:
+    HAS_WALLET = False
+
+try:
+    from app.api.v1.personal import router as personal_router
+    HAS_PERSONAL = True
+except ImportError:
+    HAS_PERSONAL = False
+
+try:
+    from app.api.v1.achievements import router as achievements_router
+    HAS_ACHIEVEMENTS = True
+except ImportError:
+    HAS_ACHIEVEMENTS = False
 
 
 # 建立 FastAPI 應用
 app = FastAPI(
     title=settings.app_name,
-    description="團購彩券系統 API",
+    description="集資彩券系統 API",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -54,7 +76,14 @@ app.include_router(series_router, prefix="/v1")
 app.include_router(groups_router, prefix="/v1")
 app.include_router(admin_router, prefix="/v1")
 app.include_router(lottery_router, prefix="/v1")
-app.include_router(statistics_router, prefix="/v1")  # Step 3: 統計報表
-app.include_router(wallet_router, prefix="/v1")      # Step 3: 錢包功能
-app.include_router(personal_router, prefix="/v1")    # Step 3: 個人彩券
-app.include_router(achievements_router, prefix="/v1") # Step 3: 成就徽章
+app.include_router(stats_router, prefix="/v1")  # Step 4-3: 號碼統計
+
+# 可選路由
+if HAS_STATISTICS:
+    app.include_router(statistics_router, prefix="/v1")
+if HAS_WALLET:
+    app.include_router(wallet_router, prefix="/v1")
+if HAS_PERSONAL:
+    app.include_router(personal_router, prefix="/v1")
+if HAS_ACHIEVEMENTS:
+    app.include_router(achievements_router, prefix="/v1")
