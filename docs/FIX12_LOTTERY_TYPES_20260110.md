@@ -1,29 +1,38 @@
-# FIX12 彩種API與集資團更名 - 2026-01-10
+# FIX12 彩種初始化與集資團更名 - 2026-01-10
+
+## 問題描述
+
+建立集資團時彩種選項為空，無法選擇任何彩種。
+
+## 問題原因
+
+1. **Dockerfile 缺少 seed_data.py**：啟動時沒有執行彩種初始化腳本，導致 `lottery_types` 資料表為空
+2. **lottery_types router 未註冊**：`app/main.py` 沒有 include `lottery_types_router`
+3. **名稱更正**：「系列團」統一更名為「集資團」
 
 ## 修復內容
 
-### 1. 修復彩種 API 未註冊問題
+### 1. Dockerfile - 添加 seed_data.py 執行
 
-**檔案**: `app/main.py`
+**修改前**:
+```
+CMD ["sh", "-c", "python scripts/migrate.py && python scripts/set_admin.py && python main.py"]
+```
 
-**問題**: 建立集資團時彩種選項為空，無法選擇彩種
+**修改後**:
+```
+CMD ["sh", "-c", "python scripts/migrate.py && python scripts/seed_data.py && python scripts/set_admin.py && python main.py"]
+```
 
-**原因**: `lottery_types` router 沒有在 `app/main.py` 中註冊，導致前端呼叫 `/api/v1/lottery-types` 時返回 404
+### 2. app/main.py - 註冊 lottery_types router
 
-**修復方式**:
+新增：
 ```python
-# 新增 import
 from app.api.v1.lottery_types import router as lottery_types_router
-
-# 新增路由註冊
 application.include_router(lottery_types_router, prefix="/v1")
 ```
 
-### 2. 更名「系列團」為「集資團」
-
-**檔案**: `static/series.html`
-
-**修改項目**:
+### 3. static/series.html - 更名為集資團
 
 | 位置 | 原本 | 修改後 |
 |------|------|--------|
@@ -40,7 +49,8 @@ application.include_router(lottery_types_router, prefix="/v1")
 ## 更新檔案清單
 
 ```
-app/main.py         - 添加 lottery_types_router
+Dockerfile          - 添加 seed_data.py 執行
+app/main.py         - 註冊 lottery_types router
 static/series.html  - 系列團更名為集資團
 ```
 
@@ -48,11 +58,16 @@ static/series.html  - 系列團更名為集資團
 
 1. 解壓縮 zip 檔案
 2. 將檔案按照目錄結構覆蓋原檔案
-3. 重新部署應用程式
+3. 重新部署應用程式（Railway 會自動重建 Docker image）
 
 ## 測試驗證
 
-1. 進入「我的集資團」頁面
-2. 點擊「建立集資團」按鈕
-3. 確認彩種選項（威力彩、大樂透、今彩539）正確顯示
-4. 確認所有文字已從「系列團」更改為「集資團」
+1. 部署後檢查啟動 log，應該看到：
+   - `🔑 初始化彩種資料...`
+   - `✅ 威力彩 已建立` (或 `⭕ 威力彩 已存在,跳過`)
+   - `✅ 大樂透 已建立`
+   - `✅ 今彩539 已建立`
+
+2. 進入「我的集資團」頁面
+3. 點擊「建立集資團」按鈕
+4. 確認彩種選項顯示：威力彩、大樂透、今彩539
