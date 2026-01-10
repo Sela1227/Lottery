@@ -14,6 +14,8 @@ from app.api.v1.series import router as series_router
 from app.api.v1.groups import router as groups_router
 from app.api.v1.admin import router as admin_router
 from app.api.v1.lottery import router as lottery_router
+from app.api.v1.statistics import router as statistics_router
+from app.api.v1.wallet import router as wallet_router
 
 
 # 建立 FastAPI 應用
@@ -50,3 +52,5 @@ app.include_router(series_router, prefix="/v1")
 app.include_router(groups_router, prefix="/v1")
 app.include_router(admin_router, prefix="/v1")
 app.include_router(lottery_router, prefix="/v1")
+app.include_router(statistics_router, prefix="/v1")  # Step 3: 統計報表
+app.include_router(wallet_router, prefix="/v1")      # Step 3: 錢包功能

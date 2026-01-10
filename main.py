@@ -86,19 +86,21 @@ async def admin_lottery():
     return FileResponse(STATIC_DIR / "admin_lottery.html")
 
 
-# ==================== 未來頁面(Step 3+) ====================
+# ==================== Step 3 功能頁面 ====================
 
 @main_app.get("/statistics")
 async def statistics():
-    """統計報表(Step 3)"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    """統計報表"""
+    return FileResponse(STATIC_DIR / "statistics.html")
 
 
 @main_app.get("/wallet")
 async def wallet():
-    """錢包(Step 3)"""
-    return FileResponse(STATIC_DIR / "coming-soon.html")
+    """錢包"""
+    return FileResponse(STATIC_DIR / "wallet.html")
 
+
+# ==================== 待開發頁面 (Step 3+4) ====================
 
 @main_app.get("/personal")
 async def personal():
