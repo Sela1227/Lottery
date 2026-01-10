@@ -170,12 +170,6 @@
         }
         .jackpot-label { opacity: 0.85; }
         .jackpot-amount { font-weight: 700; font-size: 14px; margin-left: auto; }
-        .lottery-updated {
-            font-size: 10px;
-            opacity: 0.6;
-            text-align: right;
-            margin-top: 6px;
-        }
         
         /* ===== 歡迎區 ===== */
         .welcome { margin-bottom: 24px; }
@@ -245,6 +239,13 @@
         }
         .action-btn.admin:hover { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4); }
         .action-btn.admin .action-desc { color: rgba(255,255,255,0.85); }
+        
+        .action-btn.lottery {
+            background: linear-gradient(135deg, #DC2626, #EF4444);
+            border: none; color: #fff; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+        }
+        .action-btn.lottery:hover { box-shadow: 0 12px 32px rgba(220, 38, 38, 0.4); }
+        .action-btn.lottery .action-desc { color: rgba(255,255,255,0.85); }
         
         .action-icon { font-size: 32px; margin-bottom: 10px; }
         .action-title { font-weight: 600; margin-bottom: 4px; font-size: 15px; }
@@ -416,6 +417,11 @@
                 <div class="action-icon">📊</div>
                 <div class="action-title">統計報表</div>
                 <div class="action-desc">查看投資報酬</div>
+            </a>
+            <a href="/lottery" class="action-btn lottery">
+                <div class="action-icon">🎰</div>
+                <div class="action-title">對獎專區</div>
+                <div class="action-desc">開獎資訊與歷史</div>
             </a>
             <a href="/settings" class="action-btn settings">
                 <div class="action-icon">⚙️</div>
@@ -640,14 +646,10 @@
             const numbersEl = cardEl.querySelector('.lottery-numbers');
             numbersEl.innerHTML = renderLotteryNumbers(draw.numbers, type);
             
-            // 移除舊的 jackpot 和 updated
-            const oldJackpot = cardEl.querySelector('.lottery-jackpot');
-            if (oldJackpot) oldJackpot.remove();
-            const oldUpdated = cardEl.querySelector('.lottery-updated');
-            if (oldUpdated) oldUpdated.remove();
-            
-            // 顯示頭獎
             if (data.jackpot_display) {
+                const oldJackpot = cardEl.querySelector('.lottery-jackpot');
+                if (oldJackpot) oldJackpot.remove();
+                
                 const jackpotHtml = `
                     <div class="lottery-jackpot">
                         <span class="jackpot-label">💰 頭獎</span>
@@ -655,12 +657,6 @@
                     </div>
                 `;
                 cardEl.insertAdjacentHTML('beforeend', jackpotHtml);
-            }
-            
-            // 顯示更新時間
-            if (data.updated_at) {
-                const updatedHtml = `<div class="lottery-updated">更新: ${data.updated_at}</div>`;
-                cardEl.insertAdjacentHTML('beforeend', updatedHtml);
             }
         }
         
