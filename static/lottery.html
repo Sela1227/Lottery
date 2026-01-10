@@ -286,14 +286,6 @@
             margin: 0 2px;
         }
         
-        .history-jackpot {
-            min-width: 80px;
-            text-align: right;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--sela-orange);
-        }
-        
         .load-more {
             width: 100%;
             padding: 12px;
@@ -365,9 +357,6 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
-            }
-            .history-jackpot {
-                align-self: flex-end;
             }
         }
         
@@ -684,7 +673,6 @@
                         <div class="history-numbers">
                             ${renderHistoryNumbers(item.numbers, currentType)}
                         </div>
-                        <div class="history-jackpot">${item.jackpot_display || '-'}</div>
                     </div>
                 `;
                 list.insertAdjacentHTML('beforeend', itemHtml);

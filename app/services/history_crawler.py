@@ -278,7 +278,7 @@ class HistoryCrawler:
                             "numbers": {
                                 "numbers": sorted(numbers[:5])
                             },
-                            "jackpot": 8000000  # 今彩539 固定頭獎 800萬
+                            "jackpot": None  # 歷史資料沒有當期獎金
                         })
                         count += 1
                         logger.info(f"今彩539 {draw_date}: {numbers[:5]}")
