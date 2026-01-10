@@ -170,6 +170,12 @@
         }
         .jackpot-label { opacity: 0.85; }
         .jackpot-amount { font-weight: 700; font-size: 14px; margin-left: auto; }
+        .lottery-updated {
+            font-size: 10px;
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 6px;
+        }
         
         /* ===== 歡迎區 ===== */
         .welcome { margin-bottom: 24px; }
@@ -634,10 +640,14 @@
             const numbersEl = cardEl.querySelector('.lottery-numbers');
             numbersEl.innerHTML = renderLotteryNumbers(draw.numbers, type);
             
+            // 移除舊的 jackpot 和 updated
+            const oldJackpot = cardEl.querySelector('.lottery-jackpot');
+            if (oldJackpot) oldJackpot.remove();
+            const oldUpdated = cardEl.querySelector('.lottery-updated');
+            if (oldUpdated) oldUpdated.remove();
+            
+            // 顯示頭獎
             if (data.jackpot_display) {
-                const oldJackpot = cardEl.querySelector('.lottery-jackpot');
-                if (oldJackpot) oldJackpot.remove();
-                
                 const jackpotHtml = `
                     <div class="lottery-jackpot">
                         <span class="jackpot-label">💰 頭獎</span>
@@ -645,6 +655,12 @@
                     </div>
                 `;
                 cardEl.insertAdjacentHTML('beforeend', jackpotHtml);
+            }
+            
+            // 顯示更新時間
+            if (data.updated_at) {
+                const updatedHtml = `<div class="lottery-updated">更新: ${data.updated_at}</div>`;
+                cardEl.insertAdjacentHTML('beforeend', updatedHtml);
             }
         }
         

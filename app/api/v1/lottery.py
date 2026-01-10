@@ -2,7 +2,7 @@
 SELA 樂透一路發 - 彩券開獎資訊 API
 """
 from typing import Optional, List
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -16,6 +16,9 @@ from app.models.lottery_draw import LotteryDraw
 
 
 router = APIRouter(prefix="/lottery", tags=["Lottery"])
+
+# 台灣時區 (GMT+8)
+TW_TIMEZONE = timezone(timedelta(hours=8))
 
 
 # ==================== Schema ====================
@@ -207,11 +210,20 @@ async def get_all_latest(
         # 先從資料庫讀
         db_record = get_latest_from_db(db, lottery_type)
         if db_record:
+            # 格式化更新時間 (轉換為台灣時間 GMT+8)
+            updated_at_str = None
+            if db_record.updated_at:
+                # 假設 DB 存的是 UTC，轉換成台灣時間
+                utc_time = db_record.updated_at.replace(tzinfo=timezone.utc)
+                tw_time = utc_time.astimezone(TW_TIMEZONE)
+                updated_at_str = tw_time.strftime("%m/%d %H:%M")
+            
             result[lottery_type] = {
                 "lottery_type": lottery_type,
                 "lottery_name": db_record.lottery_name,
                 "jackpot": db_record.jackpot,
                 "jackpot_display": format_jackpot(db_record.jackpot),
+                "updated_at": updated_at_str,
                 "latest_draw": {
                     "draw_date": db_record.draw_date.isoformat(),
                     "numbers": db_record.numbers
@@ -222,11 +234,13 @@ async def get_all_latest(
             try:
                 data = lottery_crawler.get_latest(lottery_type)
                 if data:
+                    now_tw = datetime.now(TW_TIMEZONE)
                     result[lottery_type] = {
                         "lottery_type": data["lottery_type"],
                         "lottery_name": data["lottery_name"],
                         "jackpot": data.get("jackpot"),
                         "jackpot_display": format_jackpot(data.get("jackpot")),
+                        "updated_at": now_tw.strftime("%m/%d %H:%M"),
                         "latest_draw": data.get("latest_draw")
                     }
             except:
