@@ -281,9 +281,6 @@ async def delete_series(
     db: Session = Depends(get_db)
 ):
     """刪除集資（僅限管理員且成員數為1時）"""
-    from app.models.member_request import MemberRequest
-    from app.models.ledger import UserLedger
-    
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     
     if not series:
@@ -308,12 +305,19 @@ async def delete_series(
     if active_members > 1:
         raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
     
-    # 刪除相關資料（按外鍵順序）
-    db.query(UserLedger).filter(UserLedger.series_id == series_id).delete()
-    db.query(MemberRequest).filter(MemberRequest.series_id == series_id).delete()
-    db.query(SeriesInvitation).filter(SeriesInvitation.series_id == series_id).delete()
-    db.query(GroupMember).filter(GroupMember.series_id == series_id).delete()
-    db.query(GroupSeries).filter(GroupSeries.id == series_id).delete()
+    # 使用原生 SQL 刪除所有相關資料（按外鍵依賴順序）
+    from sqlalchemy import text
+    
+    db.execute(text("DELETE FROM event_logs WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM user_ledger WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM period_contributions WHERE period_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
+    db.execute(text("DELETE FROM period_snapshots WHERE period_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
+    db.execute(text("DELETE FROM tickets WHERE group_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
+    db.execute(text("DELETE FROM groups WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM member_requests WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM series_invitations WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM group_members WHERE series_id = :sid"), {"sid": series_id})
+    db.execute(text("DELETE FROM group_series WHERE id = :sid"), {"sid": series_id})
     
     db.commit()
     
