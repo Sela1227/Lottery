@@ -740,10 +740,20 @@
                 <button class="modal-close" onclick="closeModal('reduce-modal')">✕</button>
             </div>
             <div class="modal-body">
+                <div class="info-row" style="background: var(--bg-secondary); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>目前份額</span>
+                        <span style="font-weight: 600; color: var(--sela-orange);" id="reduce-current-share">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>最多可減</span>
+                        <span style="font-weight: 600; color: var(--success);" id="reduce-max-amount">$0</span>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="form-label">減碼金額(元)</label>
                     <input type="number" class="form-input" id="reduce-amount" min="50" step="50" placeholder="輸入要減少的金額">
-                    <p class="form-hint">減碼後份額不可為 0，如需完全退出請使用退出功能</p>
+                    <p class="form-hint">減碼後至少需保留 50 元，如需完全退出請使用退出功能</p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">原因(選填)</label>
@@ -1215,10 +1225,31 @@
         }
         
         function showReduceModal() {
-            if (myPendingRequest) {
+            // 管理員減碼直接執行，不需檢查 pending request
+            const isAdmin = currentSeries?.my_role === 'admin';
+            if (!isAdmin && myPendingRequest) {
                 showToast('您已有待審核的申請', 'error');
                 return;
             }
+            const myShare = currentSeries?.my_pool_share || 0;
+            const maxReduce = Math.max(0, myShare - 50);  // 至少保留 50 元
+            
+            // 動態調整標題和按鈕（管理員 vs 成員）
+            const modalTitle = document.querySelector('#reduce-modal .modal-title');
+            const submitBtn = document.querySelector('#reduce-modal .btn-primary');
+            if (isAdmin) {
+                modalTitle.textContent = '📉 減碼';
+                submitBtn.textContent = '確認減碼';
+            } else {
+                modalTitle.textContent = '📉 申請減碼';
+                submitBtn.textContent = '送出申請';
+            }
+            
+            document.getElementById('reduce-current-share').textContent = `$${Number(myShare).toLocaleString()}`;
+            document.getElementById('reduce-max-amount').textContent = `$${Number(maxReduce).toLocaleString()}`;
+            document.getElementById('reduce-amount').max = maxReduce;
+            document.getElementById('reduce-amount').placeholder = `最多 ${maxReduce} 元`;
+            
             document.getElementById('reduce-modal').classList.add('active');
         }
         

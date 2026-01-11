@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.models import GroupMember, MemberStatus, SeriesStatus
+from app.models.series import GroupSeries, SeriesInvitation
 from app.schemas.series import (
     SeriesCreate, SeriesUpdate, SeriesResponse, SeriesListResponse,
     InvitationCreate, InvitationResponse, JoinByInvitation,
@@ -280,6 +281,8 @@ async def delete_series(
     db: Session = Depends(get_db)
 ):
     """刪除集資（僅限管理員且成員數為1時）"""
+    from app.models.member_request import MemberRequest
+    
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     
     if not series:
@@ -305,12 +308,8 @@ async def delete_series(
         raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
     
     # 刪除相關資料
-    from app.models.member_request import MemberRequest
     db.query(MemberRequest).filter(MemberRequest.series_id == series_id).delete()
-    
-    from app.models.series import SeriesInvitation
     db.query(SeriesInvitation).filter(SeriesInvitation.series_id == series_id).delete()
-    
     db.query(GroupMember).filter(GroupMember.series_id == series_id).delete()
     db.query(GroupSeries).filter(GroupSeries.id == series_id).delete()
     
