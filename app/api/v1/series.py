@@ -282,6 +282,7 @@ async def delete_series(
 ):
     """刪除集資（僅限管理員且成員數為1時）"""
     from app.models.member_request import MemberRequest
+    from app.models.ledger import UserLedger
     
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     
@@ -307,7 +308,8 @@ async def delete_series(
     if active_members > 1:
         raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
     
-    # 刪除相關資料
+    # 刪除相關資料（按外鍵順序）
+    db.query(UserLedger).filter(UserLedger.series_id == series_id).delete()
     db.query(MemberRequest).filter(MemberRequest.series_id == series_id).delete()
     db.query(SeriesInvitation).filter(SeriesInvitation.series_id == series_id).delete()
     db.query(GroupMember).filter(GroupMember.series_id == series_id).delete()
