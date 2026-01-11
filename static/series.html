@@ -245,9 +245,8 @@
     </header>
     
     <main class="main">
-        <div class="action-bar">
-            <button class="btn btn-primary" onclick="showCreateModal()">➕ 建立集資</button>
-            <button class="btn btn-secondary" onclick="showJoinModal()">🎫 使用邀請碼加入</button>
+        <div class="action-bar" id="action-bar">
+            <!-- 按鈕由 JS 動態生成 -->
         </div>
         
         <div class="series-list" id="series-list">
@@ -518,7 +517,19 @@
         
         async function init() {
             const user = await checkAuth();
-            if (user) { await loadLotteryTypes(); await loadSeriesList(); }
+            if (user) {
+                // 動態生成操作按鈕（建立集資僅限系統管理員）
+                const actionBar = document.getElementById('action-bar');
+                let buttons = '';
+                if (user.is_admin) {
+                    buttons += '<button class="btn btn-primary" onclick="showCreateModal()">➕ 建立集資</button>';
+                }
+                buttons += '<button class="btn btn-secondary" onclick="showJoinModal()">🎫 使用邀請碼加入</button>';
+                actionBar.innerHTML = buttons;
+                
+                await loadLotteryTypes();
+                await loadSeriesList();
+            }
         }
         
         init();
