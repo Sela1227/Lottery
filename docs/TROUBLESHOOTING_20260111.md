@@ -123,3 +123,32 @@ fixed_content = ftfy.fix_text(broken_content)
 ---
 
 *SELA 樂透一路發 © 2026*
+
+---
+
+## 問題 7：member_requests 表不存在
+
+### 症狀
+```
+relation "member_requests" does not exist
+```
+
+### 原因
+資料庫重建後，Dockerfile 的 CMD 只執行 `migrate.py`，沒有執行 `migrate_phase1.py`。
+
+### 解決方案
+更新 Dockerfile，在 CMD 中加入 Phase 1 遷移：
+```dockerfile
+CMD ["sh", "-c", "python scripts/migrate.py && python scripts/migrate_phase1.py && python scripts/seed_data.py && python scripts/set_admin.py && python main.py"]
+```
+
+### 預防措施
+新增功能需要資料庫變更時，確保：
+1. 有對應的 migrate 腳本（如 `scripts/migrate_phase1.py`）
+2. Dockerfile CMD 有執行該腳本
+3. 或將變更整合到主要的 `migrate.py`
+
+### ⚠️ 重要原則
+**避免手動執行 SQL** - Railway 介面操作不便，所有資料庫變更都應透過：
+- Python migrate 腳本自動執行
+- Dockerfile CMD 串接執行

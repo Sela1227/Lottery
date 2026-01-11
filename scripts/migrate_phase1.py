@@ -28,7 +28,7 @@ def migrate():
         exists = result.scalar()
         
         if exists:
-            print("✅ member_requests 表已存在，跳過建立")
+            print("✅ member_requests 表已存在,跳過建立")
         else:
             print("📝 建立 member_requests 表...")
             
@@ -65,7 +65,7 @@ def migrate():
             conn.commit()
             print("✅ member_requests 表建立完成")
         
-        print("🎉 Phase 1 遷移完成！")
+        print("🎉 Phase 1 遷移完成!")
 
 
 if __name__ == "__main__":
