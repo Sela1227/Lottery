@@ -277,6 +277,25 @@
                     <p class="form-hint" id="pool-hint">請先選擇彩種</p>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">運作模式</label>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="withdrawal_policy" value="flexible" checked>
+                            <div class="lottery-info">
+                                <span class="lottery-name">🔄 彈性模式</span>
+                                <span class="lottery-price">允許成員申請減碼/退出</span>
+                            </div>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="withdrawal_policy" value="no_withdraw">
+                            <div class="lottery-info">
+                                <span class="lottery-name">🔒 死戰到底</span>
+                                <span class="lottery-price">只進不出，中獎才結束</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="form-label">備註(選填)</label>
                     <textarea class="form-input" id="series-description" rows="3" placeholder="團規說明..."></textarea>
                 </div>
@@ -384,7 +403,7 @@
             poolInput.value = price * 5;
             const lt = lotteryTypes.find(t => t.code === code);
             const ltName = lt ? lt.name : code;
-            hintEl.textContent = `${ltName}每注 ${price} 元，建議 ${price * 5}~${price * 20} 元`;
+            hintEl.textContent = `${ltName}每注 ${price} 元,建議 ${price * 5}~${price * 20} 元`;
         }
         
         async function loadSeriesList() {
@@ -444,12 +463,14 @@
             const initialPool = parseFloat(document.getElementById('initial-pool').value);
             const description = document.getElementById('series-description').value.trim();
             const selectedType = document.querySelector('input[name="lottery_type"]:checked');
+            const selectedPolicy = document.querySelector('input[name="withdrawal_policy"]:checked');
             
             if (!name) { showToast('請輸入集資名稱', 'error'); return; }
             if (!selectedType) { showToast('請選擇一種彩種', 'error'); return; }
             
             const lotteryCode = selectedType.value;
             const price = LOTTERY_PRICES[lotteryCode] || 50;
+            const withdrawalPolicy = selectedPolicy ? selectedPolicy.value : 'flexible';
             
             if (initialPool < price) { showToast(`初始份額至少 ${price} 元`, 'error'); return; }
             if (initialPool % price !== 0) { showToast(`份額必須是 ${price} 的倍數`, 'error'); return; }
@@ -458,7 +479,8 @@
                 await apiPost('/series', {
                     name, initial_pool_share: initialPool,
                     description: description || null,
-                    allowed_lottery_types: [lotteryCode]
+                    allowed_lottery_types: [lotteryCode],
+                    withdrawal_policy: withdrawalPolicy
                 });
                 closeModal('create-modal');
                 showToast('集資建立成功!', 'success');
