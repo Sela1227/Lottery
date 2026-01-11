@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user_id
 from app.models.user import User
 from app.models.member import GroupMember, MemberStatus
 from app.models.member_request import MemberRequest, RequestStatus
@@ -19,6 +19,14 @@ from app.services.member_service import MemberService
 
 
 router = APIRouter(prefix="/member-requests", tags=["成員異動"])
+
+
+def get_user(db: Session, user_id: int) -> User:
+    """取得用戶"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="用戶不存在")
+    return user
 
 
 def _to_response(request: MemberRequest, db: Session) -> MemberRequestResponse:
@@ -66,14 +74,14 @@ def _to_response(request: MemberRequest, db: Session) -> MemberRequestResponse:
 async def create_reduce_request(
     series_id: int,
     data: ReduceRequest,
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """申請減碼"""
     service = MemberService(db)
     success, message, request_id = service.create_reduce_request(
         series_id=series_id,
-        user_id=current_user.id,
+        user_id=user_id,
         amount=data.amount,
         reason=data.reason
     )
@@ -92,14 +100,14 @@ async def create_reduce_request(
 async def create_withdraw_request(
     series_id: int,
     data: WithdrawRequest,
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """申請退出"""
     service = MemberService(db)
     success, message, request_id = service.create_withdraw_request(
         series_id=series_id,
-        user_id=current_user.id,
+        user_id=user_id,
         reason=data.reason
     )
     
@@ -116,12 +124,12 @@ async def create_withdraw_request(
 @router.post("/{request_id}/cancel")
 async def cancel_request(
     request_id: int,
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """取消申請"""
     service = MemberService(db)
-    success, message = service.cancel_request(request_id, current_user.id)
+    success, message = service.cancel_request(request_id, user_id)
     
     if not success:
         raise HTTPException(status_code=400, detail=message)
@@ -132,12 +140,12 @@ async def cancel_request(
 @router.get("/my", response_model=list[MemberRequestResponse])
 async def get_my_requests(
     series_id: Optional[int] = Query(None),
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """取得我的申請"""
     service = MemberService(db)
-    requests = service.get_user_requests(current_user.id, series_id)
+    requests = service.get_user_requests(user_id, series_id)
     return [_to_response(r, db) for r in requests]
 
 
@@ -147,14 +155,14 @@ async def get_my_requests(
 async def get_series_requests(
     series_id: int,
     status: Optional[str] = Query(None),
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """取得集資的所有申請（管理員）"""
     # 檢查是否為管理員
     member = db.query(GroupMember).filter(
         GroupMember.series_id == series_id,
-        GroupMember.user_id == current_user.id,
+        GroupMember.user_id == user_id,
         GroupMember.status == MemberStatus.ACTIVE
     ).first()
     
@@ -181,14 +189,14 @@ async def get_series_requests(
 async def review_request(
     request_id: int,
     data: ReviewRequest,
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """審核申請（管理員）"""
     service = MemberService(db)
     success, message, actual_amount = service.review_request(
         request_id=request_id,
-        reviewer_id=current_user.id,
+        reviewer_id=user_id,
         approved=data.approved,
         note=data.note
     )
@@ -211,7 +219,7 @@ async def review_request(
 @router.get("/series/{series_id}/pending-count")
 async def get_pending_count(
     series_id: int,
-    current_user: User = Depends(get_current_user),
+    user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """取得待審核數量"""
