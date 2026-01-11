@@ -41,33 +41,33 @@ class MemberService:
         user_id: int,
         amount: Decimal,
         reason: Optional[str] = None
-    ) -> Tuple[bool, str, Optional[int]]:
+    ) -> Tuple[bool, str, Optional[int], bool]:
         """
         建立減碼申請
         
         Returns:
-            (success, message, request_id)
+            (success, message, request_id, auto_approved)
         """
         # 檢查成員
         member = self.get_member(series_id, user_id)
         if not member:
-            return False, "您不是此集資的成員", None
+            return False, "您不是此集資的成員", None, False
         
-        # 檢查是否有待處理的申請
-        if self.has_pending_request(series_id, user_id):
-            return False, "您已有待審核的申請，請等待處理", None
+        # 檢查是否有待處理的申請（非管理員才需要檢查）
+        if not member.is_admin and self.has_pending_request(series_id, user_id):
+            return False, "您已有待審核的申請,請等待處理", None, False
         
         # 檢查金額
         if amount <= 0:
-            return False, "減碼金額必須大於 0", None
+            return False, "減碼金額必須大於 0", None, False
         
         if amount >= member.pool_share:
-            return False, f"減碼金額不可超過目前份額 ${member.pool_share}，如要全額退出請使用退出功能", None
+            return False, f"減碼金額不可超過目前份額 ${member.pool_share},如要全額退出請使用退出功能", None, False
         
-        # 檢查剩餘金額是否足夠（至少保留 50 元）
+        # 檢查剩餘金額是否足夠(至少保留 50 元)
         remaining = member.pool_share - amount
         if remaining < 50:
-            return False, "減碼後份額至少需保留 50 元，如要全額退出請使用退出功能", None
+            return False, "減碼後份額至少需保留 50 元,如要全額退出請使用退出功能", None, False
         
         # 建立申請
         request = MemberRequest(
@@ -83,7 +83,17 @@ class MemberService:
         self.db.commit()
         self.db.refresh(request)
         
-        return True, "減碼申請已送出，請等待管理員審核", request.id
+        # 管理員自動核准
+        if member.is_admin:
+            success, msg, actual = self.review_request(
+                request_id=request.id,
+                reviewer_id=user_id,
+                approved=True,
+                note="管理員自動核准"
+            )
+            return True, f"減碼 ${amount} 已執行", request.id, True
+        
+        return True, "減碼申請已送出,請等待管理員審核", request.id, False
     
     def create_withdraw_request(
         self,
@@ -104,13 +114,13 @@ class MemberService:
         
         # 檢查是否為管理員
         if member.is_admin:
-            return False, "集資管理員無法退出，請先轉移管理權限", None
+            return False, "集資管理員無法退出,請先轉移管理權限", None
         
         # 檢查是否有待處理的申請
         if self.has_pending_request(series_id, user_id):
-            return False, "您已有待審核的申請，請等待處理", None
+            return False, "您已有待審核的申請,請等待處理", None
         
-        # 建立申請（退出時 amount 為 NULL，表示全額）
+        # 建立申請(退出時 amount 為 NULL,表示全額)
         request = MemberRequest(
             series_id=series_id,
             user_id=user_id,
@@ -124,11 +134,11 @@ class MemberService:
         self.db.commit()
         self.db.refresh(request)
         
-        return True, "退出申請已送出，請等待管理員審核", request.id
+        return True, "退出申請已送出,請等待管理員審核", request.id
     
     def cancel_request(self, request_id: int, user_id: int) -> Tuple[bool, str]:
         """
-        取消申請（僅限申請人）
+        取消申請(僅限申請人)
         """
         request = self.db.query(MemberRequest).filter(
             MemberRequest.id == request_id
@@ -210,7 +220,7 @@ class MemberService:
         self.db.commit()
         
         action = "減碼" if request.request_type == RequestType.REDUCE else "退出"
-        return True, f"已核准{action}申請，金額 ${actual_amount}", actual_amount
+        return True, f"已核准{action}申請,金額 ${actual_amount}", actual_amount
     
     def _execute_request(self, request: MemberRequest, member: GroupMember) -> Decimal:
         """

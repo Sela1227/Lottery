@@ -930,6 +930,8 @@
                     <button class="btn btn-primary" onclick="showNewPeriodModal()">🎰 開新期</button>
                     <button class="btn btn-secondary" onclick="showInviteModal()">🎫 產生邀請碼</button>
                     <button class="btn btn-secondary" onclick="showTopupModal()">💰 加碼</button>
+                    ${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 減碼</button>` : ''}
+                    ${s.member_count === 1 ? `<button class="btn btn-danger" onclick="confirmDeleteSeries()">🗑️ 刪除集資</button>` : ''}
                 </div>
                 ` : `
                 <div class="member-actions" id="member-action-btns">
@@ -1240,15 +1242,21 @@
             }
             
             try {
-                await apiPost(`/member-requests/series/${seriesId}/reduce`, {
+                const result = await apiPost(`/member-requests/series/${seriesId}/reduce`, {
                     amount: amount,
                     reason: reason || null
                 });
                 
                 closeModal('reduce-modal');
-                showToast('減碼申請已送出,等待管理員審核', 'success');
                 
-                loadMyRequestStatus();
+                // 根據回傳判斷是否直接執行（管理員）或需審核（成員）
+                if (result.auto_approved) {
+                    showToast(`減碼 $${amount} 已執行`, 'success');
+                } else {
+                    showToast('減碼申請已送出，等待管理員審核', 'success');
+                    loadMyRequestStatus();
+                }
+                
                 loadSeriesDetail();
                 
                 document.getElementById('reduce-amount').value = '';
@@ -1446,6 +1454,44 @@
             navigator.clipboard.writeText(code).then(() => {
                 showToast('邀請碼已複製!', 'success');
             });
+        }
+        
+        async function confirmDeleteSeries() {
+            if (!confirm('確定要刪除此集資嗎？此操作無法復原！')) {
+                return;
+            }
+            
+            if (!confirm('再次確認：刪除後所有資料將永久消失，確定繼續？')) {
+                return;
+            }
+            
+            try {
+                await apiDelete(`/series/${seriesId}`);
+                showToast('集資已刪除', 'success');
+                setTimeout(() => {
+                    window.location.href = '/series';
+                }, 1000);
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        async function apiDelete(url) {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`${API_BASE}${url}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || '操作失敗');
+            }
+            
+            return response.json();
         }
         
         function showToast(message, type = 'info') {

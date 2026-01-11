@@ -70,7 +70,7 @@ def _to_response(request: MemberRequest, db: Session) -> MemberRequestResponse:
 
 # ==================== 申請人 API ====================
 
-@router.post("/series/{series_id}/reduce", response_model=MemberRequestCreateResponse)
+@router.post("/series/{series_id}/reduce")
 async def create_reduce_request(
     series_id: int,
     data: ReduceRequest,
@@ -79,7 +79,7 @@ async def create_reduce_request(
 ):
     """申請減碼"""
     service = MemberService(db)
-    success, message, request_id = service.create_reduce_request(
+    success, message, request_id, auto_approved = service.create_reduce_request(
         series_id=series_id,
         user_id=user_id,
         amount=data.amount,
@@ -89,11 +89,12 @@ async def create_reduce_request(
     if not success:
         raise HTTPException(status_code=400, detail=message)
     
-    return MemberRequestCreateResponse(
-        success=True,
-        message=message,
-        request_id=request_id
-    )
+    return {
+        "success": True,
+        "message": message,
+        "request_id": request_id,
+        "auto_approved": auto_approved
+    }
 
 
 @router.post("/series/{series_id}/withdraw", response_model=MemberRequestCreateResponse)
@@ -158,7 +159,7 @@ async def get_series_requests(
     user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
-    """取得集資的所有申請（管理員）"""
+    """取得集資的所有申請(管理員)"""
     # 檢查是否為管理員
     member = db.query(GroupMember).filter(
         GroupMember.series_id == series_id,
@@ -192,7 +193,7 @@ async def review_request(
     user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
-    """審核申請（管理員）"""
+    """審核申請(管理員)"""
     service = MemberService(db)
     success, message, actual_amount = service.review_request(
         request_id=request_id,

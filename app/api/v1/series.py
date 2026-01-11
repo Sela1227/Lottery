@@ -272,3 +272,48 @@ async def topup_my_pool(
         total_prize_received=member.total_prize_received,
         joined_at=member.joined_at
     )
+
+@router.delete("/{series_id}")
+async def delete_series(
+    series_id: int,
+    user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """刪除集資（僅限管理員且成員數為1時）"""
+    series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
+    
+    if not series:
+        raise HTTPException(status_code=404, detail="集資不存在")
+    
+    # 檢查是否為管理員
+    member = db.query(GroupMember).filter(
+        GroupMember.series_id == series_id,
+        GroupMember.user_id == user_id,
+        GroupMember.status == MemberStatus.ACTIVE
+    ).first()
+    
+    if not member or not member.is_admin:
+        raise HTTPException(status_code=403, detail="只有管理員可以刪除集資")
+    
+    # 檢查成員數
+    active_members = db.query(GroupMember).filter(
+        GroupMember.series_id == series_id,
+        GroupMember.status == MemberStatus.ACTIVE
+    ).count()
+    
+    if active_members > 1:
+        raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
+    
+    # 刪除相關資料
+    from app.models.member_request import MemberRequest
+    db.query(MemberRequest).filter(MemberRequest.series_id == series_id).delete()
+    
+    from app.models.series import SeriesInvitation
+    db.query(SeriesInvitation).filter(SeriesInvitation.series_id == series_id).delete()
+    
+    db.query(GroupMember).filter(GroupMember.series_id == series_id).delete()
+    db.query(GroupSeries).filter(GroupSeries.id == series_id).delete()
+    
+    db.commit()
+    
+    return {"success": True, "message": "集資已刪除"}
