@@ -307,7 +307,7 @@ async def delete_series(
     
     # 軟刪除：標記集資為已結束，成員為已退出
     series.status = SeriesStatus.ENDED
-    member.status = MemberStatus.LEFT
+    member.status = MemberStatus.EXITED
     
     db.commit()
     
