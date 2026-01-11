@@ -280,7 +280,7 @@ async def delete_series(
     user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
-    """刪除集資（僅限管理員且成員數為1時）"""
+    """刪除集資（僅限管理員且成員數為1時）- 實際為軟刪除，標記為已結束"""
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     
     if not series:
@@ -305,19 +305,9 @@ async def delete_series(
     if active_members > 1:
         raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
     
-    # 使用原生 SQL 刪除所有相關資料（按外鍵依賴順序）
-    from sqlalchemy import text
-    
-    db.execute(text("DELETE FROM event_logs WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM user_ledger WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM period_contributions WHERE period_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
-    db.execute(text("DELETE FROM period_snapshots WHERE period_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
-    db.execute(text("DELETE FROM tickets WHERE group_id IN (SELECT id FROM groups WHERE series_id = :sid)"), {"sid": series_id})
-    db.execute(text("DELETE FROM groups WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM member_requests WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM series_invitations WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM group_members WHERE series_id = :sid"), {"sid": series_id})
-    db.execute(text("DELETE FROM group_series WHERE id = :sid"), {"sid": series_id})
+    # 軟刪除：標記集資為已結束，成員為已退出
+    series.status = SeriesStatus.ENDED
+    member.status = MemberStatus.LEFT
     
     db.commit()
     
