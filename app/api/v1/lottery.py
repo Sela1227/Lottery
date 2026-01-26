@@ -13,6 +13,7 @@ from app.core.security import get_current_user_id
 from app.api.v1.admin import require_admin
 from app.services.lottery_crawler import lottery_crawler
 from app.models.lottery_draw import LotteryDraw
+from app.constants import LOTTERY_NAMES
 
 # 嘗試導入歷史爬蟲（可能不存在）
 try:
@@ -70,13 +71,6 @@ class SyncResult(BaseModel):
 
 
 # ==================== Helper ====================
-
-LOTTERY_NAMES = {
-    'power': '威力彩',
-    'super': '大樂透',
-    'daily539': '今彩539'
-}
-
 
 def format_jackpot(amount: Optional[int]) -> Optional[str]:
     """格式化獎金顯示"""
