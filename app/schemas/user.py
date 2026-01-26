@@ -45,6 +45,7 @@ class UserResponse(BaseModel):
     wallet_balance: Decimal
     created_at: datetime
     last_login_at: Optional[datetime]
+    is_admin: bool = False  # 是否為系統管理員
     
     class Config:
         from_attributes = True
