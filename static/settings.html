@@ -9,48 +9,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- 引用共用樣式 -->
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --sela-dark: #1a1a2e;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #FF9800;
-            --info: #2196F3;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
-        }
+        /* ==================== 頁面專屬樣式 ==================== */
         
         body {
             font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
         }
         
         /* Header */
         .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
             position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
+            padding: 12px 20px;
+            gap: 12px;
         }
         
         .back-btn {
@@ -77,10 +49,9 @@
         .header-title {
             font-size: 18px;
             font-weight: 700;
-            color: var(--text-primary);
         }
         
-        /* Main Content */
+        /* Main */
         main {
             padding: 20px;
             max-width: 600px;
@@ -114,31 +85,10 @@
             overflow: hidden;
         }
         
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        
-        .profile-role {
-            font-size: 13px;
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            background: #f0f0f0;
-            border-radius: 12px;
-            display: inline-block;
-        }
-        
-        .profile-role.admin {
-            background: #FFF3E0;
-            color: var(--sela-orange);
-        }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .profile-role { font-size: 13px; color: var(--text-secondary); padding: 4px 12px; background: #f0f0f0; border-radius: 12px; display: inline-block; }
+        .profile-role.admin { background: #FFF3E0; color: var(--sela-orange); }
         
         /* Section */
         .section {
@@ -159,347 +109,64 @@
             border-bottom: 1px solid var(--border-color);
         }
         
-        .section-content {
-            padding: 20px;
-        }
+        .section-content { padding: 20px; }
         
         /* Form */
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--sela-orange);
-        }
-        
-        .form-input:disabled {
-            background: #f5f5f5;
-            color: var(--text-secondary);
-        }
-        
-        .form-hint {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; }
+        .form-input:focus { outline: none; border-color: var(--sela-orange); }
+        .form-input:disabled { background: #f5f5f5; color: var(--text-secondary); }
+        .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
         
         /* Button */
-        .btn {
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--sela-orange), #D85A1E);
-            color: #fff;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        
-        .btn-sm {
-            padding: 10px 16px;
-            font-size: 14px;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        .btn { padding: 14px 24px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--sela-orange), #D85A1E); color: #fff; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+        .btn-sm { padding: 10px 16px; font-size: 14px; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         
         /* Menu Item */
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background 0.3s;
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-        
-        .menu-item:hover {
-            background: #f9f9f9;
-        }
-        
-        .menu-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-right: 14px;
-        }
-        
-        .menu-icon.push {
-            background: var(--sela-orange);
-            color: #fff;
-        }
-        
-        .menu-content {
-            flex: 1;
-        }
-        
-        .menu-title {
-            font-weight: 600;
-            font-size: 15px;
-        }
-        
-        .menu-desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-        
-        .menu-value {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-right: 8px;
-        }
-        
-        .menu-arrow {
-            color: #ccc;
-            font-size: 18px;
-        }
+        .menu-item { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.3s; text-decoration: none; color: inherit; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #f9f9f9; }
+        .menu-icon { width: 40px; height: 40px; border-radius: 10px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 14px; }
+        .menu-icon.push { background: var(--sela-orange); color: #fff; }
+        .menu-content { flex: 1; }
+        .menu-title { font-weight: 600; font-size: 15px; }
+        .menu-desc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+        .menu-arrow { color: #ccc; font-size: 18px; }
         
         /* Toggle Switch */
-        .toggle-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .toggle-item:last-child {
-            border-bottom: none;
-        }
-        
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .toggle-icon {
-            font-size: 20px;
-        }
-        
-        .toggle-text {
-            font-size: 15px;
-            font-weight: 500;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 28px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 28px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-        
-        .toggle-switch input:checked + .toggle-slider {
-            background-color: var(--sela-orange);
-        }
-        
-        .toggle-switch input:checked + .toggle-slider:before {
-            transform: translateX(22px);
-        }
-        
-        .toggle-switch input:disabled + .toggle-slider {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .toggle-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+        .toggle-item:last-child { border-bottom: none; }
+        .toggle-label { display: flex; align-items: center; gap: 12px; }
+        .toggle-icon { font-size: 20px; }
+        .toggle-text { font-size: 15px; font-weight: 500; }
+        .toggle-switch { position: relative; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.3s; border-radius: 28px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%; }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--sela-orange); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
         
         /* Status Badge */
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-badge.enabled {
-            background: #E8F5E9;
-            color: var(--success);
-        }
-        
-        .status-badge.disabled {
-            background: #f5f5f5;
-            color: var(--text-secondary);
-        }
-        
-        .status-badge.unsupported {
-            background: #FFEBEE;
-            color: var(--danger);
-        }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-badge.enabled { background: #E8F5E9; color: var(--success); }
+        .status-badge.disabled { background: #f5f5f5; color: var(--text-secondary); }
+        .status-badge.unsupported { background: #FFEBEE; color: var(--danger); }
         
         /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #333;
-            color: #fff;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 2000;
-            max-width: 90%;
-            text-align: center;
-        }
-        
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 2000; max-width: 90%; text-align: center; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
         .toast.warning { background: var(--warning); }
         
-        /* Push Info Box */
-        .push-info {
-            background: #FFF3E0;
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin: 16px 20px;
-            font-size: 13px;
-            color: #E65100;
-        }
-        
-        .push-info.success {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-        
-        /* Device List */
-        .device-list {
-            padding: 0 20px 20px;
-        }
-        
-        .device-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            margin-bottom: 8px;
-        }
-        
-        .device-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .device-icon {
-            font-size: 20px;
-        }
-        
-        .device-name {
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .device-date {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .device-remove {
-            color: var(--danger);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-        }
+        /* Push Info */
+        .push-info { background: #FFF3E0; border-radius: 10px; padding: 14px 16px; margin: 16px 20px; font-size: 13px; color: #E65100; }
     </style>
 </head>
 <body>
@@ -511,19 +178,14 @@
     <main>
         <!-- Profile Card -->
         <div class="profile-card">
-            <div class="profile-avatar" id="profile-avatar">
-                <span>?</span>
-            </div>
+            <div class="profile-avatar" id="profile-avatar"><span>?</span></div>
             <div class="profile-name" id="profile-name">載入中...</div>
             <span class="profile-role" id="profile-role">會員</span>
         </div>
         
         <!-- 個人資料 -->
         <div class="section">
-            <div class="section-header">
-                <span>👤</span>
-                <span>個人資料</span>
-            </div>
+            <div class="section-header"><span>👤</span><span>個人資料</span></div>
             <div class="section-content">
                 <div class="form-group">
                     <label class="form-label">LINE 名稱</label>
@@ -542,20 +204,13 @@
                     <label class="form-label">電話</label>
                     <input type="tel" class="form-input" id="phone" placeholder="選填">
                 </div>
-                <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">
-                    💾 儲存變更
-                </button>
+                <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">💾 儲存變更</button>
             </div>
         </div>
         
         <!-- 通知設定 -->
         <div class="section">
-            <div class="section-header">
-                <span>🔔</span>
-                <span>推播通知</span>
-            </div>
-            
-            <!-- 推播狀態 -->
+            <div class="section-header"><span>🔔</span><span>推播通知</span></div>
             <div class="menu-item" id="push-status-item">
                 <span class="menu-icon push">📱</span>
                 <div class="menu-content">
@@ -564,92 +219,44 @@
                 </div>
                 <span class="status-badge disabled" id="push-status">載入中</span>
             </div>
-            
-            <!-- 訂閱/取消按鈕 -->
-            <div style="padding: 16px 20px;" id="push-action-container">
-                <button class="btn btn-success" id="subscribe-btn" onclick="subscribePush()" style="display: none;">
-                    🔔 啟用推播通知
-                </button>
-                <button class="btn btn-outline" id="unsubscribe-btn" onclick="unsubscribePush()" style="display: none;">
-                    🔕 關閉推播通知
-                </button>
+            <div style="padding: 16px 20px;">
+                <button class="btn btn-success" id="subscribe-btn" onclick="subscribePush()" style="display: none;">🔔 啟用推播通知</button>
+                <button class="btn btn-outline" id="unsubscribe-btn" onclick="unsubscribePush()" style="display: none;">🔕 關閉推播通知</button>
             </div>
-            
-            <!-- 不支援提示 -->
-            <div class="push-info" id="push-unsupported" style="display: none;">
-                ⚠️ 您的瀏覽器不支援推播通知，請使用 Chrome、Firefox、Edge 或 Safari。
-            </div>
-            
-            <!-- 通知開關 -->
+            <div class="push-info" id="push-unsupported" style="display: none;">⚠️ 您的瀏覽器不支援推播通知，請使用 Chrome、Firefox、Edge 或 Safari。</div>
             <div id="notify-toggles" style="display: none;">
                 <div class="toggle-item">
-                    <div class="toggle-label">
-                        <span class="toggle-icon">🎰</span>
-                        <span class="toggle-text">開獎提醒</span>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="notify-draw" checked onchange="updateNotifySettings()">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <div class="toggle-label"><span class="toggle-icon">🎰</span><span class="toggle-text">開獎提醒</span></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notify-draw" checked onchange="updateNotifySettings()"><span class="toggle-slider"></span></label>
                 </div>
                 <div class="toggle-item">
-                    <div class="toggle-label">
-                        <span class="toggle-icon">🎉</span>
-                        <span class="toggle-text">中獎通知</span>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="notify-win" checked onchange="updateNotifySettings()">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <div class="toggle-label"><span class="toggle-icon">🎉</span><span class="toggle-text">中獎通知</span></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notify-win" checked onchange="updateNotifySettings()"><span class="toggle-slider"></span></label>
                 </div>
                 <div class="toggle-item">
-                    <div class="toggle-label">
-                        <span class="toggle-icon">💰</span>
-                        <span class="toggle-text">結算通知</span>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="notify-settlement" checked onchange="updateNotifySettings()">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <div class="toggle-label"><span class="toggle-icon">💰</span><span class="toggle-text">結算通知</span></div>
+                    <label class="toggle-switch"><input type="checkbox" id="notify-settlement" checked onchange="updateNotifySettings()"><span class="toggle-slider"></span></label>
                 </div>
-                
-                <!-- 測試通知按鈕 -->
-                <div style="padding: 16px 20px;">
-                    <button class="btn btn-outline btn-sm" onclick="sendTestNotify()">
-                        🔔 發送測試通知
-                    </button>
-                </div>
+                <div style="padding: 16px 20px;"><button class="btn btn-outline btn-sm" onclick="sendTestNotify()">🔔 發送測試通知</button></div>
             </div>
         </div>
         
         <!-- 其他 -->
         <div class="section">
-            <div class="section-header">
-                <span>ℹ️</span>
-                <span>其他</span>
-            </div>
+            <div class="section-header"><span>ℹ️</span><span>其他</span></div>
             <a href="/personal" class="menu-item">
                 <span class="menu-icon">🎫</span>
-                <div class="menu-content">
-                    <div class="menu-title">個人彩券</div>
-                    <div class="menu-desc">管理個人購買的彩券</div>
-                </div>
+                <div class="menu-content"><div class="menu-title">個人彩券</div><div class="menu-desc">管理個人購買的彩券</div></div>
                 <span class="menu-arrow">›</span>
             </a>
             <a href="/statistics" class="menu-item">
                 <span class="menu-icon">📊</span>
-                <div class="menu-content">
-                    <div class="menu-title">統計報表</div>
-                    <div class="menu-desc">查看投資報酬率</div>
-                </div>
+                <div class="menu-content"><div class="menu-title">統計報表</div><div class="menu-desc">查看投資報酬率</div></div>
                 <span class="menu-arrow">›</span>
             </a>
             <div class="menu-item" onclick="logout()">
                 <span class="menu-icon" style="background: #FFEBEE;">🚪</span>
-                <div class="menu-content">
-                    <div class="menu-title" style="color: var(--danger);">登出</div>
-                    <div class="menu-desc">登出此帳號</div>
-                </div>
+                <div class="menu-content"><div class="menu-title" style="color: var(--danger);">登出</div><div class="menu-desc">登出此帳號</div></div>
                 <span class="menu-arrow">›</span>
             </div>
         </div>
@@ -664,159 +271,83 @@
         let swRegistration = null;
         let pushSubscription = null;
         
-        // ========== Auth & API ==========
-        
         async function checkAuth() {
             const token = localStorage.getItem('access_token');
-            if (!token) {
-                window.location.href = '/';
-                return false;
-            }
+            if (!token) { window.location.href = '/'; return false; }
             return true;
         }
         
         async function apiGet(url) {
             const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) {
-                if (res.status === 401) {
-                    window.location.href = '/';
-                    return null;
-                }
-                throw new Error((await res.json()).detail || 'API Error');
-            }
+            const res = await fetch(`${API_BASE}${url}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) { if (res.status === 401) { window.location.href = '/'; return null; } throw new Error((await res.json()).detail || 'API Error'); }
             return res.json();
         }
         
         async function apiPut(url, data) {
             const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) {
-                throw new Error((await res.json()).detail || 'API Error');
-            }
+            const res = await fetch(`${API_BASE}${url}`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (!res.ok) throw new Error((await res.json()).detail || 'API Error');
             return res.json();
         }
         
         async function apiPost(url, data = {}) {
             const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) {
-                throw new Error((await res.json()).detail || 'API Error');
-            }
+            const res = await fetch(`${API_BASE}${url}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (!res.ok) throw new Error((await res.json()).detail || 'API Error');
             return res.json();
         }
         
         async function apiDelete(url) {
             const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) {
-                throw new Error((await res.json()).detail || 'API Error');
-            }
+            const res = await fetch(`${API_BASE}${url}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) throw new Error((await res.json()).detail || 'API Error');
             return res.json();
         }
-        
-        // ========== Profile ==========
         
         async function loadProfile() {
             try {
                 userData = await apiGet('/users/me');
                 if (!userData) return;
-                
                 const avatarEl = document.getElementById('profile-avatar');
-                if (userData.picture_url) {
-                    avatarEl.innerHTML = `<img src="${userData.picture_url}" alt="avatar">`;
-                } else {
-                    avatarEl.innerHTML = `<span>${(userData.nickname || userData.display_name).charAt(0)}</span>`;
-                }
-                
-                document.getElementById('profile-name').textContent = 
-                    userData.nickname || userData.display_name;
-                
+                if (userData.picture_url) { avatarEl.innerHTML = `<img src="${userData.picture_url}" alt="avatar">`; }
+                else { avatarEl.innerHTML = `<span>${(userData.nickname || userData.display_name).charAt(0)}</span>`; }
+                document.getElementById('profile-name').textContent = userData.nickname || userData.display_name;
                 const roleEl = document.getElementById('profile-role');
-                if (userData.role === 'admin') {
-                    roleEl.textContent = '👑 系統管理員';
-                    roleEl.classList.add('admin');
-                } else {
-                    roleEl.textContent = '一般會員';
-                }
-                
+                if (userData.role === 'admin') { roleEl.textContent = '👑 系統管理員'; roleEl.classList.add('admin'); }
+                else { roleEl.textContent = '一般會員'; }
                 document.getElementById('display-name').value = userData.display_name;
                 document.getElementById('nickname').value = userData.nickname || '';
                 document.getElementById('email').value = userData.email || '';
                 document.getElementById('phone').value = userData.phone || '';
-                
-            } catch (e) {
-                console.error('Failed to load profile:', e);
-                showToast('載入失敗', 'error');
-            }
+            } catch (e) { console.error('Failed to load profile:', e); showToast('載入失敗', 'error'); }
         }
         
         async function saveProfile() {
             const btn = document.getElementById('save-btn');
-            btn.disabled = true;
-            btn.innerHTML = '儲存中...';
-            
+            btn.disabled = true; btn.innerHTML = '儲存中...';
             try {
-                const data = {
-                    nickname: document.getElementById('nickname').value.trim() || null,
-                    email: document.getElementById('email').value.trim() || null,
-                    phone: document.getElementById('phone').value.trim() || null
-                };
-                
+                const data = { nickname: document.getElementById('nickname').value.trim() || null, email: document.getElementById('email').value.trim() || null, phone: document.getElementById('phone').value.trim() || null };
                 userData = await apiPut('/users/me', data);
-                
-                document.getElementById('profile-name').textContent = 
-                    userData.nickname || userData.display_name;
-                
+                document.getElementById('profile-name').textContent = userData.nickname || userData.display_name;
                 showToast('設定已儲存', 'success');
-            } catch (e) {
-                showToast(e.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '💾 儲存變更';
-            }
+            } catch (e) { showToast(e.message, 'error'); }
+            finally { btn.disabled = false; btn.innerHTML = '💾 儲存變更'; }
         }
-        
-        // ========== Web Push ==========
         
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/-/g, '+')
-                .replace(/_/g, '/');
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
             const rawData = window.atob(base64);
             const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
+            for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
             return outputArray;
         }
         
         function arrayBufferToBase64(buffer) {
             let binary = '';
             const bytes = new Uint8Array(buffer);
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
+            for (let i = 0; i < bytes.byteLength; i++) { binary += String.fromCharCode(bytes[i]); }
             return window.btoa(binary);
         }
         
@@ -828,130 +359,53 @@
             const unsubscribeBtnEl = document.getElementById('unsubscribe-btn');
             const togglesEl = document.getElementById('notify-toggles');
             
-            // 檢查瀏覽器支援
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                statusEl.textContent = '不支援';
-                statusEl.className = 'status-badge unsupported';
-                descEl.textContent = '您的瀏覽器不支援推播通知';
-                unsupportedEl.style.display = 'block';
-                return;
+                statusEl.textContent = '不支援'; statusEl.className = 'status-badge unsupported';
+                descEl.textContent = '您的瀏覽器不支援推播通知'; unsupportedEl.style.display = 'block'; return;
             }
-            
             try {
-                // 取得通知設定
                 notifySettings = await apiGet('/notify/settings');
-                
-                if (!notifySettings.push_enabled) {
-                    statusEl.textContent = '未啟用';
-                    statusEl.className = 'status-badge disabled';
-                    descEl.textContent = '系統尚未啟用推播功能';
-                    return;
-                }
-                
-                // 註冊 Service Worker
+                if (!notifySettings.push_enabled) { statusEl.textContent = '未啟用'; statusEl.className = 'status-badge disabled'; descEl.textContent = '系統尚未啟用推播功能'; return; }
                 swRegistration = await navigator.serviceWorker.register('/static/sw.js');
-                console.log('Service Worker registered');
-                
-                // 檢查現有訂閱
                 pushSubscription = await swRegistration.pushManager.getSubscription();
-                
                 if (pushSubscription && notifySettings.subscribed) {
-                    // 已訂閱
-                    statusEl.textContent = '已啟用';
-                    statusEl.className = 'status-badge enabled';
+                    statusEl.textContent = '已啟用'; statusEl.className = 'status-badge enabled';
                     descEl.textContent = `已在 ${notifySettings.subscription_count} 個裝置上啟用`;
-                    unsubscribeBtnEl.style.display = 'block';
-                    togglesEl.style.display = 'block';
-                    
-                    // 設定開關狀態
+                    unsubscribeBtnEl.style.display = 'block'; togglesEl.style.display = 'block';
                     document.getElementById('notify-draw').checked = notifySettings.notify_draw_reminder;
                     document.getElementById('notify-win').checked = notifySettings.notify_win_alert;
                     document.getElementById('notify-settlement').checked = notifySettings.notify_settlement;
                 } else {
-                    // 未訂閱
-                    statusEl.textContent = '未啟用';
-                    statusEl.className = 'status-badge disabled';
-                    descEl.textContent = '點擊下方按鈕啟用推播通知';
-                    subscribeBtnEl.style.display = 'block';
+                    statusEl.textContent = '未啟用'; statusEl.className = 'status-badge disabled';
+                    descEl.textContent = '點擊下方按鈕啟用推播通知'; subscribeBtnEl.style.display = 'block';
                 }
-                
-            } catch (e) {
-                console.error('Push init error:', e);
-                statusEl.textContent = '錯誤';
-                statusEl.className = 'status-badge unsupported';
-                descEl.textContent = '初始化推播功能時發生錯誤';
-            }
+            } catch (e) { console.error('Push init error:', e); statusEl.textContent = '錯誤'; statusEl.className = 'status-badge unsupported'; descEl.textContent = '初始化推播功能時發生錯誤'; }
         }
         
         async function subscribePush() {
             const btn = document.getElementById('subscribe-btn');
-            btn.disabled = true;
-            btn.textContent = '啟用中...';
-            
+            btn.disabled = true; btn.textContent = '啟用中...';
             try {
-                // 請求通知權限
                 const permission = await Notification.requestPermission();
-                if (permission !== 'granted') {
-                    showToast('請允許通知權限', 'warning');
-                    btn.disabled = false;
-                    btn.textContent = '🔔 啟用推播通知';
-                    return;
-                }
-                
-                // 訂閱推播
-                const subscription = await swRegistration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(notifySettings.vapid_public_key)
-                });
-                
-                // 發送到伺服器
+                if (permission !== 'granted') { showToast('請允許通知權限', 'warning'); btn.disabled = false; btn.textContent = '🔔 啟用推播通知'; return; }
+                const subscription = await swRegistration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(notifySettings.vapid_public_key) });
                 const p256dh = arrayBufferToBase64(subscription.getKey('p256dh'));
                 const auth = arrayBufferToBase64(subscription.getKey('auth'));
-                
-                await apiPost('/notify/subscribe', {
-                    endpoint: subscription.endpoint,
-                    p256dh: p256dh,
-                    auth: auth,
-                    device_name: getDeviceName()
-                });
-                
+                await apiPost('/notify/subscribe', { endpoint: subscription.endpoint, p256dh: p256dh, auth: auth, device_name: getDeviceName() });
                 pushSubscription = subscription;
                 showToast('推播通知已啟用！', 'success');
-                
-                // 重新載入狀態
                 await initPushNotifications();
-                
-            } catch (e) {
-                console.error('Subscribe error:', e);
-                showToast('啟用失敗：' + e.message, 'error');
-                btn.disabled = false;
-                btn.textContent = '🔔 啟用推播通知';
-            }
+            } catch (e) { console.error('Subscribe error:', e); showToast('啟用失敗：' + e.message, 'error'); btn.disabled = false; btn.textContent = '🔔 啟用推播通知'; }
         }
         
         async function unsubscribePush() {
             if (!confirm('確定要關閉推播通知嗎？')) return;
-            
             const btn = document.getElementById('unsubscribe-btn');
-            btn.disabled = true;
-            btn.textContent = '處理中...';
-            
+            btn.disabled = true; btn.textContent = '處理中...';
             try {
-                if (pushSubscription) {
-                    await apiDelete(`/notify/subscribe?endpoint=${encodeURIComponent(pushSubscription.endpoint)}`);
-                    await pushSubscription.unsubscribe();
-                    pushSubscription = null;
-                }
-                
-                showToast('已關閉推播通知', 'success');
-                await initPushNotifications();
-                
-            } catch (e) {
-                console.error('Unsubscribe error:', e);
-                showToast('關閉失敗', 'error');
-                btn.disabled = false;
-                btn.textContent = '🔕 關閉推播通知';
-            }
+                if (pushSubscription) { await apiDelete(`/notify/subscribe?endpoint=${encodeURIComponent(pushSubscription.endpoint)}`); await pushSubscription.unsubscribe(); pushSubscription = null; }
+                showToast('已關閉推播通知', 'success'); await initPushNotifications();
+            } catch (e) { console.error('Unsubscribe error:', e); showToast('關閉失敗', 'error'); btn.disabled = false; btn.textContent = '🔕 關閉推播通知'; }
         }
         
         function getDeviceName() {
@@ -964,50 +418,19 @@
         }
         
         async function updateNotifySettings() {
-            try {
-                await apiPut('/notify/settings', {
-                    notify_draw_reminder: document.getElementById('notify-draw').checked,
-                    notify_win_alert: document.getElementById('notify-win').checked,
-                    notify_settlement: document.getElementById('notify-settlement').checked
-                });
-            } catch (e) {
-                console.error('Failed to update notify settings:', e);
-            }
+            try { await apiPut('/notify/settings', { notify_draw_reminder: document.getElementById('notify-draw').checked, notify_win_alert: document.getElementById('notify-win').checked, notify_settlement: document.getElementById('notify-settlement').checked }); }
+            catch (e) { console.error('Failed to update notify settings:', e); }
         }
         
         async function sendTestNotify() {
-            try {
-                const result = await apiPost('/notify/test');
-                showToast(result.message, 'success');
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            try { const result = await apiPost('/notify/test'); showToast(result.message, 'success'); }
+            catch (e) { showToast(e.message, 'error'); }
         }
         
-        // ========== Utils ==========
+        function logout() { if (confirm('確定要登出嗎？')) { localStorage.removeItem('access_token'); window.location.href = '/'; } }
+        function showToast(message, type = 'info') { const toast = document.getElementById('toast'); toast.textContent = message; toast.className = `toast ${type} show`; setTimeout(() => toast.classList.remove('show'), 3000); }
         
-        function logout() {
-            if (confirm('確定要登出嗎？')) {
-                localStorage.removeItem('access_token');
-                window.location.href = '/';
-            }
-        }
-        
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-        
-        // ========== Init ==========
-        
-        async function init() {
-            if (!await checkAuth()) return;
-            await loadProfile();
-            await initPushNotifications();
-        }
-        
+        async function init() { if (!await checkAuth()) return; await loadProfile(); await initPushNotifications(); }
         init();
     </script>
 </body>
