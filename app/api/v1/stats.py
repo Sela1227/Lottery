@@ -11,24 +11,14 @@ from collections import Counter
 from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.models.lottery_draw import LotteryDraw
-
+from app.constants import NUMBER_RANGES, LOTTERY_NAMES
 
 router = APIRouter(prefix="/stats", tags=["Statistics"])
 
-
-# 各彩種號碼範圍
-NUMBER_RANGES = {
-    "power": {"first_zone": (1, 38), "second_zone": (1, 8)},
+,
     "super": {"main": (1, 49), "special": (1, 49)},
     "daily539": {"numbers": (1, 39)},
 }
-
-LOTTERY_NAMES = {
-    "power": "威力彩",
-    "super": "大樂透",
-    "daily539": "今彩539"
-}
-
 
 def get_all_numbers(lottery_type: str, draws: List[LotteryDraw]) -> List[int]:
     """從開獎記錄中提取所有號碼"""
@@ -50,7 +40,6 @@ def get_all_numbers(lottery_type: str, draws: List[LotteryDraw]) -> List[int]:
                 all_numbers.extend(numbers["numbers"])
     
     return all_numbers
-
 
 def calculate_missing_periods(lottery_type: str, draws: List[LotteryDraw], number_range: tuple) -> Dict[int, int]:
     """計算每個號碼的遺漏期數（多少期沒開出）"""
@@ -92,7 +81,6 @@ def calculate_missing_periods(lottery_type: str, draws: List[LotteryDraw], numbe
             missing[num] = total_periods
     
     return missing
-
 
 @router.get("/numbers/{lottery_type}")
 async def get_number_stats(
@@ -173,7 +161,6 @@ async def get_number_stats(
         "overdue_numbers": [{"number": n, "missing": m} for n, m in overdue_numbers],
         "full_stats": full_stats
     }
-
 
 @router.get("/special/{lottery_type}")
 async def get_special_number_stats(
