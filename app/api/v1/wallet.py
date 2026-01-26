@@ -15,6 +15,7 @@ from app.models.user import User
 from app.models.member import GroupMember, MemberStatus
 from app.models.series import GroupSeries
 from app.models.ledger import UserLedger, AccountType, TransactionType
+from app.constants import TRANSACTION_TYPE_DISPLAY
 
 
 router = APIRouter(prefix="/wallet", tags=["Wallet"])
@@ -61,25 +62,6 @@ class TransactionListResponse(BaseModel):
     transactions: List[TransactionRecord]
     total: int
     has_more: bool
-
-
-# ==================== 交易類型顯示名稱 ====================
-
-TRANSACTION_TYPE_DISPLAY = {
-    "deposit": "儲值",
-    "withdraw": "提領",
-    "transfer_out": "轉出",
-    "transfer_in": "轉入",
-    "pool_join": "加入系列團",
-    "pool_topup": "加碼",
-    "pool_withdraw": "減碼",
-    "pool_purchase": "購買扣除",
-    "pool_carryover": "滾入",
-    "pool_prize": "獎金分配",
-    "pool_exit": "退出結算",
-    "adjustment": "調整",
-}
-
 
 # ==================== API 端點 ====================
 
