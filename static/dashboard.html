@@ -11,182 +11,56 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ==================== 頁面專屬樣式 ==================== */
+        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100dvh; }
         
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
-            --success: #16A34A;
-        }
-        
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            min-height: 100dvh;
-            color: var(--text-primary);
-        }
-        
-        .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-        
+        .header { padding: 12px 20px; justify-content: space-between; position: sticky; }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .logo { width: 36px; height: 36px; border-radius: 8px; box-shadow: var(--shadow-sm); }
         .brand { font-size: 16px; font-weight: 700; color: var(--sela-orange); }
         .header-right { display: flex; align-items: center; gap: 12px; }
         .user-info { display: flex; align-items: center; gap: 10px; }
-        
-        .user-avatar {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 600; color: #fff; overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #fff; overflow: hidden; box-shadow: var(--shadow-sm); }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .user-name {
-            font-weight: 500; font-size: 14px; max-width: 100px;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        
-        .logout-btn {
-            padding: 8px 14px; background: var(--bg-secondary);
-            border: 1px solid var(--border-color); color: var(--sela-orange);
-            border-radius: 8px; cursor: pointer; transition: all 0.3s;
-            font-size: 13px; font-weight: 500;
-        }
+        .user-name { font-weight: 500; font-size: 14px; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .logout-btn { padding: 8px 14px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--sela-orange); border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 13px; font-weight: 500; }
         .logout-btn:hover { background: var(--sela-orange); color: #fff; border-color: var(--sela-orange); }
         
         .main { padding: 20px; max-width: 800px; margin: 0 auto; }
         
-        /* ===== 開獎資訊卡片 ===== */
-        .lottery-cards {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
+        /* 開獎資訊卡片 */
+        .lottery-cards { display: flex; gap: 12px; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .lottery-cards::-webkit-scrollbar { display: none; }
-        
-        .lottery-card {
-            flex: 1;
-            min-width: 160px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 14px 16px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .lottery-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .lottery-card.power {
-            background: linear-gradient(135deg, #F26522 0%, #ff8a50 100%);
-        }
-        .lottery-card.super {
-            background: linear-gradient(135deg, #1a73e8 0%, #4dabf7 100%);
-        }
+        .lottery-card { flex: 1; min-width: 160px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 14px 16px; color: white; position: relative; overflow: hidden; }
+        .lottery-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); pointer-events: none; }
+        .lottery-card.power { background: linear-gradient(135deg, #F26522 0%, #ff8a50 100%); }
+        .lottery-card.super { background: linear-gradient(135deg, #1a73e8 0%, #4dabf7 100%); }
         .lottery-card.loading-card { opacity: 0.7; }
         .lottery-card.no-data { opacity: 0.6; }
-        
-        .lottery-card-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
+        .lottery-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
         .lottery-icon { font-size: 18px; }
         .lottery-name { font-size: 14px; font-weight: 600; }
         .lottery-date { font-size: 11px; opacity: 0.8; margin-left: auto; }
-        
-        .lottery-numbers {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-            min-height: 28px;
-            font-size: 12px;
-        }
-        .lottery-ball {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.95);
-            color: #333;
-            font-size: 12px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
+        .lottery-numbers { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 28px; font-size: 12px; }
+        .lottery-ball { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #333; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
         .lottery-ball.special { background: #FFD700; color: #333; }
         .lottery-ball.second-zone { background: #FF4757; color: white; }
-        .lottery-divider {
-            width: 1px;
-            height: 20px;
-            background: rgba(255,255,255,0.4);
-            margin: 0 4px;
-        }
-        .lottery-jackpot {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            font-size: 12px;
-        }
+        .lottery-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.4); margin: 0 4px; }
+        .lottery-jackpot { display: flex; align-items: center; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 12px; }
         .jackpot-label { opacity: 0.85; }
         .jackpot-amount { font-weight: 700; font-size: 14px; margin-left: auto; }
         
-        /* ===== 歡迎區 ===== */
+        /* 歡迎區 */
         .welcome { margin-bottom: 24px; }
         .welcome h1 { font-size: 22px; margin-bottom: 4px; font-weight: 700; }
         .welcome h1 span { color: var(--sela-orange); }
         .welcome p { color: var(--text-secondary); font-size: 14px; }
         
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
-        .stat-card {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm);
-            position: relative; overflow: hidden;
-        }
-        .stat-card::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--sela-orange), var(--sela-orange-light)); opacity: 0.6;
-        }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--sela-orange), var(--sela-orange-light)); opacity: 0.6; }
         .stat-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .stat-card-title { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
         .stat-card-icon { font-size: 20px; }
@@ -197,82 +71,39 @@
         .section-title { font-size: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
         
         .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
-        .action-btn {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 20px 14px; text-align: center;
-            cursor: pointer; transition: all 0.3s; text-decoration: none;
-            color: var(--text-primary); box-shadow: var(--shadow-sm);
-        }
+        .action-btn { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px 14px; text-align: center; cursor: pointer; transition: all 0.3s; text-decoration: none; color: var(--text-primary); box-shadow: var(--shadow-sm); }
         .action-btn:hover { border-color: var(--sela-orange); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
-        }
+        .action-btn.primary { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); border: none; color: #fff; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3); }
         .action-btn.primary:hover { box-shadow: 0 12px 32px rgba(242, 101, 34, 0.4); }
         .action-btn.primary .action-desc { color: rgba(255,255,255,0.85); }
-        
-        .action-btn.wallet {
-            background: linear-gradient(135deg, #16A34A, #15803D);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
-        }
+        .action-btn.wallet { background: linear-gradient(135deg, #16A34A, #15803D); border: none; color: #fff; box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3); }
         .action-btn.wallet:hover { box-shadow: 0 12px 32px rgba(22, 163, 74, 0.4); }
         .action-btn.wallet .action-desc { color: rgba(255,255,255,0.85); }
-        
-        .action-btn.stats-btn {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-        }
+        .action-btn.stats-btn { background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; color: #fff; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3); }
         .action-btn.stats-btn:hover { box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4); }
         .action-btn.stats-btn .action-desc { color: rgba(255,255,255,0.85); }
-        
-        .action-btn.settings {
-            background: linear-gradient(135deg, #607D8B, #455A64);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(96, 125, 139, 0.3);
-        }
+        .action-btn.settings { background: linear-gradient(135deg, #607D8B, #455A64); border: none; color: #fff; box-shadow: 0 8px 24px rgba(96, 125, 139, 0.3); }
         .action-btn.settings:hover { box-shadow: 0 12px 32px rgba(96, 125, 139, 0.4); }
         .action-btn.settings .action-desc { color: rgba(255,255,255,0.85); }
-        
-        .action-btn.admin {
-            background: linear-gradient(135deg, #6366F1, #4F46E5);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
-        }
+        .action-btn.admin { background: linear-gradient(135deg, #6366F1, #4F46E5); border: none; color: #fff; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }
         .action-btn.admin:hover { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4); }
         .action-btn.admin .action-desc { color: rgba(255,255,255,0.85); }
-        
-        .action-btn.lottery {
-            background: linear-gradient(135deg, #DC2626, #EF4444);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
-        }
+        .action-btn.lottery { background: linear-gradient(135deg, #DC2626, #EF4444); border: none; color: #fff; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3); }
         .action-btn.lottery:hover { box-shadow: 0 12px 32px rgba(220, 38, 38, 0.4); }
         .action-btn.lottery .action-desc { color: rgba(255,255,255,0.85); }
-        .action-btn.number-stats {
-            background: linear-gradient(135deg, #7C3AED, #8B5CF6);
-            border: none; color: #fff; box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
-        }
+        .action-btn.number-stats { background: linear-gradient(135deg, #7C3AED, #8B5CF6); border: none; color: #fff; box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3); }
         .action-btn.number-stats:hover { box-shadow: 0 12px 32px rgba(124, 58, 237, 0.4); }
         .action-btn.number-stats .action-desc { color: rgba(255,255,255,0.85); }
-        
         .action-icon { font-size: 32px; margin-bottom: 10px; }
         .action-title { font-weight: 600; margin-bottom: 4px; font-size: 15px; }
         .action-desc { font-size: 11px; color: var(--text-secondary); }
         
-        .activity-section {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; overflow: hidden; margin-bottom: 28px;
-        }
-        .activity-header {
-            padding: 16px 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .activity-section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
+        .activity-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .activity-title { font-weight: 700; font-size: 15px; }
         .view-all { color: var(--sela-orange); font-size: 13px; text-decoration: none; font-weight: 500; }
         .activity-list { padding: 0; }
-        .activity-item {
-            padding: 14px 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-            text-decoration: none; color: inherit; transition: background 0.3s;
-        }
+        .activity-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: background 0.3s; }
         .activity-item:last-child { border-bottom: none; }
         .activity-item:hover { background: var(--bg-secondary); }
         .activity-info { flex: 1; }
@@ -290,20 +121,18 @@
         .empty-title { font-size: 16px; margin-bottom: 8px; font-weight: 600; }
         .empty-desc { color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
         
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-primary); display: flex; align-items: center;
-            justify-content: center; z-index: 1000;
-        }
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .loading-content { text-align: center; }
-        .loading-logo {
-            width: 72px; height: 72px; border-radius: 16px;
-            margin-bottom: 20px; box-shadow: var(--shadow-md);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
+        .loading-logo { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 20px; box-shadow: var(--shadow-md); animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
         .loading-text { color: var(--text-secondary); font-size: 14px; }
         .hidden { display: none !important; }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 2000; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
         
         @media (max-width: 480px) {
             .header { padding: 10px 16px; }
@@ -323,7 +152,6 @@
             .lottery-card { min-width: 150px; padding: 12px 14px; }
             .lottery-ball { width: 24px; height: 24px; font-size: 11px; }
         }
-        
         @media (min-width: 768px) {
             .header { padding: 14px 30px; }
             .logo { width: 40px; height: 40px; }
@@ -360,20 +188,13 @@
     </header>
     
     <main class="main">
-        <!-- 最新開獎資訊 -->
         <div class="lottery-cards" id="lottery-cards">
             <div class="lottery-card power loading-card">
-                <div class="lottery-card-header">
-                    <span class="lottery-icon">🎯</span>
-                    <span class="lottery-name">威力彩</span>
-                </div>
+                <div class="lottery-card-header"><span class="lottery-icon">🎯</span><span class="lottery-name">威力彩</span></div>
                 <div class="lottery-numbers">載入中...</div>
             </div>
             <div class="lottery-card super loading-card">
-                <div class="lottery-card-header">
-                    <span class="lottery-icon">🎰</span>
-                    <span class="lottery-name">大樂透</span>
-                </div>
+                <div class="lottery-card-header"><span class="lottery-icon">🎰</span><span class="lottery-name">大樂透</span></div>
                 <div class="lottery-numbers">載入中...</div>
             </div>
         </div>
@@ -385,83 +206,35 @@
         
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">總份額</span>
-                    <span class="stat-card-icon">💰</span>
-                </div>
+                <div class="stat-card-header"><span class="stat-card-title">總份額</span><span class="stat-card-icon">💰</span></div>
                 <div class="stat-card-value" id="total-pool">$0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">參與集資</span>
-                    <span class="stat-card-icon">🎰</span>
-                </div>
+                <div class="stat-card-header"><span class="stat-card-title">參與集資</span><span class="stat-card-icon">🎰</span></div>
                 <div class="stat-card-value blue" id="series-count">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">累計獎金</span>
-                    <span class="stat-card-icon">🎉</span>
-                </div>
+                <div class="stat-card-header"><span class="stat-card-title">累計獎金</span><span class="stat-card-icon">🎉</span></div>
                 <div class="stat-card-value green" id="total-prize">$0</div>
             </div>
         </div>
         
         <h2 class="section-title">⚡ 快速操作</h2>
         <div class="actions">
-            <a href="/series" class="action-btn primary">
-                <div class="action-icon">🎰</div>
-                <div class="action-title">我的集資</div>
-                <div class="action-desc">查看與管理集資</div>
-            </a>
-            <a href="/wallet" class="action-btn wallet">
-                <div class="action-icon">💰</div>
-                <div class="action-title">我的錢包</div>
-                <div class="action-desc">查看資產與記錄</div>
-            </a>
-            <a href="/statistics" class="action-btn stats-btn">
-                <div class="action-icon">📊</div>
-                <div class="action-title">統計報表</div>
-                <div class="action-desc">查看投資報酬</div>
-            </a>
-            <a href="/lottery" class="action-btn lottery">
-                <div class="action-icon">🎰</div>
-                <div class="action-title">對獎專區</div>
-                <div class="action-desc">開獎資訊與歷史</div>
-            </a>
-            <a href="/stats" class="action-btn number-stats">
-                <div class="action-icon">📊</div>
-                <div class="action-title">號碼統計</div>
-                <div class="action-desc">熱門冷門分析</div>
-            </a>
-            <a href="/settings" class="action-btn settings">
-                <div class="action-icon">⚙️</div>
-                <div class="action-title">設定</div>
-                <div class="action-desc">個人資料與通知</div>
-            </a>
-            <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();">
-                <div class="action-icon">🎫</div>
-                <div class="action-title">加入集資</div>
-                <div class="action-desc">使用邀請碼</div>
-            </a>
-            <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;">
-                <div class="action-icon">🔧</div>
-                <div class="action-title">管理後台</div>
-                <div class="action-desc">系統管理</div>
-            </a>
+            <a href="/series" class="action-btn primary"><div class="action-icon">🎰</div><div class="action-title">我的集資</div><div class="action-desc">查看與管理集資</div></a>
+            <a href="/wallet" class="action-btn wallet"><div class="action-icon">💰</div><div class="action-title">我的錢包</div><div class="action-desc">查看資產與記錄</div></a>
+            <a href="/statistics" class="action-btn stats-btn"><div class="action-icon">📊</div><div class="action-title">統計報表</div><div class="action-desc">查看投資報酬</div></a>
+            <a href="/lottery" class="action-btn lottery"><div class="action-icon">🎰</div><div class="action-title">對獎專區</div><div class="action-desc">開獎資訊與歷史</div></a>
+            <a href="/stats" class="action-btn number-stats"><div class="action-icon">📊</div><div class="action-title">號碼統計</div><div class="action-desc">熱門冷門分析</div></a>
+            <a href="/settings" class="action-btn settings"><div class="action-icon">⚙️</div><div class="action-title">設定</div><div class="action-desc">個人資料與通知</div></a>
+            <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();"><div class="action-icon">🎫</div><div class="action-title">加入集資</div><div class="action-desc">使用邀請碼</div></a>
+            <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;"><div class="action-icon">🔧</div><div class="action-title">管理後台</div><div class="action-desc">系統管理</div></a>
         </div>
         
         <div class="activity-section">
-            <div class="activity-header">
-                <span class="activity-title">📋 近期活動</span>
-                <a href="/series" class="view-all">查看全部</a>
-            </div>
+            <div class="activity-header"><span class="activity-title">📋 近期活動</span><a href="/series" class="view-all">查看全部</a></div>
             <div class="activity-list" id="activity-list">
-                <div class="empty-state">
-                    <div class="empty-icon">📋</div>
-                    <h3 class="empty-title">尚無活動</h3>
-                    <p class="empty-desc">加入或建立集資開始吧!</p>
-                </div>
+                <div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無活動</h3><p class="empty-desc">加入或建立集資開始吧!</p></div>
             </div>
         </div>
     </main>
@@ -489,9 +262,7 @@
                     <button onclick="saveWelcomeNickname()" style="flex: 1; padding: 14px; border: none; background: #F26522; color: #fff; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">確認</button>
                 </div>
             </div>
-            <div style="padding: 0 24px 20px; text-align: center;">
-                <p style="font-size: 12px; color: #999;">💡 之後可在「設定」頁面修改</p>
-            </div>
+            <div style="padding: 0 24px 20px; text-align: center;"><p style="font-size: 12px; color: #999;">💡 之後可在「設定」頁面修改</p></div>
         </div>
     </div>
     
@@ -508,100 +279,61 @@
         </div>
     </div>
     
-    <div id="toast" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 2000;"></div>
+    <div id="toast" class="toast"></div>
     
+    <script src="/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
-        
-        function showJoinModal() { document.getElementById('join-modal').style.display = 'flex'; }
-        function closeJoinModal() { document.getElementById('join-modal').style.display = 'none'; }
-        
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? '#DC2626' : type === 'success' ? '#16A34A' : '#333';
-            toast.style.transform = 'translateX(-50%) translateY(0)';
-            toast.style.opacity = '1';
-            setTimeout(() => { toast.style.transform = 'translateX(-50%) translateY(100px)'; toast.style.opacity = '0'; }, 3000);
-        }
+        // ==================== 彈窗 ====================
+        function showJoinModal() { $('join-modal').style.display = 'flex'; }
+        function closeJoinModal() { $('join-modal').style.display = 'none'; }
         
         async function joinSeries() {
-            const code = document.getElementById('invite-code').value.trim().toUpperCase();
-            const pool = parseFloat(document.getElementById('join-pool').value);
+            const code = $('invite-code').value.trim().toUpperCase();
+            const pool = parseFloat($('join-pool').value);
             if (!code) { showToast('請輸入邀請碼', 'error'); return; }
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/series/join`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ invitation_code: code, initial_pool_share: pool })
-                });
-                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || '加入失敗'); }
+                await apiPost('/series/join', { invitation_code: code, initial_pool_share: pool });
                 closeJoinModal();
                 showToast('成功加入集資!', 'success');
                 loadDashboardData();
             } catch (e) { showToast(e.message, 'error'); }
         }
         
-        // ===== 首次登入相關函數 =====
+        // ==================== 首次登入 ====================
         function checkFirstLogin(user) {
-            const isNewUser = localStorage.getItem('is_new_user');
-            if (isNewUser === '1') {
+            if (localStorage.getItem('is_new_user') === '1') {
                 localStorage.removeItem('is_new_user');
                 showWelcomeModal(user);
             }
         }
         
         function showWelcomeModal(user) {
-            document.getElementById('welcome-display-name').value = user.display_name;
-            document.getElementById('welcome-nickname').value = '';
-            document.getElementById('welcome-modal').style.display = 'flex';
-            setTimeout(() => document.getElementById('welcome-nickname').focus(), 300);
+            $('welcome-display-name').value = user.display_name;
+            $('welcome-nickname').value = '';
+            $('welcome-modal').style.display = 'flex';
+            setTimeout(() => $('welcome-nickname').focus(), 300);
         }
         
-        function closeWelcomeModal() {
-            document.getElementById('welcome-modal').style.display = 'none';
-        }
-        
-        function skipWelcome() {
-            closeWelcomeModal();
-            showToast('歡迎加入!隨時可在設定中修改暱稱', 'success');
-        }
+        function closeWelcomeModal() { $('welcome-modal').style.display = 'none'; }
+        function skipWelcome() { closeWelcomeModal(); showToast('歡迎加入!隨時可在設定中修改暱稱', 'success'); }
         
         async function saveWelcomeNickname() {
-            const nickname = document.getElementById('welcome-nickname').value.trim();
+            const nickname = $('welcome-nickname').value.trim();
             if (!nickname) { skipWelcome(); return; }
-            
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/users/me`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nickname: nickname })
-                });
-                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || '儲存失敗'); }
-                
-                const updatedUser = await res.json();
+                const updatedUser = await apiPut('/users/me', { nickname });
                 const displayName = updatedUser.nickname || updatedUser.display_name;
-                document.getElementById('user-name').textContent = displayName;
-                document.getElementById('welcome-name').textContent = displayName;
-                
+                setText('user-name', displayName);
+                setText('welcome-name', displayName);
                 closeWelcomeModal();
                 showToast(`歡迎 ${displayName}!祝您好運 🍀`, 'success');
             } catch (e) { showToast(e.message, 'error'); }
         }
         
-        // ===== 開獎資訊相關函數 =====
+        // ==================== 開獎資訊 ====================
         async function loadLotteryInfo() {
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/lottery/latest`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!res.ok) throw new Error('無法取得開獎資訊');
-                
-                const data = await res.json();
+                const data = await apiGet('/lottery/latest');
                 renderLotteryCards(data.lotteries);
             } catch (e) {
                 console.error('Failed to load lottery info:', e);
@@ -614,118 +346,108 @@
         }
         
         function renderLotteryCards(lotteries) {
-            const container = document.getElementById('lottery-cards');
-            
-            const powerCard = container.querySelector('.lottery-card.power');
-            if (lotteries?.power) {
-                renderLotteryCard(powerCard, lotteries.power, 'power');
-            } else {
-                powerCard.classList.remove('loading-card');
-                powerCard.classList.add('no-data');
-                powerCard.querySelector('.lottery-numbers').innerHTML = '暫無資料';
-            }
-            
-            const superCard = container.querySelector('.lottery-card.super');
-            if (lotteries?.super) {
-                renderLotteryCard(superCard, lotteries.super, 'super');
-            } else {
-                superCard.classList.remove('loading-card');
-                superCard.classList.add('no-data');
-                superCard.querySelector('.lottery-numbers').innerHTML = '暫無資料';
-            }
+            const container = $('lottery-cards');
+            ['power', 'super'].forEach(type => {
+                const card = container.querySelector(`.lottery-card.${type}`);
+                if (lotteries?.[type]) renderLotteryCard(card, lotteries[type], type);
+                else { card.classList.remove('loading-card'); card.classList.add('no-data'); card.querySelector('.lottery-numbers').innerHTML = '暫無資料'; }
+            });
         }
         
         function renderLotteryCard(cardEl, data, type) {
             cardEl.classList.remove('loading-card');
-            
             const draw = data.latest_draw;
-            if (!draw) {
-                cardEl.classList.add('no-data');
-                cardEl.querySelector('.lottery-numbers').innerHTML = '暫無資料';
-                return;
-            }
+            if (!draw) { cardEl.classList.add('no-data'); cardEl.querySelector('.lottery-numbers').innerHTML = '暫無資料'; return; }
             
             const headerEl = cardEl.querySelector('.lottery-card-header');
             const existingDate = headerEl.querySelector('.lottery-date');
             if (existingDate) existingDate.remove();
-            
             const dateEl = document.createElement('span');
             dateEl.className = 'lottery-date';
             dateEl.textContent = formatLotteryDate(draw.draw_date);
             headerEl.appendChild(dateEl);
             
-            const numbersEl = cardEl.querySelector('.lottery-numbers');
-            numbersEl.innerHTML = renderLotteryNumbers(draw.numbers, type);
+            cardEl.querySelector('.lottery-numbers').innerHTML = renderLotteryNumbers(draw.numbers, type);
             
             if (data.jackpot_display) {
                 const oldJackpot = cardEl.querySelector('.lottery-jackpot');
                 if (oldJackpot) oldJackpot.remove();
-                
-                const jackpotHtml = `
-                    <div class="lottery-jackpot">
-                        <span class="jackpot-label">💰 頭獎</span>
-                        <span class="jackpot-amount">${data.jackpot_display}</span>
-                    </div>
-                `;
-                cardEl.insertAdjacentHTML('beforeend', jackpotHtml);
+                cardEl.insertAdjacentHTML('beforeend', `<div class="lottery-jackpot"><span class="jackpot-label">💰 頭獎</span><span class="jackpot-amount">${data.jackpot_display}</span></div>`);
             }
         }
         
         function renderLotteryNumbers(numbers, type) {
             let html = '';
-            
             if (type === 'power') {
-                if (numbers.first_zone) {
-                    numbers.first_zone.forEach(num => {
-                        html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.second_zone !== undefined && numbers.second_zone !== null) {
-                    html += `<span class="lottery-divider"></span>`;
-                    html += `<span class="lottery-ball second-zone">${String(numbers.second_zone).padStart(2, '0')}</span>`;
-                }
+                if (numbers.first_zone) numbers.first_zone.forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.second_zone !== undefined && numbers.second_zone !== null) { html += `<span class="lottery-divider"></span><span class="lottery-ball second-zone">${String(numbers.second_zone).padStart(2, '0')}</span>`; }
             } else if (type === 'super') {
-                if (numbers.main) {
-                    numbers.main.forEach(num => {
-                        html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.special !== undefined && numbers.special !== null) {
-                    html += `<span class="lottery-divider"></span>`;
-                    html += `<span class="lottery-ball special">${String(numbers.special).padStart(2, '0')}</span>`;
-                }
+                if (numbers.main) numbers.main.forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.special !== undefined && numbers.special !== null) { html += `<span class="lottery-divider"></span><span class="lottery-ball special">${String(numbers.special).padStart(2, '0')}</span>`; }
             } else {
-                if (numbers.numbers || numbers.main) {
-                    (numbers.numbers || numbers.main).forEach(num => {
-                        html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
+                if (numbers.numbers || numbers.main) (numbers.numbers || numbers.main).forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
             }
-            
             return html || '暫無資料';
         }
         
         function formatLotteryDate(dateStr) {
             if (!dateStr) return '';
-            try {
-                const parts = dateStr.split(/[\/\-]/);
-                if (parts.length >= 3) {
-                    return `${parts[1]}/${parts[2]}`;
-                }
-                return dateStr;
-            } catch (e) {
-                return dateStr;
-            }
+            try { const parts = dateStr.split(/[\/\-]/); return parts.length >= 3 ? `${parts[1]}/${parts[2]}` : dateStr; } catch (e) { return dateStr; }
         }
         
-        // ===== 主要邏輯 =====
-        async function checkAuth() {
-            const token = localStorage.getItem('access_token');
+        // ==================== 主邏輯 ====================
+        function updateUI(user) {
+            const displayName = user.nickname || user.display_name;
+            setText('user-name', displayName);
+            setText('welcome-name', displayName);
+            const avatarEl = $('user-avatar');
+            if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`;
+            else avatarEl.textContent = displayName.charAt(0);
+            if (user.role === 'admin') $('admin-btn').style.display = 'block';
+            $('loading-overlay').classList.add('hidden');
+        }
+        
+        async function loadDashboardData() {
+            try {
+                const seriesList = await apiGet('/series');
+                let totalPool = 0;
+                seriesList.forEach(s => { totalPool += Number(s.my_pool_share) || 0; });
+                setText('total-pool', `$${totalPool.toLocaleString()}`);
+                setText('series-count', seriesList.length);
+                setText('total-prize', '$0');
+                renderRecentActivity(seriesList);
+            } catch (e) { console.error('Failed to load dashboard data:', e); }
+        }
+        
+        async function renderRecentActivity(seriesList) {
+            const container = $('activity-list');
+            if (seriesList.length === 0) return;
+            const recentGroups = [];
+            for (const series of seriesList.slice(0, 3)) {
+                try {
+                    const groups = await apiGet(`/series/${series.id}/groups`);
+                    groups.slice(0, 2).forEach(g => { recentGroups.push({ ...g, seriesName: series.name, seriesId: series.id }); });
+                } catch (e) { console.error('Failed to load groups:', e); }
+            }
+            if (recentGroups.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無單期團</h3><p class="empty-desc">管理員開新期後會顯示在這裡</p></div>`;
+                return;
+            }
+            const statusText = { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' };
+            container.innerHTML = recentGroups.slice(0, 5).map(g => `
+                <a href="/group/${g.id}" class="activity-item">
+                    <div class="activity-info"><div class="activity-name">${g.seriesName} - 第 ${g.period_number} 期</div><div class="activity-detail">${g.lottery_type_name} · 池 $${Number(g.total_pool).toLocaleString()}</div></div>
+                    <span class="activity-status ${g.status}">${statusText[g.status] || g.status}</span>
+                </a>
+            `).join('');
+        }
+        
+        async function initDashboard() {
+            const token = getToken();
             if (!token) { window.location.href = '/'; return; }
             try {
-                const response = await fetch(`${API_BASE}/users/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if (!response.ok) throw new Error('Unauthorized');
-                const user = await response.json();
+                const user = await apiGet('/users/me');
+                if (!user) return;
                 updateUI(user);
                 checkFirstLogin(user);
                 loadLotteryInfo();
@@ -737,71 +459,10 @@
             }
         }
         
-        function updateUI(user) {
-            const displayName = user.nickname || user.display_name;
-            document.getElementById('user-name').textContent = displayName;
-            document.getElementById('welcome-name').textContent = displayName;
-            const avatarEl = document.getElementById('user-avatar');
-            if (user.picture_url) { avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`; }
-            else { avatarEl.textContent = displayName.charAt(0); }
-            if (user.role === 'admin') { document.getElementById('admin-btn').style.display = 'block'; }
-            document.getElementById('loading-overlay').classList.add('hidden');
-        }
+        $('join-modal').addEventListener('click', function(e) { if (e.target === this) closeJoinModal(); });
+        $('welcome-modal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
         
-        async function loadDashboardData() {
-            const token = localStorage.getItem('access_token');
-            try {
-                const seriesRes = await fetch(`${API_BASE}/series`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if (seriesRes.ok) {
-                    const seriesList = await seriesRes.json();
-                    let totalPool = 0, totalPrize = 0;
-                    seriesList.forEach(s => { totalPool += Number(s.my_pool_share) || 0; });
-                    document.getElementById('total-pool').textContent = `$${totalPool.toLocaleString()}`;
-                    document.getElementById('series-count').textContent = seriesList.length;
-                    document.getElementById('total-prize').textContent = `$${totalPrize.toLocaleString()}`;
-                    renderRecentActivity(seriesList);
-                }
-            } catch (e) { console.error('Failed to load dashboard data:', e); }
-        }
-        
-        async function renderRecentActivity(seriesList) {
-            const container = document.getElementById('activity-list');
-            if (seriesList.length === 0) return;
-            const recentGroups = [];
-            const token = localStorage.getItem('access_token');
-            for (const series of seriesList.slice(0, 3)) {
-                try {
-                    const res = await fetch(`${API_BASE}/series/${series.id}/groups`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (res.ok) {
-                        const groups = await res.json();
-                        groups.slice(0, 2).forEach(g => { recentGroups.push({ ...g, seriesName: series.name, seriesId: series.id }); });
-                    }
-                } catch (e) { console.error('Failed to load groups:', e); }
-            }
-            if (recentGroups.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無單期團</h3><p class="empty-desc">管理員開新期後會顯示在這裡</p></div>`;
-                return;
-            }
-            const statusText = { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' };
-            container.innerHTML = recentGroups.slice(0, 5).map(g => `
-                <a href="/group/${g.id}" class="activity-item">
-                    <div class="activity-info">
-                        <div class="activity-name">${g.seriesName} - 第 ${g.period_number} 期</div>
-                        <div class="activity-detail">${g.lottery_type_name} · 池 $${Number(g.total_pool).toLocaleString()}</div>
-                    </div>
-                    <span class="activity-status ${g.status}">${statusText[g.status] || g.status}</span>
-                </a>
-            `).join('');
-        }
-        
-        function logout() { if (confirm('確定要登出嗎?')) { localStorage.removeItem('access_token'); window.location.href = '/'; } }
-        
-        document.getElementById('join-modal').addEventListener('click', function(e) { if (e.target === this) closeJoinModal(); });
-        document.getElementById('welcome-modal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
-        
-        checkAuth();
+        initDashboard();
     </script>
 </body>
 </html>
-```
-

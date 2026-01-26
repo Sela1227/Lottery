@@ -9,443 +9,106 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ==================== 頁面專屬樣式 ==================== */
+        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; padding-bottom: 100px; }
         
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.12);
-            --success: #16A34A;
-            --info: #2563EB;
-            --warning: #F59E0B;
-            --danger: #DC2626;
-        }
+        .header { padding: 12px 20px; gap: 12px; position: sticky; }
+        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
+        .page-title { font-size: 18px; font-weight: 700; }
         
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-            padding-bottom: 100px;
-        }
-        
-        /* Header */
-        .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .back-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-        
-        .page-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        /* Main */
-        .main {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .main { padding: 20px; max-width: 600px; margin: 0 auto; }
         
         /* Balance Card */
-        .balance-card {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
-        }
-        
-        .balance-label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 8px;
-        }
-        
-        .balance-amount {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 20px;
-        }
-        
-        .balance-details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .balance-item {
-            text-align: center;
-        }
-        
-        .balance-item-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-        
-        .balance-item-value {
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .balance-card { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); border-radius: 20px; padding: 24px; color: white; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3); }
+        .balance-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+        .balance-amount { font-size: 36px; font-weight: 900; margin-bottom: 20px; }
+        .balance-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .balance-item { text-align: center; }
+        .balance-item-label { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
+        .balance-item-value { font-size: 18px; font-weight: 700; }
         
         /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .stat-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--sela-orange);
-            margin-bottom: 4px;
-        }
-        
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; text-align: center; }
+        .stat-icon { font-size: 24px; margin-bottom: 8px; }
+        .stat-value { font-size: 18px; font-weight: 700; color: var(--sela-orange); margin-bottom: 4px; }
         .stat-value.green { color: var(--success); }
         .stat-value.blue { color: var(--info); }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); }
         
         /* Section */
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        
-        .section-action {
-            color: var(--sela-orange);
-            font-size: 13px;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-        }
+        .section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 16px; font-weight: 700; }
+        .section-action { color: var(--sela-orange); font-size: 13px; text-decoration: none; font-weight: 500; cursor: pointer; }
         
         /* Pool Share List */
-        .pool-list {
-            padding: 0;
-        }
-        
-        .pool-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.2s;
-        }
-        
-        .pool-item:last-child {
-            border-bottom: none;
-        }
-        
-        .pool-item:hover {
-            background: var(--bg-secondary);
-        }
-        
-        .pool-info {
-            flex: 1;
-        }
-        
-        .pool-name {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-        
-        .pool-ratio {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .pool-amount {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--sela-orange);
-        }
+        .pool-list { padding: 0; }
+        .pool-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .pool-item:last-child { border-bottom: none; }
+        .pool-item:hover { background: var(--bg-secondary); }
+        .pool-info { flex: 1; }
+        .pool-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .pool-ratio { font-size: 12px; color: var(--text-secondary); }
+        .pool-amount { font-weight: 700; font-size: 16px; color: var(--sela-orange); }
         
         /* Transaction List */
-        .tx-list {
-            padding: 0;
-        }
-        
-        .tx-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .tx-item:last-child {
-            border-bottom: none;
-        }
-        
-        .tx-info {
-            flex: 1;
-        }
-        
-        .tx-type {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .tx-badge {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-        }
-        
-        .tx-note {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .tx-amount {
-            text-align: right;
-        }
-        
-        .tx-amount-value {
-            font-weight: 700;
-            font-size: 15px;
-        }
-        
-        .tx-amount-value.positive {
-            color: var(--success);
-        }
-        
-        .tx-amount-value.positive::before {
-            content: '+';
-        }
-        
-        .tx-amount-value.negative {
-            color: var(--danger);
-        }
-        
-        .tx-time {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
+        .tx-list { padding: 0; }
+        .tx-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .tx-item:last-child { border-bottom: none; }
+        .tx-info { flex: 1; }
+        .tx-type { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .tx-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--bg-secondary); color: var(--text-secondary); }
+        .tx-note { font-size: 12px; color: var(--text-secondary); }
+        .tx-amount { text-align: right; }
+        .tx-amount-value { font-weight: 700; font-size: 15px; }
+        .tx-amount-value.positive { color: var(--success); }
+        .tx-amount-value.positive::before { content: '+'; }
+        .tx-amount-value.negative { color: var(--danger); }
+        .tx-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
         
         /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            padding: 12px 20px;
-            overflow-x: auto;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .filter-tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-        
-        .filter-tab.active {
-            background: var(--sela-orange);
-            color: white;
-        }
+        .filter-tabs { display: flex; gap: 8px; padding: 12px 20px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
+        .filter-tab { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; background: var(--bg-secondary); color: var(--text-secondary); border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .filter-tab.active { background: var(--sela-orange); color: white; }
         
         /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        
-        .empty-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-text { color: var(--text-secondary); font-size: 14px; }
         
         /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--sela-orange);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 32px; height: 32px; border: 3px solid var(--border-color); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         /* Load More */
-        .load-more {
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .load-more-btn {
-            padding: 12px 32px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .load-more-btn:hover {
-            background: var(--sela-orange);
-            color: white;
-            border-color: var(--sela-orange);
-        }
+        .load-more { padding: 16px; text-align: center; }
+        .load-more-btn { padding: 12px 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
+        .load-more-btn:hover { background: var(--sela-orange); color: white; border-color: var(--sela-orange); }
         
         /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 300;
-        }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 300; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        /* Responsive */
         @media (max-width: 480px) {
-            .balance-amount {
-                font-size: 28px;
-            }
-            
-            .balance-item-value {
-                font-size: 16px;
-            }
-            
-            .stats-grid {
-                gap: 8px;
-            }
-            
-            .stat-card {
-                padding: 12px;
-            }
-            
-            .stat-value {
-                font-size: 16px;
-            }
+            .balance-amount { font-size: 28px; }
+            .balance-item-value { font-size: 16px; }
+            .stats-grid { gap: 8px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <a href="/dashboard" class="back-btn">←</a>
         <h1 class="page-title">💰 我的錢包</h1>
     </header>
     
-    <!-- Main -->
     <main class="main">
-        <!-- Balance Card -->
         <div class="balance-card">
             <div class="balance-label">總資產</div>
             <div class="balance-amount" id="total-assets">$0</div>
@@ -461,7 +124,6 @@
             </div>
         </div>
         
-        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📈</div>
@@ -475,7 +137,6 @@
             </div>
         </div>
         
-        <!-- Pool Shares -->
         <div class="section">
             <div class="section-header">
                 <span class="section-title">🎰 集資份額</span>
@@ -486,7 +147,6 @@
             </div>
         </div>
         
-        <!-- Transactions -->
         <div class="section">
             <div class="section-header">
                 <span class="section-title">📋 交易記錄</span>
@@ -505,134 +165,71 @@
         </div>
     </main>
     
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
     
+    <script src="/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
         let currentFilter = 'all';
         let txSkip = 0;
         const txLimit = 20;
         let hasMoreTx = false;
         
-        // Auth Check
-        async function checkAuth() {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                window.location.href = '/';
-                return false;
-            }
-            return true;
-        }
-        
-        // API Helpers
-        async function apiGet(url) {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) {
-                if (res.status === 401) {
-                    window.location.href = '/';
-                    return null;
-                }
-                const err = await res.json();
-                throw new Error(err.detail || 'API Error');
-            }
-            return res.json();
-        }
-        
-        // Load Overview
+        // ==================== 載入資料 ====================
         async function loadOverview() {
             try {
                 const data = await apiGet('/wallet/overview');
                 if (!data) return;
-                
-                document.getElementById('total-assets').textContent = `$${Number(data.total_assets).toLocaleString()}`;
-                document.getElementById('wallet-balance').textContent = `$${Number(data.wallet_balance).toLocaleString()}`;
-                document.getElementById('pool-share').textContent = `$${Number(data.total_pool_share).toLocaleString()}`;
-            } catch (e) {
-                console.error('Failed to load overview:', e);
-            }
+                setText('total-assets', `$${formatMoney(data.total_assets)}`);
+                setText('wallet-balance', `$${formatMoney(data.wallet_balance)}`);
+                setText('pool-share', `$${formatMoney(data.total_pool_share)}`);
+            } catch (e) { console.error('Failed to load overview:', e); }
         }
         
-        // Load Summary
         async function loadSummary() {
             try {
                 const data = await apiGet('/wallet/transactions/summary');
                 if (!data) return;
-                
-                document.getElementById('total-invested').textContent = `$${Number(data.total_invested).toLocaleString()}`;
-                document.getElementById('total-prize').textContent = `$${Number(data.total_prize).toLocaleString()}`;
-            } catch (e) {
-                console.error('Failed to load summary:', e);
-            }
+                setText('total-invested', `$${formatMoney(data.total_invested)}`);
+                setText('total-prize', `$${formatMoney(data.total_prize)}`);
+            } catch (e) { console.error('Failed to load summary:', e); }
         }
         
-        // Load Pool Shares
         async function loadPoolShares() {
             try {
                 const shares = await apiGet('/wallet/pool-shares');
                 if (!shares) return;
-                
-                const container = document.getElementById('pool-list');
-                
+                const container = $('pool-list');
                 if (shares.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">🎰</div>
-                            <p class="empty-text">尚未參與任何集資</p>
-                        </div>
-                    `;
+                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎰</div><p class="empty-text">尚未參與任何集資</p></div>`;
                     return;
                 }
-                
                 container.innerHTML = shares.map(s => `
                     <a href="/series/${s.series_id}" class="pool-item">
-                        <div class="pool-info">
-                            <div class="pool-name">${s.series_name}</div>
-                            <div class="pool-ratio">佔比 ${s.ratio}%</div>
-                        </div>
-                        <div class="pool-amount">$${Number(s.pool_share).toLocaleString()}</div>
+                        <div class="pool-info"><div class="pool-name">${s.series_name}</div><div class="pool-ratio">佔比 ${s.ratio}%</div></div>
+                        <div class="pool-amount">$${formatMoney(s.pool_share)}</div>
                     </a>
                 `).join('');
             } catch (e) {
                 console.error('Failed to load pool shares:', e);
-                document.getElementById('pool-list').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">❌</div>
-                        <p class="empty-text">載入失敗</p>
-                    </div>
-                `;
+                $('pool-list').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><p class="empty-text">載入失敗</p></div>`;
             }
         }
         
-        // Load Transactions
         async function loadTransactions(append = false) {
             try {
                 let url = `/wallet/transactions?skip=${txSkip}&limit=${txLimit}`;
-                
-                if (currentFilter === 'pool') {
-                    url += '&account_type=pool';
-                } else if (currentFilter === 'prize') {
-                    url += '&transaction_type=pool_prize';
-                }
+                if (currentFilter === 'pool') url += '&account_type=pool';
+                else if (currentFilter === 'prize') url += '&transaction_type=pool_prize';
                 
                 const data = await apiGet(url);
                 if (!data) return;
                 
                 hasMoreTx = data.has_more;
-                document.getElementById('load-more').style.display = hasMoreTx ? 'block' : 'none';
+                setVisible('load-more', hasMoreTx);
                 
-                const container = document.getElementById('tx-list');
-                
+                const container = $('tx-list');
                 if (data.transactions.length === 0 && !append) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">📋</div>
-                            <p class="empty-text">尚無交易記錄</p>
-                        </div>
-                    `;
+                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">尚無交易記錄</p></div>`;
                     return;
                 }
                 
@@ -641,37 +238,22 @@
                     return `
                         <div class="tx-item">
                             <div class="tx-info">
-                                <div class="tx-type">
-                                    ${tx.transaction_type_display}
-                                    ${tx.series_name ? `<span class="tx-badge">${tx.series_name}</span>` : ''}
-                                </div>
+                                <div class="tx-type">${tx.transaction_type_display}${tx.series_name ? `<span class="tx-badge">${tx.series_name}</span>` : ''}</div>
                                 <div class="tx-note">${tx.note || ''}</div>
                             </div>
                             <div class="tx-amount">
-                                <div class="tx-amount-value ${isPositive ? 'positive' : 'negative'}">
-                                    $${Math.abs(parseFloat(tx.amount)).toLocaleString()}
-                                </div>
-                                <div class="tx-time">${formatTime(tx.created_at)}</div>
+                                <div class="tx-amount-value ${isPositive ? 'positive' : 'negative'}">$${formatMoney(Math.abs(parseFloat(tx.amount)))}</div>
+                                <div class="tx-time">${formatRelativeTime(tx.created_at)}</div>
                             </div>
                         </div>
                     `;
                 }).join('');
                 
-                if (append) {
-                    container.innerHTML += html;
-                } else {
-                    container.innerHTML = html;
-                }
+                if (append) container.innerHTML += html;
+                else container.innerHTML = html;
             } catch (e) {
                 console.error('Failed to load transactions:', e);
-                if (!append) {
-                    document.getElementById('tx-list').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">❌</div>
-                            <p class="empty-text">載入失敗</p>
-                        </div>
-                    `;
-                }
+                if (!append) $('tx-list').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><p class="empty-text">載入失敗</p></div>`;
             }
         }
         
@@ -680,7 +262,7 @@
             loadTransactions(true);
         }
         
-        // Filter Tabs
+        // ==================== Filter Tabs ====================
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -691,15 +273,16 @@
             });
         });
         
-        // Utilities
-        function formatTime(dateStr) {
-            const d = new Date(dateStr);
-            const now = new Date();
-            const diff = now - d;
-            
-            if (diff < 60000) return '剛剛';
-            if (diff < 3600000) return `${Math.floor(diff / 60000)} 分鐘前`;
-            if (diff < 86400000) return `${Math.floor(diff / 3600000)} 小時前`;
-            if (diff < 604800000) return `${Math.floor(diff / 86400000)} 天前`;
-            
-            return `${d.getMonth() + 1}/${d.getDate()}`;
+        // ==================== Init ====================
+        async function init() {
+            if (!await checkAuth()) return;
+            loadOverview();
+            loadSummary();
+            loadPoolShares();
+            loadTransactions();
+        }
+        
+        init();
+    </script>
+</body>
+</html>
