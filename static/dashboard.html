@@ -444,18 +444,27 @@
         
         async function initDashboard() {
             const token = getToken();
-            if (!token) { window.location.href = '/'; return; }
+            if (!token) { 
+                safeRedirect('/'); 
+                return; 
+            }
             try {
                 const user = await apiGet('/users/me');
                 if (!user) return;
+                
+                // 成功載入，清除重定向計數
+                if (typeof clearRedirectCount === 'function') {
+                    clearRedirectCount();
+                }
+                
                 updateUI(user);
                 checkFirstLogin(user);
                 loadLotteryInfo();
                 loadDashboardData();
             } catch (error) {
                 console.error('Auth error:', error);
-                localStorage.removeItem('access_token');
-                window.location.href = '/';
+                removeToken();
+                safeRedirect('/');
             }
         }
         
