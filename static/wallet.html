@@ -6,104 +6,239 @@
     <meta name="theme-color" content="#F26522">
     <title>我的錢包 - SELA 樂透一路發</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-        /* ==================== 頁面專屬樣式 ==================== */
-        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; padding-bottom: 100px; }
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --success: #16A34A;
+            --info: #2196F3;
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
+        }
         
-        .header { padding: 12px 20px; gap: 12px; position: sticky; }
-        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
-        .page-title { font-size: 18px; font-weight: 700; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
         
-        .main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        /* ===== Header 統一樣式 ===== */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+        .header .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* ===== Main 統一樣式 ===== */
+        .main {
+            padding: 16px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .main { max-width: 600px; padding: 20px; }
+        }
         
         /* Balance Card */
-        .balance-card { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); border-radius: 20px; padding: 24px; color: white; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3); }
-        .balance-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
-        .balance-amount { font-size: 36px; font-weight: 900; margin-bottom: 20px; }
-        .balance-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .balance-card {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3);
+        }
+        .balance-label { font-size: 14px; opacity: 0.9; margin-bottom: 6px; }
+        .balance-amount { font-size: 32px; font-weight: 900; margin-bottom: 16px; }
+        .balance-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
         .balance-item { text-align: center; }
         .balance-item-label { font-size: 12px; opacity: 0.8; margin-bottom: 4px; }
-        .balance-item-value { font-size: 18px; font-weight: 700; }
+        .balance-item-value { font-size: 16px; font-weight: 700; }
         
         /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; text-align: center; }
-        .stat-icon { font-size: 24px; margin-bottom: 8px; }
-        .stat-value { font-size: 18px; font-weight: 700; color: var(--sela-orange); margin-bottom: 4px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .stat-icon { font-size: 20px; margin-bottom: 6px; }
+        .stat-value { font-size: 16px; font-weight: 700; color: var(--sela-orange); margin-bottom: 4px; }
         .stat-value.green { color: var(--success); }
         .stat-value.blue { color: var(--info); }
-        .stat-label { font-size: 12px; color: var(--text-secondary); }
+        .stat-label { font-size: 11px; color: var(--text-secondary); }
         
         /* Section */
-        .section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
-        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .section-title { font-size: 16px; font-weight: 700; }
-        .section-action { color: var(--sela-orange); font-size: 13px; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .section-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title { font-size: 15px; font-weight: 700; }
+        .section-action { color: var(--sela-orange); font-size: 13px; text-decoration: none; font-weight: 500; }
         
         /* Pool Share List */
         .pool-list { padding: 0; }
-        .pool-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .pool-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
         .pool-item:last-child { border-bottom: none; }
-        .pool-item:hover { background: var(--bg-secondary); }
         .pool-info { flex: 1; }
-        .pool-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .pool-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
         .pool-ratio { font-size: 12px; color: var(--text-secondary); }
-        .pool-amount { font-weight: 700; font-size: 16px; color: var(--sela-orange); }
+        .pool-amount { font-weight: 700; font-size: 15px; color: var(--sela-orange); }
         
         /* Transaction List */
         .tx-list { padding: 0; }
-        .tx-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .tx-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .tx-item:last-child { border-bottom: none; }
         .tx-info { flex: 1; }
-        .tx-type { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-        .tx-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--bg-secondary); color: var(--text-secondary); }
-        .tx-note { font-size: 12px; color: var(--text-secondary); }
-        .tx-amount { text-align: right; }
-        .tx-amount-value { font-weight: 700; font-size: 15px; }
-        .tx-amount-value.positive { color: var(--success); }
-        .tx-amount-value.positive::before { content: '+'; }
-        .tx-amount-value.negative { color: var(--danger); }
-        .tx-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        .tx-type { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+        .tx-date { font-size: 12px; color: var(--text-secondary); }
+        .tx-amount { font-weight: 700; font-size: 15px; }
+        .tx-amount.positive { color: var(--success); }
+        .tx-amount.negative { color: #DC2626; }
         
         /* Filter Tabs */
-        .filter-tabs { display: flex; gap: 8px; padding: 12px 20px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
-        .filter-tab { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; background: var(--bg-secondary); color: var(--text-secondary); border: none; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-        .filter-tab.active { background: var(--sela-orange); color: white; }
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+        .filter-tab {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+        .filter-tab.active {
+            background: var(--sela-orange);
+            color: white;
+            border-color: var(--sela-orange);
+        }
         
         /* Empty State */
-        .empty-state { text-align: center; padding: 40px 20px; }
-        .empty-icon { font-size: 48px; margin-bottom: 12px; }
-        .empty-text { color: var(--text-secondary); font-size: 14px; }
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .empty-icon { font-size: 40px; margin-bottom: 12px; }
         
         /* Loading */
-        .loading { text-align: center; padding: 40px; }
-        .spinner { width: 32px; height: 32px; border: 3px solid var(--border-color); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+        .loading { display: flex; justify-content: center; padding: 30px; }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--bg-secondary);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Load More */
-        .load-more { padding: 16px; text-align: center; }
-        .load-more-btn { padding: 12px 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
-        .load-more-btn:hover { background: var(--sela-orange); color: white; border-color: var(--sela-orange); }
-        
         /* Toast */
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 300; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        
-        @media (max-width: 480px) {
-            .balance-amount { font-size: 28px; }
-            .balance-item-value { font-size: 16px; }
-            .stats-grid { gap: 8px; }
-            .stat-card { padding: 12px; }
-            .stat-value { font-size: 16px; }
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
         }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: #DC2626; }
     </style>
 </head>
 <body>
-        <header class="header">
+    <header class="header">
         <div class="header-left">
             <img src="/static/logo.jpg" alt="SELA" class="logo">
             <span class="brand">我的錢包</span>
@@ -129,21 +264,30 @@
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">📈</div>
-                <div class="stat-value blue" id="total-invested">$0</div>
-                <div class="stat-label">累計投資</div>
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="total-invested">$0</div>
+                <div class="stat-label">累計投入</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🎉</div>
+                <div class="stat-icon">🏆</div>
                 <div class="stat-value green" id="total-prize">$0</div>
                 <div class="stat-label">累計獎金</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value blue" id="roi">0%</div>
+                <div class="stat-label">投報率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="series-count">0</div>
+                <div class="stat-label">參與集資</div>
             </div>
         </div>
         
         <div class="section">
             <div class="section-header">
-                <span class="section-title">🎰 集資份額</span>
-                <a href="/series" class="section-action">查看全部</a>
+                <span class="section-title">💰 集資份額明細</span>
             </div>
             <div class="pool-list" id="pool-list">
                 <div class="loading"><div class="spinner"></div></div>
@@ -152,161 +296,109 @@
         
         <div class="section">
             <div class="section-header">
-                <span class="section-title">📋 交易記錄</span>
+                <span class="section-title">📜 交易記錄</span>
             </div>
             <div class="filter-tabs">
-                <button class="filter-tab active" data-filter="all">全部</button>
-                <button class="filter-tab" data-filter="pool">集資</button>
-                <button class="filter-tab" data-filter="prize">獎金</button>
+                <button class="filter-tab active" onclick="filterTx('all')">全部</button>
+                <button class="filter-tab" onclick="filterTx('topup')">加碼</button>
+                <button class="filter-tab" onclick="filterTx('prize')">獎金</button>
+                <button class="filter-tab" onclick="filterTx('purchase')">購買</button>
             </div>
             <div class="tx-list" id="tx-list">
                 <div class="loading"><div class="spinner"></div></div>
             </div>
-            <div class="load-more" id="load-more" style="display: none;">
-                <button class="load-more-btn" onclick="loadMoreTransactions()">載入更多</button>
-            </div>
         </div>
     </main>
     
-    <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
     
     <script src="/static/js/common.js"></script>
     <script>
-        // ==================== 備援函數（防止 common.js 載入失敗）====================
+        // 備援函數
         if (typeof $ === 'undefined') window.$ = id => document.getElementById(id);
-        if (typeof setText === 'undefined') window.setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-        if (typeof setHtml === 'undefined') window.setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+        if (typeof setText === 'undefined') window.setText = (id, t) => { const e = document.getElementById(id); if(e) e.textContent = t; };
         if (typeof getToken === 'undefined') window.getToken = () => { try { return localStorage.getItem('access_token'); } catch(e) { return null; } };
-        if (typeof removeToken === 'undefined') window.removeToken = () => { try { localStorage.removeItem('access_token'); } catch(e) {} };
-        if (typeof checkAuth === 'undefined') window.checkAuth = () => { if (!getToken()) { window.location.href = '/'; return false; } return true; };
         if (typeof apiGet === 'undefined') window.apiGet = async (url) => { const r = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof apiPost === 'undefined') window.apiPost = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiPut === 'undefined') window.apiPut = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiDelete === 'undefined') window.apiDelete = async (url) => { const r = await fetch('/api/v1' + url, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof showToast === 'undefined') window.showToast = (msg, type) => { const t = document.getElementById('toast'); if (t) { t.textContent = msg; t.className = 'toast ' + (type||'info') + ' show'; setTimeout(() => t.classList.remove('show'), 3000); } else { console.log('[Toast]', type, msg); alert(msg); } };
         if (typeof formatMoney === 'undefined') window.formatMoney = (n) => Number(n||0).toLocaleString();
         if (typeof formatDate === 'undefined') window.formatDate = (d) => { if (!d) return ''; const dt = new Date(d); return dt.getFullYear() + '/' + (dt.getMonth()+1) + '/' + dt.getDate(); };
-        if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', paused:'已暫停', closed:'已結束', collecting:'集資中', locked:'已鎖定', purchased:'已購買', drawn:'已開獎', settled:'已結算' }[s] || s);
-
-        let currentFilter = 'all';
-        let txSkip = 0;
-        const txLimit = 20;
-        let hasMoreTx = false;
+        if (typeof showToast === 'undefined') window.showToast = (msg) => alert(msg);
         
-        // ==================== 載入資料 ====================
+        let currentFilter = 'all';
+        
         async function loadOverview() {
             try {
                 const data = await apiGet('/wallet/overview');
                 if (!data) return;
-                setText('total-assets', `$${formatMoney(data.total_assets)}`);
-                setText('wallet-balance', `$${formatMoney(data.wallet_balance)}`);
-                setText('pool-share', `$${formatMoney(data.total_pool_share)}`);
-            } catch (e) { console.error('Failed to load overview:', e); }
-        }
-        
-        async function loadSummary() {
-            try {
-                const data = await apiGet('/wallet/transactions/summary');
-                if (!data) return;
-                setText('total-invested', `$${formatMoney(data.total_invested)}`);
-                setText('total-prize', `$${formatMoney(data.total_prize)}`);
-            } catch (e) { console.error('Failed to load summary:', e); }
+                setText('total-assets', '$' + formatMoney(data.total_assets));
+                setText('wallet-balance', '$' + formatMoney(data.wallet_balance));
+                setText('pool-share', '$' + formatMoney(data.total_pool_share));
+                setText('total-invested', '$' + formatMoney(data.total_invested));
+                setText('total-prize', '$' + formatMoney(data.total_prize));
+                const roi = data.total_invested > 0 ? ((data.total_prize - data.total_invested) / data.total_invested * 100).toFixed(1) : 0;
+                setText('roi', roi + '%');
+                setText('series-count', data.series_count || 0);
+            } catch (e) { console.error('loadOverview:', e); }
         }
         
         async function loadPoolShares() {
             try {
-                const shares = await apiGet('/wallet/pool-shares');
-                if (!shares) return;
-                const container = $('pool-list');
-                if (shares.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎰</div><p class="empty-text">尚未參與任何集資</p></div>`;
+                const data = await apiGet('/wallet/pool-shares');
+                const list = $('pool-list');
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>尚無集資份額</p></div>';
                     return;
                 }
-                container.innerHTML = shares.map(s => `
-                    <a href="/series/${s.series_id}" class="pool-item">
-                        <div class="pool-info"><div class="pool-name">${s.series_name}</div><div class="pool-ratio">佔比 ${s.ratio}%</div></div>
-                        <div class="pool-amount">$${formatMoney(s.pool_share)}</div>
+                list.innerHTML = data.map(p => `
+                    <a href="/series/${p.series_id}" class="pool-item">
+                        <div class="pool-info">
+                            <div class="pool-name">${p.series_name || '集資'}</div>
+                            <div class="pool-ratio">佔比 ${(p.ratio * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="pool-amount">$${formatMoney(p.amount)}</div>
                     </a>
                 `).join('');
-            } catch (e) {
-                console.error('Failed to load pool shares:', e);
-                $('pool-list').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><p class="empty-text">載入失敗</p></div>`;
-            }
+            } catch (e) { $('pool-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
         }
         
-        async function loadTransactions(append = false) {
+        async function loadTransactions() {
             try {
-                let url = `/wallet/transactions?skip=${txSkip}&limit=${txLimit}`;
-                if (currentFilter === 'pool') url += '&account_type=pool';
-                else if (currentFilter === 'prize') url += '&transaction_type=pool_prize';
-                
+                const url = currentFilter === 'all' ? '/wallet/transactions' : `/wallet/transactions?type=${currentFilter}`;
                 const data = await apiGet(url);
-                if (!data) return;
-                
-                hasMoreTx = data.has_more;
-                setVisible('load-more', hasMoreTx);
-                
-                const container = $('tx-list');
-                if (data.transactions.length === 0 && !append) {
-                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">尚無交易記錄</p></div>`;
+                const list = $('tx-list');
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><p>尚無交易記錄</p></div>';
                     return;
                 }
-                
-                const html = data.transactions.map(tx => {
-                    const isPositive = parseFloat(tx.amount) > 0;
+                list.innerHTML = data.map(tx => {
+                    const isPositive = ['prize', 'topup', 'deposit'].includes(tx.type);
+                    const typeNames = { topup: '加碼', prize: '獎金分配', purchase: '購買彩券', deposit: '充值', withdraw: '提領' };
                     return `
                         <div class="tx-item">
                             <div class="tx-info">
-                                <div class="tx-type">${tx.transaction_type_display}${tx.series_name ? `<span class="tx-badge">${tx.series_name}</span>` : ''}</div>
-                                <div class="tx-note">${tx.note || ''}</div>
+                                <div class="tx-type">${typeNames[tx.type] || tx.type}</div>
+                                <div class="tx-date">${formatDate(tx.created_at)}</div>
                             </div>
-                            <div class="tx-amount">
-                                <div class="tx-amount-value ${isPositive ? 'positive' : 'negative'}">$${formatMoney(Math.abs(parseFloat(tx.amount)))}</div>
-                                <div class="tx-time">${formatRelativeTime(tx.created_at)}</div>
-                            </div>
+                            <div class="tx-amount ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : '-'}$${formatMoney(Math.abs(tx.amount))}</div>
                         </div>
                     `;
                 }).join('');
-                
-                if (append) container.innerHTML += html;
-                else container.innerHTML = html;
-            } catch (e) {
-                console.error('Failed to load transactions:', e);
-                if (!append) $('tx-list').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><p class="empty-text">載入失敗</p></div>`;
-            }
+            } catch (e) { $('tx-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
         }
         
-        function loadMoreTransactions() {
-            txSkip += txLimit;
-            loadTransactions(true);
-        }
-        
-        // ==================== Filter Tabs ====================
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                currentFilter = tab.dataset.filter;
-                txSkip = 0;
-                loadTransactions();
-            });
-        });
-        
-        // ==================== Init ====================
-        async function init() {
-            if (!await checkAuth()) return;
-            loadOverview();
-            loadSummary();
-            loadPoolShares();
+        function filterTx(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
             loadTransactions();
         }
         
-        // 確保 common.js 載入完成後再執行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getToken()) { window.location.href = '/'; return; }
+            loadOverview();
+            loadPoolShares();
+            loadTransactions();
+        });
     </script>
 </body>
 </html>

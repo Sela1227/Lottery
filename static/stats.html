@@ -2,21 +2,97 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
     <title>號碼統計 - SELA 樂透一路發</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style>
-        body { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); min-height: 100vh; }
-        .header { background: linear-gradient(135deg, #DC2626 0%, #F97316 100%); color: white; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .logo { width: 40px; height: 40px; border-radius: 10px; }
-        .brand { font-size: 1.25rem; font-weight: bold; }
-        .back-btn { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; color: white; text-decoration: none; font-size: 14px; }
-        .main { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
+        }
         
-        .lottery-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
-        .lottery-tab { padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s; border: none; font-size: 15px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        /* ===== Header 統一樣式 ===== */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+        .header .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* ===== Main 統一樣式 ===== */
+        .main {
+            padding: 16px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .main { max-width: 600px; padding: 20px; }
+        }
+        
+        /* Lottery Tabs */
+        .lottery-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .lottery-tab {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
         .lottery-tab.power { background: #FEE2E2; color: #DC2626; }
         .lottery-tab.power.active { background: linear-gradient(135deg, #DC2626, #EF4444); color: white; }
         .lottery-tab.super { background: #DBEAFE; color: #2563EB; }
@@ -24,46 +100,100 @@
         .lottery-tab.daily539 { background: #D1FAE5; color: #059669; }
         .lottery-tab.daily539.active { background: linear-gradient(135deg, #059669, #10B981); color: white; }
         
-        .stat-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .stat-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .stat-title .icon { font-size: 20px; }
-        .number-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .number-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .number-ball { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: white; }
-        .ball-hot { background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); }
-        .ball-cold { background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4); }
-        .ball-overdue { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
-        .number-label { font-size: 11px; color: #666; }
+        /* Stats Card */
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+        .stat-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-title .icon { font-size: 18px; }
         
-        .full-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin-top: 16px; }
-        .full-stat-item { background: #F9FAFB; border-radius: 8px; padding: 8px; text-align: center; }
+        /* Number List */
+        .number-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .number-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .number-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            color: white;
+        }
+        .ball-hot { background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); }
+        .ball-cold { background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3); }
+        .ball-overdue { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3); }
+        .number-label { font-size: 10px; color: #666; }
+        
+        /* Full Stats Grid */
+        .full-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .full-stat-item {
+            background: #F9FAFB;
+            border-radius: 6px;
+            padding: 6px;
+            text-align: center;
+        }
         .full-stat-item.hot { background: #FEE2E2; }
         .full-stat-item.cold { background: #DBEAFE; }
-        .full-stat-number { font-weight: bold; font-size: 18px; color: #374151; }
-        .full-stat-count { font-size: 11px; color: #9CA3AF; }
+        .full-stat-num { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+        .full-stat-count { font-size: 10px; color: var(--text-secondary); }
         
-        .toggle-btn { width: 100%; padding: 12px; background: #F3F4F6; border: none; border-radius: 8px; font-size: 14px; color: #4B5563; cursor: pointer; transition: all 0.2s; }
-        .toggle-btn:hover { background: #E5E7EB; }
+        /* Period Info */
+        .period-info {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
         
-        .analysis-info { background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #92400E; text-align: center; }
-        
-        .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #F3F4F6; border-top-color: #F59E0B; border-radius: 50%; animation: spin 1s linear infinite; }
+        /* Loading & Empty */
+        .loading { display: flex; justify-content: center; padding: 30px; }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--bg-secondary);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .hidden { display: none; }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #E5E7EB; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #9CA3AF; font-size: 12px; }
-        .nav-item.active { color: #DC2626; }
-        .nav-icon { font-size: 20px; }
+        .empty-state { padding: 30px; text-align: center; color: var(--text-secondary); }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-left">
             <img src="/static/logo.jpg" alt="SELA" class="logo">
-            <span class="brand">📊 號碼統計</span>
+            <span class="brand">號碼統計</span>
         </div>
         <a href="/dashboard" class="back-btn">← 返回</a>
     </header>
@@ -76,36 +206,17 @@
         </div>
         
         <div id="statsContent">
-            <div class="loading"><div class="spinner"></div><p>載入統計資料中...</p></div>
+            <div class="loading"><div class="spinner"></div></div>
         </div>
     </main>
     
-    <nav class="bottom-nav">
-        <a href="/dashboard" class="nav-item"><span class="nav-icon">🏠</span><span>首頁</span></a>
-        <a href="/lottery" class="nav-item"><span class="nav-icon">🎰</span><span>開獎</span></a>
-        <a href="/stats" class="nav-item active"><span class="nav-icon">📊</span><span>統計</span></a>
-        <a href="/series" class="nav-item"><span class="nav-icon">👥</span><span>集資</span></a>
-        <a href="/settings" class="nav-item"><span class="nav-icon">⚙️</span><span>設定</span></a>
-    </nav>
-    
     <script src="/static/js/common.js"></script>
     <script>
-        // ==================== 備援函數（防止 common.js 載入失敗）====================
+        // 備援函數
         if (typeof $ === 'undefined') window.$ = id => document.getElementById(id);
-        if (typeof setText === 'undefined') window.setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-        if (typeof setHtml === 'undefined') window.setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
         if (typeof getToken === 'undefined') window.getToken = () => { try { return localStorage.getItem('access_token'); } catch(e) { return null; } };
-        if (typeof removeToken === 'undefined') window.removeToken = () => { try { localStorage.removeItem('access_token'); } catch(e) {} };
-        if (typeof checkAuth === 'undefined') window.checkAuth = () => { if (!getToken()) { window.location.href = '/'; return false; } return true; };
         if (typeof apiGet === 'undefined') window.apiGet = async (url) => { const r = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof apiPost === 'undefined') window.apiPost = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiPut === 'undefined') window.apiPut = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiDelete === 'undefined') window.apiDelete = async (url) => { const r = await fetch('/api/v1' + url, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof showToast === 'undefined') window.showToast = (msg, type) => { const t = document.getElementById('toast'); if (t) { t.textContent = msg; t.className = 'toast ' + (type||'info') + ' show'; setTimeout(() => t.classList.remove('show'), 3000); } else { console.log('[Toast]', type, msg); alert(msg); } };
-        if (typeof formatMoney === 'undefined') window.formatMoney = (n) => Number(n||0).toLocaleString();
-        if (typeof formatDate === 'undefined') window.formatDate = (d) => { if (!d) return ''; const dt = new Date(d); return dt.getFullYear() + '/' + (dt.getMonth()+1) + '/' + dt.getDate(); };
-        if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', paused:'已暫停', closed:'已結束', collecting:'集資中', locked:'已鎖定', purchased:'已購買', drawn:'已開獎', settled:'已結算' }[s] || s);
-
+        
         let currentLottery = 'power';
         
         function switchLottery(type) {
@@ -116,88 +227,108 @@
         }
         
         async function loadStats() {
-            const container = document.getElementById('statsContent');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>載入統計資料中...</p></div>';
+            const container = $('statsContent');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
             try {
                 const data = await apiGet(`/stats/numbers/${currentLottery}?limit=100`);
                 
-                if (!data || data.error) { container.innerHTML = '<div class="stat-card"><p>載入失敗</p></div>'; return; }
-                if (data.total_draws === 0) { container.innerHTML = '<div class="stat-card"><p style="text-align:center; color:#9CA3AF;">尚無歷史資料</p></div>'; return; }
-                
-                renderStats(data);
-                
-                if (currentLottery === 'power' || currentLottery === 'super') {
-                    const specialData = await apiGet(`/stats/special/${currentLottery}?limit=100`);
-                    if (specialData && !specialData.error) renderSpecialStats(specialData);
+                if (!data || data.error) {
+                    container.innerHTML = '<div class="stat-card"><p style="text-align:center; color:#9CA3AF;">載入失敗</p></div>';
+                    return;
                 }
-            } catch (error) {
-                console.error('載入失敗:', error);
-                container.innerHTML = '<div class="stat-card"><p>載入失敗</p></div>';
+                
+                if (data.total_draws === 0) {
+                    container.innerHTML = '<div class="stat-card"><p style="text-align:center; color:#9CA3AF;">尚無歷史資料</p></div>';
+                    return;
+                }
+                
+                const hot = data.hot_numbers || [];
+                const cold = data.cold_numbers || [];
+                const overdue = data.overdue_numbers || [];
+                const all = data.all_numbers || [];
+                
+                let html = `
+                    <div class="period-info">
+                        📊 統計期數：${data.total_draws || 0} 期
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-title"><span class="icon">🔥</span>熱門號碼 (出現最多)</div>
+                        <div class="number-list">
+                            ${hot.slice(0, 8).map(n => `
+                                <div class="number-item">
+                                    <div class="number-ball ball-hot">${n.number}</div>
+                                    <span class="number-label">${n.count}次</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-title"><span class="icon">❄️</span>冷門號碼 (出現最少)</div>
+                        <div class="number-list">
+                            ${cold.slice(0, 8).map(n => `
+                                <div class="number-item">
+                                    <div class="number-ball ball-cold">${n.number}</div>
+                                    <span class="number-label">${n.count}次</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-title"><span class="icon">⏰</span>最久未開 (遺漏期數)</div>
+                        <div class="number-list">
+                            ${overdue.slice(0, 8).map(n => `
+                                <div class="number-item">
+                                    <div class="number-ball ball-overdue">${n.number}</div>
+                                    <span class="number-label">${n.gap}期</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                // 完整統計（如果有數據）
+                if (all.length > 0) {
+                    const maxCount = Math.max(...all.map(n => n.count));
+                    const minCount = Math.min(...all.map(n => n.count));
+                    const threshold = (maxCount - minCount) / 3;
+                    
+                    html += `
+                        <div class="stat-card">
+                            <div class="stat-title"><span class="icon">📋</span>完整統計</div>
+                            <div class="full-stats-grid">
+                                ${all.map(n => {
+                                    let cls = '';
+                                    if (n.count >= maxCount - threshold) cls = 'hot';
+                                    else if (n.count <= minCount + threshold) cls = 'cold';
+                                    return `
+                                        <div class="full-stat-item ${cls}">
+                                            <div class="full-stat-num">${n.number}</div>
+                                            <div class="full-stat-count">${n.count}次</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+                
+            } catch (e) {
+                console.error('loadStats error:', e);
+                container.innerHTML = '<div class="stat-card"><p style="text-align:center; color:#9CA3AF;">載入失敗，請重試</p></div>';
             }
         }
         
-        function renderStats(data) {
-            document.getElementById('statsContent').innerHTML = `
-                <div class="analysis-info">📊 分析 <strong>${data.total_draws}</strong> 期開獎資料</div>
-                
-                <div class="stat-card">
-                    <div class="stat-title"><span class="icon">🔥</span>熱門號碼 TOP 10</div>
-                    <div class="number-list">${data.hot_numbers.map(item => `<div class="number-item"><div class="number-ball ball-hot">${String(item.number).padStart(2, '0')}</div><div class="number-label">${item.count}次</div></div>`).join('')}</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-title"><span class="icon">❄️</span>冷門號碼 TOP 10</div>
-                    <div class="number-list">${data.cold_numbers.map(item => `<div class="number-item"><div class="number-ball ball-cold">${String(item.number).padStart(2, '0')}</div><div class="number-label">${item.count}次</div></div>`).join('')}</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-title"><span class="icon">⏰</span>遺漏最久 TOP 10</div>
-                    <div class="number-list">${data.overdue_numbers.map(item => `<div class="number-item"><div class="number-ball ball-overdue">${String(item.number).padStart(2, '0')}</div><div class="number-label">${item.missing}期</div></div>`).join('')}</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-title"><span class="icon">📋</span>完整統計</div>
-                    <button class="toggle-btn" onclick="toggleFullStats()">展開完整統計</button>
-                    <div id="fullStats" class="hidden">
-                        <div class="full-stats-grid">
-                            ${data.full_stats.map(item => {
-                                const isHot = data.hot_numbers.slice(0, 5).some(h => h.number === item.number);
-                                const isCold = data.cold_numbers.slice(0, 5).some(c => c.number === item.number);
-                                return `<div class="full-stat-item ${isHot ? 'hot' : (isCold ? 'cold' : '')}"><div class="full-stat-number">${String(item.number).padStart(2, '0')}</div><div class="full-stat-count">${item.count}次 / ${item.missing}期</div></div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="specialStats"></div>
-            `;
-        }
-        
-        function renderSpecialStats(data) {
-            const container = document.getElementById('specialStats');
-            if (!container) return;
-            container.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-title"><span class="icon">⭐</span>${data.label}統計</div>
-                    <div class="number-list">${data.full_stats.map(item => `<div class="number-item"><div class="number-ball" style="background: linear-gradient(135deg, #F59E0B, #D97706); width: 40px; height: 40px; font-size: 14px;">${String(item.number).padStart(2, '0')}</div><div class="number-label">${item.count}次</div></div>`).join('')}</div>
-                </div>
-            `;
-        }
-        
-        function toggleFullStats() {
-            const el = document.getElementById('fullStats'), btn = document.querySelector('.toggle-btn');
-            if (el.classList.contains('hidden')) { el.classList.remove('hidden'); btn.textContent = '收合完整統計'; }
-            else { el.classList.add('hidden'); btn.textContent = '展開完整統計'; }
-        }
-        
-        async function init() {
-            const user = await checkAuth();
-            if (!user) return;
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getToken()) { window.location.href = '/'; return; }
             loadStats();
-        }
-        
-        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+        });
     </script>
 </body>
 </html>
