@@ -462,7 +462,12 @@
         $('join-modal').addEventListener('click', function(e) { if (e.target === this) closeJoinModal(); });
         $('welcome-modal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
         
-        initDashboard();
+        // 確保 common.js 載入完成後再執行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            initDashboard();
+        }
     </script>
 </body>
 </html>

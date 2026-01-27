@@ -413,7 +413,12 @@
             await initPushNotifications();
         }
         
-        init();
+        // 確保 common.js 載入完成後再執行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
