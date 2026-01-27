@@ -175,6 +175,37 @@
     
     <script src="/static/js/common.js"></script>
     <script>
+        // 備援函數（防止 common.js 載入失敗）
+        if (typeof $ === 'undefined') {
+            window.$ = id => document.getElementById(id);
+        }
+        if (typeof apiGet === 'undefined') {
+            window.apiGet = async (url) => {
+                const token = localStorage.getItem('access_token');
+                const res = await fetch('/api/v1' + url, { 
+                    headers: { 'Authorization': 'Bearer ' + token } 
+                });
+                if (!res.ok) throw new Error('API Error: ' + res.status);
+                return res.json();
+            };
+        }
+        if (typeof showToast === 'undefined') {
+            window.showToast = (msg, type) => { 
+                console.log('[Toast]', type, msg);
+                alert(msg); 
+            };
+        }
+        if (typeof formatMoney === 'undefined') {
+            window.formatMoney = (amount) => '$' + Number(amount || 0).toLocaleString();
+        }
+        if (typeof formatDate === 'undefined') {
+            window.formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+            };
+        }
+        
         async function checkAdminAuth() {
             // 先檢查 token 是否存在
             const token = localStorage.getItem('access_token');
@@ -205,12 +236,16 @@
             // 載入統計
             try {
                 const stats = await apiGet('/admin/stats');
-                $('total-users').textContent = stats.total_users || 0;
-                $('total-series').textContent = stats.total_series || 0;
-                $('total-invested').textContent = formatMoney(stats.total_pool || 0);
-                $('total-prize').textContent = formatMoney(stats.total_prize || 0);
+                console.log('Admin stats:', stats);
+                if ($('total-users')) $('total-users').textContent = stats.total_users || 0;
+                if ($('total-series')) $('total-series').textContent = stats.total_series || 0;
+                if ($('total-invested')) $('total-invested').textContent = formatMoney(stats.total_pool || 0);
+                if ($('total-prize')) $('total-prize').textContent = formatMoney(stats.total_prize || 0);
             } catch (e) {
                 console.error('載入統計失敗', e);
+                // 顯示錯誤狀態
+                if ($('total-users')) $('total-users').textContent = '錯誤';
+                if ($('total-series')) $('total-series').textContent = '錯誤';
             }
             
             // 載入用戶列表
