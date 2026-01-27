@@ -10,220 +10,72 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
-            --success: #16A34A;
-            --warning: #F59E0B;
-            --error: #DC2626;
-        }
-        
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-        }
-        
-        .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-        
+        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .header { padding: 12px 20px; justify-content: space-between; position: sticky; }
         .header-left { display: flex; align-items: center; gap: 10px; }
-        
-        .back-btn {
-            width: 36px; height: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px;
-            text-decoration: none; color: var(--text-primary);
-        }
-        
+        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
         .page-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
         .header-right { display: flex; align-items: center; gap: 12px; }
-        
-        .user-avatar {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 600; color: #fff; overflow: hidden;
-        }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #fff; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
         .main { padding: 20px; max-width: 800px; margin: 0 auto; }
-        
         .action-bar { display: flex; gap: 12px; margin-bottom: 20px; }
-        
-        .btn {
-            padding: 12px 20px; border-radius: 12px;
-            font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s;
-            border: none; display: flex; align-items: center; gap: 8px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            color: #fff; box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3);
-        }
+        .btn { padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); color: #fff; box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(242, 101, 34, 0.4); }
-        
-        .btn-secondary {
-            background: var(--bg-card); color: var(--sela-orange);
-            border: 1px solid var(--border-color);
-        }
+        .btn-secondary { background: var(--bg-card); color: var(--sela-orange); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--bg-secondary); }
-        
         .series-list { display: flex; flex-direction: column; gap: 16px; }
-        
-        .series-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 20px;
-            box-shadow: var(--shadow-sm);
-            cursor: pointer; transition: all 0.3s;
-            text-decoration: none; color: inherit;
-        }
+        .series-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.3s; text-decoration: none; color: inherit; }
         .series-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--sela-orange); }
-        
         .series-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
         .series-name { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
         .series-lottery-types { display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .lottery-tag {
-            font-size: 12px; padding: 4px 10px; border-radius: 20px;
-            background: var(--bg-secondary); color: var(--sela-orange); font-weight: 500;
-        }
-        
+        .lottery-tag { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--bg-secondary); color: var(--sela-orange); font-weight: 500; }
         .series-status { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; }
         .status-active { background: rgba(22, 163, 74, 0.1); color: var(--success); }
         .status-ended { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
-        
-        .series-stats {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 12px; padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
+        .series-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-top: 16px; border-top: 1px solid var(--border-color); }
         .stat-item { text-align: center; }
         .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
         .stat-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
         .stat-value.orange { color: var(--sela-orange); }
         .stat-value.green { color: var(--success); }
-        
-        .my-role {
-            font-size: 11px; padding: 3px 8px; border-radius: 4px;
-            background: var(--sela-orange); color: #fff; margin-left: 8px;
-        }
-        
-        .empty-state {
-            text-align: center; padding: 60px 20px;
-            background: var(--bg-card);
-            border: 2px dashed var(--border-color); border-radius: 16px;
-        }
+        .my-role { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--sela-orange); color: #fff; margin-left: 8px; }
+        .empty-state { text-align: center; padding: 60px 20px; background: var(--bg-card); border: 2px dashed var(--border-color); border-radius: 16px; }
         .empty-icon { font-size: 64px; margin-bottom: 16px; }
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
         .empty-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
-        
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1000; padding: 20px;
-            opacity: 0; visibility: hidden; transition: all 0.3s;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
-        .modal {
-            background: var(--bg-card); border-radius: 20px;
-            width: 100%; max-width: 480px; max-height: 90vh;
-            overflow-y: auto; transform: translateY(20px); transition: transform 0.3s;
-        }
+        .modal { background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.3s; }
         .modal-overlay.active .modal { transform: translateY(0); }
-        
-        .modal-header {
-            padding: 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .modal-title { font-size: 18px; font-weight: 700; }
-        .modal-close {
-            width: 32px; height: 32px; border-radius: 8px;
-            border: none; background: var(--bg-secondary); cursor: pointer; font-size: 18px;
-        }
-        
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-secondary); cursor: pointer; font-size: 18px; }
         .modal-body { padding: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-        
-        .form-input {
-            width: 100%; padding: 12px 16px;
-            border: 1px solid var(--border-color); border-radius: 10px;
-            font-size: 16px; font-family: inherit; transition: border-color 0.3s;
-        }
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; font-family: inherit; transition: border-color 0.3s; }
         .form-input:focus { outline: none; border-color: var(--sela-orange); }
         .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
-        
         .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        
-        .radio-item {
-            display: flex; align-items: center; gap: 8px;
-            padding: 12px 16px; border: 2px solid var(--border-color);
-            border-radius: 10px; cursor: pointer; transition: all 0.3s;
-            flex: 1; min-width: 120px;
-        }
+        .radio-item { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border: 2px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all 0.3s; flex: 1; min-width: 120px; }
         .radio-item:has(input:checked) { background: var(--bg-secondary); border-color: var(--sela-orange); }
         .radio-item input { accent-color: var(--sela-orange); }
         .radio-item .lottery-info { display: flex; flex-direction: column; }
         .radio-item .lottery-name { font-weight: 600; color: var(--text-primary); }
         .radio-item .lottery-price { font-size: 12px; color: var(--text-secondary); }
-        
-        .modal-footer {
-            padding: 20px; border-top: 1px solid var(--border-color);
-            display: flex; gap: 12px; justify-content: flex-end;
-        }
-        
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: flex-end; }
         .loading { display: flex; justify-content: center; padding: 40px; }
-        .spinner {
-            width: 40px; height: 40px;
-            border: 3px solid var(--bg-secondary);
-            border-top-color: var(--sela-orange);
-            border-radius: 50%; animation: spin 1s linear infinite;
-        }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--bg-secondary); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .toast {
-            position: fixed; bottom: 20px; left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--text-primary); color: #fff;
-            padding: 14px 24px; border-radius: 12px;
-            font-size: 14px; font-weight: 500;
-            z-index: 2000; opacity: 0; transition: all 0.3s;
-        }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text-primary); color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 2000; opacity: 0; transition: all 0.3s; }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
-        
+        .toast.error { background: var(--danger); }
         @media (max-width: 600px) {
             .series-stats { grid-template-columns: repeat(2, 1fr); }
             .action-bar { flex-direction: column; }
@@ -245,10 +97,7 @@
     </header>
     
     <main class="main">
-        <div class="action-bar" id="action-bar">
-            <!-- 按鈕由 JS 動態生成 -->
-        </div>
-        
+        <div class="action-bar" id="action-bar"></div>
         <div class="series-list" id="series-list">
             <div class="loading"><div class="spinner"></div></div>
         </div>
@@ -280,17 +129,11 @@
                     <div class="radio-group">
                         <label class="radio-item">
                             <input type="radio" name="withdrawal_policy" value="flexible" checked>
-                            <div class="lottery-info">
-                                <span class="lottery-name">🔄 彈性模式</span>
-                                <span class="lottery-price">允許成員申請減碼/退出</span>
-                            </div>
+                            <div class="lottery-info"><span class="lottery-name">🔄 彈性模式</span><span class="lottery-price">允許成員申請減碼/退出</span></div>
                         </label>
                         <label class="radio-item">
                             <input type="radio" name="withdrawal_policy" value="no_withdraw">
-                            <div class="lottery-info">
-                                <span class="lottery-name">🔒 死戰到底</span>
-                                <span class="lottery-price">只進不出，中獎才結束</span>
-                            </div>
+                            <div class="lottery-info"><span class="lottery-name">🔒 死戰到底</span><span class="lottery-price">只進不出，中獎才結束</span></div>
                         </label>
                     </div>
                 </div>
@@ -333,44 +176,11 @@
     
     <div class="toast" id="toast"></div>
     
+    <script src="/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
         let lotteryTypes = [];
         let selectedLotteryType = null;
-        
         const LOTTERY_PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
-        
-        async function checkAuth() {
-            const token = localStorage.getItem('access_token');
-            if (!token) { window.location.href = '/'; return null; }
-            try {
-                const res = await fetch(`${API_BASE}/users/me`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if (!res.ok) throw new Error('Unauthorized');
-                const user = await res.json();
-                const avatarEl = document.getElementById('user-avatar');
-                if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="">`;
-                else avatarEl.textContent = (user.nickname || user.display_name || '?')[0];
-                return user;
-            } catch (e) { localStorage.removeItem('access_token'); window.location.href = '/'; return null; }
-        }
-        
-        async function apiGet(url) {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!res.ok) throw new Error(await res.text());
-            return res.json();
-        }
-        
-        async function apiPost(url, data) {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Error'); }
-            return res.json();
-        }
         
         async function loadLotteryTypes() {
             try {
@@ -380,14 +190,11 @@
         }
         
         function renderLotteryTypeRadios() {
-            const container = document.getElementById('lottery-types');
+            const container = $('lottery-types');
             container.innerHTML = lotteryTypes.map(lt => `
                 <label class="radio-item">
                     <input type="radio" name="lottery_type" value="${lt.code}" onchange="onLotteryTypeChange('${lt.code}')">
-                    <div class="lottery-info">
-                        <span class="lottery-name">${lt.name}</span>
-                        <span class="lottery-price">每注 ${lt.price_per_bet} 元</span>
-                    </div>
+                    <div class="lottery-info"><span class="lottery-name">${lt.name}</span><span class="lottery-price">每注 ${lt.price_per_bet} 元</span></div>
                 </label>
             `).join('');
         }
@@ -395,27 +202,20 @@
         function onLotteryTypeChange(code) {
             selectedLotteryType = code;
             const price = LOTTERY_PRICES[code] || 50;
-            const poolInput = document.getElementById('initial-pool');
-            const hintEl = document.getElementById('pool-hint');
+            const poolInput = $('initial-pool');
             poolInput.min = price;
             poolInput.step = price;
             poolInput.value = price * 5;
             const lt = lotteryTypes.find(t => t.code === code);
-            const ltName = lt ? lt.name : code;
-            hintEl.textContent = `${ltName}每注 ${price} 元,建議 ${price * 5}~${price * 20} 元`;
+            setText('pool-hint', `${lt ? lt.name : code}每注 ${price} 元,建議 ${price * 5}~${price * 20} 元`);
         }
         
         async function loadSeriesList() {
-            const container = document.getElementById('series-list');
+            const container = $('series-list');
             try {
                 const seriesList = await apiGet('/series');
                 if (seriesList.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">🎰</div>
-                            <h3 class="empty-title">還沒有加入任何集資</h3>
-                            <p class="empty-desc">建立一個新的集資,或使用邀請碼加入</p>
-                        </div>`;
+                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎰</div><h3 class="empty-title">還沒有加入任何集資</h3><p class="empty-desc">建立一個新的集資,或使用邀請碼加入</p></div>`;
                     return;
                 }
                 container.innerHTML = seriesList.map(s => `
@@ -429,9 +229,9 @@
                         </div>
                         <div class="series-stats">
                             <div class="stat-item"><div class="stat-label">成員數</div><div class="stat-value">${s.member_count}</div></div>
-                            <div class="stat-item"><div class="stat-label">資金池</div><div class="stat-value orange">$${Number(s.current_pool).toLocaleString()}</div></div>
+                            <div class="stat-item"><div class="stat-label">資金池</div><div class="stat-value orange">$${formatMoney(s.current_pool)}</div></div>
                             <div class="stat-item"><div class="stat-label">已開期數</div><div class="stat-value">${s.total_periods}</div></div>
-                            <div class="stat-item"><div class="stat-label">我的份額</div><div class="stat-value green">$${Number(s.my_pool_share).toLocaleString()}</div></div>
+                            <div class="stat-item"><div class="stat-label">我的份額</div><div class="stat-value green">$${formatMoney(s.my_pool_share)}</div></div>
                         </div>
                     </a>`).join('');
             } catch (e) {
@@ -446,21 +246,21 @@
         
         function showCreateModal() {
             selectedLotteryType = null;
-            document.getElementById('series-name').value = '';
-            document.getElementById('series-description').value = '';
-            document.getElementById('initial-pool').value = '500';
-            document.getElementById('pool-hint').textContent = '請先選擇彩種';
+            $('series-name').value = '';
+            $('series-description').value = '';
+            $('initial-pool').value = '500';
+            setText('pool-hint', '請先選擇彩種');
             document.querySelectorAll('input[name="lottery_type"]').forEach(el => el.checked = false);
-            document.getElementById('create-modal').classList.add('active');
+            $('create-modal').classList.add('active');
         }
         
-        function showJoinModal() { document.getElementById('join-modal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function showJoinModal() { $('join-modal').classList.add('active'); }
+        function closeModal(id) { $(id).classList.remove('active'); }
         
         async function createSeries() {
-            const name = document.getElementById('series-name').value.trim();
-            const initialPool = parseFloat(document.getElementById('initial-pool').value);
-            const description = document.getElementById('series-description').value.trim();
+            const name = $('series-name').value.trim();
+            const initialPool = parseFloat($('initial-pool').value);
+            const description = $('series-description').value.trim();
             const selectedType = document.querySelector('input[name="lottery_type"]:checked');
             const selectedPolicy = document.querySelector('input[name="withdrawal_policy"]:checked');
             
@@ -475,12 +275,7 @@
             if (initialPool % price !== 0) { showToast(`份額必須是 ${price} 的倍數`, 'error'); return; }
             
             try {
-                await apiPost('/series', {
-                    name, initial_pool_share: initialPool,
-                    description: description || null,
-                    allowed_lottery_types: [lotteryCode],
-                    withdrawal_policy: withdrawalPolicy
-                });
+                await apiPost('/series', { name, initial_pool_share: initialPool, description: description || null, allowed_lottery_types: [lotteryCode], withdrawal_policy: withdrawalPolicy });
                 closeModal('create-modal');
                 showToast('集資建立成功!', 'success');
                 loadSeriesList();
@@ -488,8 +283,8 @@
         }
         
         async function joinSeries() {
-            const code = document.getElementById('invite-code').value.trim().toUpperCase();
-            const initialPool = parseFloat(document.getElementById('join-pool').value);
+            const code = $('invite-code').value.trim().toUpperCase();
+            const initialPool = parseFloat($('join-pool').value);
             
             if (!code || code.length < 6) { showToast('請輸入有效的邀請碼', 'error'); return; }
             if (initialPool < 50) { showToast('初始份額至少 50 元', 'error'); return; }
@@ -499,16 +294,9 @@
                 closeModal('join-modal');
                 showToast('成功加入集資!', 'success');
                 loadSeriesList();
-                document.getElementById('invite-code').value = '';
-                document.getElementById('join-pool').value = '500';
+                $('invite-code').value = '';
+                $('join-pool').value = '500';
             } catch (e) { showToast(e.message, 'error'); }
-        }
-        
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
         
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -516,20 +304,23 @@
         });
         
         async function init() {
-            const user = await checkAuth();
-            if (user) {
-                // 動態生成操作按鈕（建立集資僅限系統管理員）
-                const actionBar = document.getElementById('action-bar');
+            const token = getToken();
+            if (!token) { window.location.href = '/'; return; }
+            try {
+                const user = await apiGet('/users/me');
+                const avatarEl = $('user-avatar');
+                if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="">`;
+                else avatarEl.textContent = (user.nickname || user.display_name || '?')[0];
+                
+                const actionBar = $('action-bar');
                 let buttons = '';
-                if (user.is_admin) {
-                    buttons += '<button class="btn btn-primary" onclick="showCreateModal()">➕ 建立集資</button>';
-                }
+                if (user.is_admin) buttons += '<button class="btn btn-primary" onclick="showCreateModal()">➕ 建立集資</button>';
                 buttons += '<button class="btn btn-secondary" onclick="showJoinModal()">🎫 使用邀請碼加入</button>';
                 actionBar.innerHTML = buttons;
                 
                 await loadLotteryTypes();
                 await loadSeriesList();
-            }
+            } catch (e) { localStorage.removeItem('access_token'); window.location.href = '/'; }
         }
         
         init();

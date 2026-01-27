@@ -7,635 +7,154 @@
     <title>SELA 樂透一路發 - 集資詳情</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
-            --success: #16A34A;
-            --warning: #F59E0B;
-            --error: #DC2626;
-            --info: #2563EB;
-        }
-        
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-        }
-        
-        .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-        
+        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .header { padding: 12px 20px; justify-content: space-between; position: sticky; }
         .header-left { display: flex; align-items: center; gap: 10px; }
-        
-        .back-btn {
-            width: 36px; height: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px;
-            text-decoration: none; color: var(--text-primary);
-        }
-        
+        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
         .page-title { font-size: 18px; font-weight: 700; }
-        
         .main { padding: 20px; max-width: 900px; margin: 0 auto; }
         
         /* Info Card */
-        .info-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .info-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-        
+        .info-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+        .info-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
         .info-title { font-size: 22px; font-weight: 700; }
-        
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
         .status-active { background: rgba(22, 163, 74, 0.1); color: var(--success); }
         .status-ended { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
-        
-        .info-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            padding: 16px 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 16px;
-        }
-        
+        .info-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
         .info-stat { text-align: center; }
         .info-stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
         .info-stat-value { font-size: 20px; font-weight: 700; }
         .info-stat-value.orange { color: var(--sela-orange); }
         .info-stat-value.green { color: var(--success); }
-        
-        .info-desc {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        /* Mode Badge */
-        .mode-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        .mode-fixed { background: rgba(220, 38, 38, 0.1); color: var(--error); }
+        .info-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+        .mode-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: 10px; }
+        .mode-fixed { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
         .mode-flexible { background: rgba(37, 99, 235, 0.1); color: var(--info); }
         
         /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            color: var(--text-secondary);
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .tab.active {
-            background: var(--sela-orange);
-            color: #fff;
-            border-color: var(--sela-orange);
-        }
-        
-        .tab:hover:not(.active) {
-            background: var(--bg-secondary);
-        }
-        
-        /* Tab Badge */
-        .tab .badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 18px;
-            height: 18px;
-            padding: 0 6px;
-            border-radius: 9px;
-            background: var(--error);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-            margin-left: 6px;
-        }
-        
-        .tab.active .badge {
-            background: #fff;
-            color: var(--sela-orange);
-        }
-        
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+        .tab { padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); transition: all 0.3s; }
+        .tab.active { background: var(--sela-orange); color: #fff; border-color: var(--sela-orange); }
+        .tab:hover:not(.active) { background: var(--bg-secondary); }
+        .tab .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 6px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; margin-left: 6px; }
+        .tab.active .badge { background: #fff; color: var(--sela-orange); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* Section */
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-title { font-size: 16px; font-weight: 700; }
-        
         /* Buttons */
-        .btn {
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            color: #fff;
-        }
-        
+        .btn { padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); color: #fff; }
         .btn-primary:hover { transform: translateY(-1px); }
-        
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--sela-orange);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        
-        .btn-danger {
-            background: var(--error);
-            color: #fff;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: #fff;
-        }
-        
+        .btn-secondary { background: var(--bg-secondary); color: var(--sela-orange); border: 1px solid var(--border-color); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-warning { background: var(--warning); color: #fff; }
         .btn-sm { padding: 8px 14px; font-size: 13px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        /* Section */
+        .section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 16px; font-weight: 700; }
         
         /* Group List */
         .group-list { padding: 0; }
-        
-        .group-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background 0.3s;
-            text-decoration: none;
-            color: inherit;
-        }
-        
+        .group-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.3s; text-decoration: none; color: inherit; }
         .group-item:last-child { border-bottom: none; }
         .group-item:hover { background: var(--bg-secondary); }
-        
         .group-info { flex: 1; }
-        
-        .group-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .group-meta {
-            font-size: 13px;
-            color: var(--text-secondary);
-            display: flex;
-            gap: 16px;
-        }
-        
-        .group-status {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
+        .group-title { font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .group-meta { font-size: 13px; color: var(--text-secondary); display: flex; gap: 16px; }
+        .group-status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
         .group-status.collecting { background: rgba(37, 99, 235, 0.1); color: var(--info); }
         .group-status.locked { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
         .group-status.purchased { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
         .group-status.drawn { background: rgba(22, 163, 74, 0.1); color: var(--success); }
         .group-status.settled { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
-        
-        .group-prize {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--success);
-        }
+        .group-prize { font-size: 16px; font-weight: 700; color: var(--success); }
         
         /* Member List */
         .member-list { padding: 0; }
-        
-        .member-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
+        .member-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
         .member-item:last-child { border-bottom: none; }
-        
         .member-info { display: flex; align-items: center; gap: 12px; }
-        
-        .member-avatar {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light));
-            display: flex; align-items: center; justify-content: center;
-            color: #fff; font-weight: 600;
-            overflow: hidden;
-        }
-        
+        .member-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; overflow: hidden; }
         .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
         .member-name { font-weight: 600; }
-        
-        .member-role {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: var(--sela-orange);
-            color: #fff;
-            margin-left: 6px;
-        }
-        
-        .member-share {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--sela-orange);
-        }
+        .member-role { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--sela-orange); color: #fff; margin-left: 6px; }
+        .member-share { font-size: 16px; font-weight: 700; color: var(--sela-orange); }
         
         /* Invite Code */
         .invite-section { padding: 20px; }
-        
-        .invite-code-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .invite-code {
-            font-size: 24px;
-            font-weight: 700;
-            font-family: monospace;
-            letter-spacing: 4px;
-            color: var(--sela-orange);
-            flex: 1;
-        }
-        
-        .copy-btn {
-            padding: 10px 16px;
-            background: var(--sela-orange);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .invite-info {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
+        .invite-code-display { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 16px; }
+        .invite-code { font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 4px; color: var(--sela-orange); flex: 1; }
+        .copy-btn { padding: 10px 16px; background: var(--sela-orange); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .invite-info { font-size: 13px; color: var(--text-secondary); }
         
         /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-        
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        
-        .modal {
-            background: var(--bg-card);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(20px);
-            transition: transform 0.3s;
-        }
-        
+        .modal { background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.3s; }
         .modal-overlay.active .modal { transform: translateY(0); }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .modal-title { font-size: 18px; font-weight: 700; }
-        
-        .modal-close {
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            border: none;
-            background: var(--bg-secondary);
-            cursor: pointer;
-            font-size: 18px;
-        }
-        
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-secondary); cursor: pointer; font-size: 18px; }
         .modal-body { padding: 20px; }
-        
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: inherit;
-        }
-        
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--sela-orange);
-        }
-        
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; font-family: inherit; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--sela-orange); }
         .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: flex-end; }
         
         /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-        
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .empty-icon { font-size: 48px; margin-bottom: 12px; }
         .empty-text { font-size: 14px; }
         
         /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--text-primary);
-            color: #fff;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 2000;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text-primary); color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 2000; opacity: 0; transition: all 0.3s; }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
+        .toast.error { background: var(--danger); }
         
         /* Loading */
         .loading { display: flex; justify-content: center; padding: 40px; }
-        .spinner {
-            width: 40px; height: 40px;
-            border: 3px solid var(--bg-secondary);
-            border-top-color: var(--sela-orange);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--bg-secondary); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Admin Actions */
-        .admin-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding: 16px 20px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
+        /* Admin & Member Actions */
+        .admin-actions, .member-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 20px; }
         
-        /* Member Actions (非管理員) */
-        .member-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding: 16px 20px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        
-        /* Pending Request Card */
-        .pending-request-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .pending-request-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .pending-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: var(--warning);
-            color: #fff;
-            font-size: 12px;
-            font-weight: 600;
-        }
+        /* Pending Request */
+        .pending-request-card { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; margin-bottom: 16px; }
+        .pending-request-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .pending-badge { padding: 4px 10px; border-radius: 6px; background: var(--warning); color: #fff; font-size: 12px; font-weight: 600; }
         
         /* Request List */
         .request-list { padding: 0; }
-        
-        .request-item {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
+        .request-item { padding: 16px 20px; border-bottom: 1px solid var(--border-color); }
         .request-item:last-child { border-bottom: none; }
-        
         .request-item.approved { background: rgba(22, 163, 74, 0.05); }
         .request-item.rejected { background: rgba(220, 38, 38, 0.05); }
-        
-        .request-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .request-user {
-            font-weight: 600;
-            font-size: 15px;
-        }
-        
-        .request-type-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
+        .request-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+        .request-user { font-weight: 600; font-size: 15px; }
+        .request-type-badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .request-type-badge.reduce { background: rgba(37, 99, 235, 0.1); color: var(--info); }
-        .request-type-badge.withdraw { background: rgba(220, 38, 38, 0.1); color: var(--error); }
-        
-        .request-status-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
+        .request-type-badge.withdraw { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+        .request-status-badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         .request-status-badge.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
         .request-status-badge.approved { background: rgba(22, 163, 74, 0.1); color: var(--success); }
-        .request-status-badge.rejected { background: rgba(220, 38, 38, 0.1); color: var(--error); }
+        .request-status-badge.rejected { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+        .request-details { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; flex-wrap: wrap; }
+        .request-reason { font-size: 13px; color: var(--text-secondary); font-style: italic; }
+        .request-review-note { font-size: 13px; color: var(--danger); margin-top: 4px; }
+        .request-actions { display: flex; gap: 8px; margin-top: 12px; }
         
-        .request-details {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            flex-wrap: wrap;
-        }
-        
-        .request-reason {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-        
-        .request-review-note {
-            font-size: 13px;
-            color: var(--error);
-            margin-top: 4px;
-        }
-        
-        .request-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        
-        /* Responsive */
         @media (max-width: 600px) {
             .info-stats { grid-template-columns: repeat(2, 1fr); }
             .group-meta { flex-direction: column; gap: 4px; }
@@ -653,892 +172,255 @@
     </header>
     
     <main class="main">
-        <div id="content">
-            <div class="loading"><div class="spinner"></div></div>
-        </div>
+        <div id="content"><div class="loading"><div class="spinner"></div></div></div>
     </main>
     
     <!-- New Period Modal -->
     <div class="modal-overlay" id="new-period-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">開新期</h2>
-                <button class="modal-close" onclick="closeModal('new-period-modal')">✕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">開新期</h2><button class="modal-close" onclick="closeModal('new-period-modal')">✕</button></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">彩種</label>
-                    <select class="form-select" id="lottery-type-select"></select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">台彩期數(選填)</label>
-                    <input type="text" class="form-input" id="draw-term" placeholder="例如:113000098">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">開獎日期(選填)</label>
-                    <input type="date" class="form-input" id="draw-date">
-                </div>
+                <div class="form-group"><label class="form-label">彩種</label><select class="form-select" id="lottery-type-select"></select></div>
+                <div class="form-group"><label class="form-label">台彩期數(選填)</label><input type="text" class="form-input" id="draw-term" placeholder="例如:113000098"></div>
+                <div class="form-group"><label class="form-label">開獎日期(選填)</label><input type="date" class="form-input" id="draw-date"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('new-period-modal')">取消</button>
-                <button class="btn btn-primary" onclick="createNewPeriod()">開新期</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('new-period-modal')">取消</button><button class="btn btn-primary" onclick="createNewPeriod()">開新期</button></div>
         </div>
     </div>
     
     <!-- Invite Modal -->
     <div class="modal-overlay" id="invite-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">產生邀請碼</h2>
-                <button class="modal-close" onclick="closeModal('invite-modal')">✕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">產生邀請碼</h2><button class="modal-close" onclick="closeModal('invite-modal')">✕</button></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">最大使用次數</label>
-                    <input type="number" class="form-input" id="max-uses" value="5" min="1" max="100">
-                    <p class="form-hint">設為 1 表示一次性邀請碼</p>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">有效天數</label>
-                    <input type="number" class="form-input" id="expires-days" value="7" min="1" max="30">
-                </div>
+                <div class="form-group"><label class="form-label">最大使用次數</label><input type="number" class="form-input" id="max-uses" value="5" min="1" max="100"><p class="form-hint">設為 1 表示一次性邀請碼</p></div>
+                <div class="form-group"><label class="form-label">有效天數</label><input type="number" class="form-input" id="expires-days" value="7" min="1" max="30"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('invite-modal')">取消</button>
-                <button class="btn btn-primary" onclick="createInvitation()">產生</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('invite-modal')">取消</button><button class="btn btn-primary" onclick="createInvitation()">產生</button></div>
         </div>
     </div>
     
     <!-- Topup Modal -->
     <div class="modal-overlay" id="topup-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">加碼</h2>
-                <button class="modal-close" onclick="closeModal('topup-modal')">✕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">加碼</h2><button class="modal-close" onclick="closeModal('topup-modal')">✕</button></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">加碼金額(元)</label>
-                    <input type="number" class="form-input" id="topup-amount" value="500" min="50" step="50">
-                    <p class="form-hint">以 50 元為單位</p>
-                </div>
+                <div class="form-group"><label class="form-label">加碼金額(元)</label><input type="number" class="form-input" id="topup-amount" value="500" min="50" step="50"><p class="form-hint">以 50 元為單位</p></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('topup-modal')">取消</button>
-                <button class="btn btn-primary" onclick="topup()">確認加碼</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('topup-modal')">取消</button><button class="btn btn-primary" onclick="topup()">確認加碼</button></div>
         </div>
     </div>
     
-    <!-- Reduce Modal (Phase 1) -->
+    <!-- Reduce Modal -->
     <div class="modal-overlay" id="reduce-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">📉 申請減碼</h2>
-                <button class="modal-close" onclick="closeModal('reduce-modal')">✕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">📉 申請減碼</h2><button class="modal-close" onclick="closeModal('reduce-modal')">✕</button></div>
             <div class="modal-body">
-                <div class="info-row" style="background: var(--bg-secondary); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>目前份額</span>
-                        <span style="font-weight: 600; color: var(--sela-orange);" id="reduce-current-share">$0</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>最多可減</span>
-                        <span style="font-weight: 600; color: var(--success);" id="reduce-max-amount">$0</span>
-                    </div>
+                <div style="background: var(--bg-secondary); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>目前份額</span><span style="font-weight: 600; color: var(--sela-orange);" id="reduce-current-share">$0</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>最多可減</span><span style="font-weight: 600; color: var(--success);" id="reduce-max-amount">$0</span></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">減碼金額(元)</label>
-                    <input type="number" class="form-input" id="reduce-amount" min="50" step="50" placeholder="輸入要減少的金額">
-                    <p class="form-hint">減碼後至少需保留 50 元，如需完全退出請使用退出功能</p>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">原因(選填)</label>
-                    <textarea class="form-textarea" id="reduce-reason" placeholder="說明減碼原因..."></textarea>
-                </div>
+                <div class="form-group"><label class="form-label">減碼金額(元)</label><input type="number" class="form-input" id="reduce-amount" min="50" step="50" placeholder="輸入要減少的金額"><p class="form-hint">減碼後至少需保留 50 元，如需完全退出請使用退出功能</p></div>
+                <div class="form-group"><label class="form-label">原因(選填)</label><textarea class="form-textarea" id="reduce-reason" placeholder="說明減碼原因..."></textarea></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('reduce-modal')">取消</button>
-                <button class="btn btn-primary" onclick="submitReduceRequest()">送出申請</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('reduce-modal')">取消</button><button class="btn btn-primary" onclick="submitReduceRequest()">送出申請</button></div>
         </div>
     </div>
     
-    <!-- Withdraw Modal (Phase 1) -->
+    <!-- Withdraw Modal -->
     <div class="modal-overlay" id="withdraw-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">🚪 申請退出</h2>
-                <button class="modal-close" onclick="closeModal('withdraw-modal')">✕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">🚪 申請退出</h2><button class="modal-close" onclick="closeModal('withdraw-modal')">✕</button></div>
             <div class="modal-body">
-                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 20px;">
-                    <p style="margin-bottom: 8px; font-weight: 600;">退出後將退還您的份額:</p>
-                    <p style="font-size: 24px; font-weight: 700; color: var(--sela-orange);" id="withdraw-share-display">$0</p>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">退出原因(選填)</label>
-                    <textarea class="form-textarea" id="withdraw-reason" placeholder="說明退出原因..."></textarea>
-                </div>
-                <p style="font-size: 13px; color: var(--text-secondary);">
-                    ⚠️ 退出申請需經管理員審核。如有進行中的期數,鎖定金額將在該期結算後退還。
-                </p>
+                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 20px;"><p style="margin-bottom: 8px; font-weight: 600;">退出後將退還您的份額:</p><p style="font-size: 24px; font-weight: 700; color: var(--sela-orange);" id="withdraw-share-display">$0</p></div>
+                <div class="form-group"><label class="form-label">退出原因(選填)</label><textarea class="form-textarea" id="withdraw-reason" placeholder="說明退出原因..."></textarea></div>
+                <p style="font-size: 13px; color: var(--text-secondary);">⚠️ 退出申請需經管理員審核。如有進行中的期數,鎖定金額將在該期結算後退還。</p>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('withdraw-modal')">取消</button>
-                <button class="btn btn-danger" onclick="submitWithdrawRequest()">確認退出</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('withdraw-modal')">取消</button><button class="btn btn-danger" onclick="submitWithdrawRequest()">確認退出</button></div>
         </div>
     </div>
     
-    <!-- Reject Modal (Phase 1 - Admin) -->
+    <!-- Reject Modal -->
     <div class="modal-overlay" id="reject-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">拒絕申請</h2>
-                <button class="modal-close" onclick="closeModal('reject-modal')">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">拒絕原因(選填)</label>
-                    <textarea class="form-textarea" id="reject-note" placeholder="說明拒絕原因..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('reject-modal')">取消</button>
-                <button class="btn btn-danger" onclick="submitReject()">確認拒絕</button>
-            </div>
+            <div class="modal-header"><h2 class="modal-title">拒絕申請</h2><button class="modal-close" onclick="closeModal('reject-modal')">✕</button></div>
+            <div class="modal-body"><div class="form-group"><label class="form-label">拒絕原因(選填)</label><textarea class="form-textarea" id="reject-note" placeholder="說明拒絕原因..."></textarea></div></div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('reject-modal')">取消</button><button class="btn btn-danger" onclick="submitReject()">確認拒絕</button></div>
         </div>
     </div>
     
     <div class="toast" id="toast"></div>
     
+    <script src="/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
         const seriesId = window.location.pathname.split('/').pop();
-        let seriesData = null;
-        let currentSeries = null; // Alias for member-requests.js
-        let lotteryTypes = [];
-        let isAdmin = false;
-        let currentInvitation = null;
-        
-        // Phase 1: 異動申請相關變數
-        let pendingRequestsCount = 0;
-        let myPendingRequest = null;
-        let currentRejectRequestId = null;
-        
-        async function apiGet(url) {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error((await res.json()).detail || 'Error');
-            return res.json();
-        }
-        
-        async function apiPost(url, data) {
-            const token = localStorage.getItem('access_token');
-            const res = await fetch(`${API_BASE}${url}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error((await res.json()).detail || 'Error');
-            return res.json();
-        }
+        let seriesData = null, currentSeries = null, lotteryTypes = [], isAdmin = false, currentInvitation = null;
+        let pendingRequestsCount = 0, myPendingRequest = null, currentRejectRequestId = null;
         
         async function loadData() {
             try {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    window.location.href = '/';
-                    return;
-                }
-                
-                [seriesData, lotteryTypes] = await Promise.all([
-                    apiGet(`/series/${seriesId}`),
-                    apiGet('/lottery-types')
-                ]);
-                
-                currentSeries = seriesData; // Alias
+                const token = getToken();
+                if (!token) { window.location.href = '/'; return; }
+                [seriesData, lotteryTypes] = await Promise.all([apiGet(`/series/${seriesId}`), apiGet('/lottery-types')]);
+                currentSeries = seriesData;
                 isAdmin = seriesData.my_role === 'admin';
                 renderContent();
-                
-                // Phase 1: 初始化異動功能
                 initPhase1();
-                
-            } catch (e) {
-                document.getElementById('content').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">❌</div>
-                        <p class="empty-text">載入失敗:${e.message}</p>
-                    </div>
-                `;
-            }
+            } catch (e) { setHtml('content', `<div class="empty-state"><div class="empty-icon">❌</div><p class="empty-text">載入失敗:${e.message}</p></div>`); }
         }
         
-        async function loadSeriesDetail() {
-            seriesData = await apiGet(`/series/${seriesId}`);
-            currentSeries = seriesData;
-            renderContent();
-        }
+        async function loadSeriesDetail() { seriesData = await apiGet(`/series/${seriesId}`); currentSeries = seriesData; renderContent(); }
         
         function renderContent() {
             const s = seriesData;
-            const content = document.getElementById('content');
-            
-            // 判斷是否為彈性模式 (後端欄位: withdrawal_policy)
-            // flexible = 彈性模式, no_withdraw = 死戰到底
             const isFlexibleMode = s.withdrawal_policy === 'flexible';
             const modeText = isFlexibleMode ? '🔄 彈性模式' : '🔒 死戰到底';
             const modeClass = isFlexibleMode ? 'mode-flexible' : 'mode-fixed';
             
-            content.innerHTML = `
-                <!-- Info Card -->
+            setHtml('content', `
                 <div class="info-card">
-                    <div class="info-header">
-                        <div>
-                            <h2 class="info-title">${s.name}</h2>
-                            <span class="mode-badge ${modeClass}">${modeText}</span>
-                        </div>
-                        <span class="status-badge ${s.status === 'active' ? 'status-active' : 'status-ended'}">
-                            ${s.status === 'active' ? '進行中' : '已結束'}
-                        </span>
-                    </div>
+                    <div class="info-header"><div><h2 class="info-title">${s.name}</h2><span class="mode-badge ${modeClass}">${modeText}</span></div><span class="status-badge ${s.status === 'active' ? 'status-active' : 'status-ended'}">${s.status === 'active' ? '進行中' : '已結束'}</span></div>
                     <div class="info-stats">
-                        <div class="info-stat">
-                            <div class="info-stat-label">成員數</div>
-                            <div class="info-stat-value">${s.member_count}</div>
-                        </div>
-                        <div class="info-stat">
-                            <div class="info-stat-label">資金池</div>
-                            <div class="info-stat-value orange">$${Number(s.current_pool).toLocaleString()}</div>
-                        </div>
-                        <div class="info-stat">
-                            <div class="info-stat-label">已開期數</div>
-                            <div class="info-stat-value">${s.total_periods}</div>
-                        </div>
-                        <div class="info-stat">
-                            <div class="info-stat-label">我的份額</div>
-                            <div class="info-stat-value green">$${Number(s.my_pool_share).toLocaleString()}</div>
-                        </div>
+                        <div class="info-stat"><div class="info-stat-label">成員數</div><div class="info-stat-value">${s.member_count}</div></div>
+                        <div class="info-stat"><div class="info-stat-label">資金池</div><div class="info-stat-value orange">$${formatMoney(s.current_pool)}</div></div>
+                        <div class="info-stat"><div class="info-stat-label">已開期數</div><div class="info-stat-value">${s.total_periods}</div></div>
+                        <div class="info-stat"><div class="info-stat-label">我的份額</div><div class="info-stat-value green">$${formatMoney(s.my_pool_share)}</div></div>
                     </div>
                     ${s.description ? `<p class="info-desc">${s.description}</p>` : ''}
                 </div>
-                
-                <!-- 我的申請狀態 (Phase 1) -->
                 <div id="my-request-status"></div>
-                
-                ${isAdmin ? `
-                <div class="admin-actions">
-                    <button class="btn btn-primary" onclick="showNewPeriodModal()">🎰 開新期</button>
-                    <button class="btn btn-secondary" onclick="showInviteModal()">🎫 產生邀請碼</button>
-                    <button class="btn btn-secondary" onclick="showTopupModal()">💰 加碼</button>
-                    ${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 減碼</button>` : ''}
-                    ${s.member_count === 1 ? `<button class="btn btn-danger" onclick="confirmDeleteSeries()">🗑️ 刪除集資</button>` : ''}
-                </div>
-                ` : `
-                <div class="member-actions" id="member-action-btns">
-                    <button class="btn btn-primary" onclick="showTopupModal()">💰 加碼</button>
-                    ${isFlexibleMode ? `
-                        <button class="btn btn-secondary" onclick="showReduceModal()">📉 申請減碼</button>
-                        <button class="btn btn-warning" onclick="showWithdrawModal()">🚪 申請退出</button>
-                    ` : ''}
-                </div>
-                `}
-                
-                <!-- Tabs -->
-                <div class="tabs">
-                    <div class="tab active" data-tab="periods">單期團記錄</div>
-                    <div class="tab" data-tab="members">成員 (${s.member_count})</div>
-                    ${isAdmin ? '<div class="tab" data-tab="invites">邀請碼</div>' : ''}
-                    ${isAdmin ? '<div class="tab" data-tab="requests">異動申請</div>' : ''}
-                </div>
-                
-                <!-- Tab Contents -->
-                <div id="tab-periods" class="tab-content active"></div>
-                <div id="tab-members" class="tab-content"></div>
-                ${isAdmin ? '<div id="tab-invites" class="tab-content"></div>' : ''}
-                ${isAdmin ? '<div id="tab-requests" class="tab-content"></div>' : ''}
-            `;
+                ${isAdmin ? `<div class="admin-actions"><button class="btn btn-primary" onclick="showNewPeriodModal()">🎰 開新期</button><button class="btn btn-secondary" onclick="showInviteModal()">🎫 產生邀請碼</button><button class="btn btn-secondary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 減碼</button>` : ''}${s.member_count === 1 ? `<button class="btn btn-danger" onclick="confirmDeleteSeries()">🗑️ 刪除集資</button>` : ''}</div>` : `<div class="member-actions" id="member-action-btns"><button class="btn btn-primary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 申請減碼</button><button class="btn btn-warning" onclick="showWithdrawModal()">🚪 申請退出</button>` : ''}</div>`}
+                <div class="tabs"><div class="tab active" data-tab="periods">單期團記錄</div><div class="tab" data-tab="members">成員 (${s.member_count})</div>${isAdmin ? '<div class="tab" data-tab="invites">邀請碼</div><div class="tab" data-tab="requests">異動申請</div>' : ''}</div>
+                <div id="tab-periods" class="tab-content active"></div><div id="tab-members" class="tab-content"></div>${isAdmin ? '<div id="tab-invites" class="tab-content"></div><div id="tab-requests" class="tab-content"></div>' : ''}
+            `);
             
-            // Setup tab switching
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     tab.classList.add('active');
-                    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-                    
-                    // 點擊異動申請 Tab 時載入資料
-                    if (tab.dataset.tab === 'requests') {
-                        loadRequests();
-                    }
+                    $(`tab-${tab.dataset.tab}`).classList.add('active');
+                    if (tab.dataset.tab === 'requests') loadRequests();
                 });
             });
             
-            // Setup lottery type select
-            const select = document.getElementById('lottery-type-select');
-            select.innerHTML = (s.allowed_lottery_types || []).map(code => {
-                const lt = lotteryTypes.find(t => t.code === code);
-                return `<option value="${code}">${lt ? lt.name : code}</option>`;
-            }).join('');
-            
-            loadPeriods();
-            loadMembers();
-            if (isAdmin) loadInvitations();
+            $('lottery-type-select').innerHTML = (s.allowed_lottery_types || []).map(code => { const lt = lotteryTypes.find(t => t.code === code); return `<option value="${code}">${lt ? lt.name : code}</option>`; }).join('');
+            loadPeriods(); loadMembers(); if (isAdmin) loadInvitations();
         }
         
+        function getStatusText(status) { return { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' }[status] || status; }
+        
         async function loadPeriods() {
-            const container = document.getElementById('tab-periods');
+            const container = $('tab-periods');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
             try {
                 const groups = await apiGet(`/series/${seriesId}/groups`);
-                
-                if (groups.length === 0) {
-                    container.innerHTML = `
-                        <div class="section">
-                            <div class="empty-state">
-                                <div class="empty-icon">📋</div>
-                                <p class="empty-text">還沒有開過期,${isAdmin ? '點擊「開新期」開始' : '等待管理員開新期'}</p>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = `
-                    <div class="section">
-                        <div class="group-list">
-                            ${groups.map(g => `
-                                <a href="/group/${g.id}" class="group-item">
-                                    <div class="group-info">
-                                        <div class="group-title">
-                                            第 ${g.period_number} 期
-                                            <span class="group-status ${g.status}">${getStatusText(g.status)}</span>
-                                        </div>
-                                        <div class="group-meta">
-                                            <span>🎰 ${g.lottery_type_name}</span>
-                                            ${g.draw_term ? `<span>📅 ${g.draw_term}</span>` : ''}
-                                            <span>💰 池 $${Number(g.total_pool).toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                    ${g.total_prize > 0 ? `<div class="group-prize">+$${Number(g.total_prize).toLocaleString()}</div>` : '<span style="color: var(--text-secondary);">→</span>'}
-                                </a>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗:${e.message}</p></div>`;
-            }
+                if (groups.length === 0) { container.innerHTML = `<div class="section"><div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">還沒有開過期,${isAdmin ? '點擊「開新期」開始' : '等待管理員開新期'}</p></div></div>`; return; }
+                container.innerHTML = `<div class="section"><div class="group-list">${groups.map(g => `<a href="/group/${g.id}" class="group-item"><div class="group-info"><div class="group-title">第 ${g.period_number} 期<span class="group-status ${g.status}">${getStatusText(g.status)}</span></div><div class="group-meta"><span>🎰 ${g.lottery_type_name}</span>${g.draw_term ? `<span>📅 ${g.draw_term}</span>` : ''}<span>💰 池 $${formatMoney(g.total_pool)}</span></div></div>${g.total_prize > 0 ? `<div class="group-prize">+$${formatMoney(g.total_prize)}</div>` : '<span style="color: var(--text-secondary);">→</span>'}</a>`).join('')}</div></div>`;
+            } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗:${e.message}</p></div>`; }
         }
         
         async function loadMembers() {
-            const container = document.getElementById('tab-members');
+            const container = $('tab-members');
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
             try {
                 const members = await apiGet(`/series/${seriesId}/members`);
-                
-                container.innerHTML = `
-                    <div class="section">
-                        <div class="member-list">
-                            ${members.map(m => `
-                                <div class="member-item">
-                                    <div class="member-info">
-                                        <div class="member-avatar">
-                                            ${m.picture_url ? `<img src="${m.picture_url}">` : m.display_name[0]}
-                                        </div>
-                                        <div>
-                                            <span class="member-name">${m.display_name}</span>
-                                            ${m.role === 'admin' ? '<span class="member-role">管理員</span>' : ''}
-                                        </div>
-                                    </div>
-                                    <div class="member-share">$${Number(m.pool_share).toLocaleString()}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗</p></div>`;
-            }
+                container.innerHTML = `<div class="section"><div class="member-list">${members.map(m => `<div class="member-item"><div class="member-info"><div class="member-avatar">${m.picture_url ? `<img src="${m.picture_url}">` : m.display_name[0]}</div><div><span class="member-name">${m.display_name}</span>${m.role === 'admin' ? '<span class="member-role">管理員</span>' : ''}</div></div><div class="member-share">$${formatMoney(m.pool_share)}</div></div>`).join('')}</div></div>`;
+            } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗</p></div>`; }
         }
         
         async function loadInvitations() {
-            const container = document.getElementById('tab-invites');
+            const container = $('tab-invites');
             if (!container) return;
-            
-            container.innerHTML = `
-                <div class="section">
-                    <div class="invite-section">
-                        ${currentInvitation ? `
-                            <div class="invite-code-display">
-                                <span class="invite-code">${currentInvitation.code}</span>
-                                <button class="copy-btn" onclick="copyCode('${currentInvitation.code}')">複製</button>
-                            </div>
-                            <p class="invite-info">
-                                已使用 ${currentInvitation.used_count}/${currentInvitation.max_uses || '∞'} 次
-                                ${currentInvitation.expires_at ? ` · 有效期至 ${new Date(currentInvitation.expires_at).toLocaleDateString()}` : ''}
-                            </p>
-                        ` : `
-                            <div class="empty-state">
-                                <div class="empty-icon">🎫</div>
-                                <p class="empty-text">點擊上方「產生邀請碼」來建立邀請連結</p>
-                            </div>
-                        `}
-                    </div>
-                </div>
-            `;
+            container.innerHTML = `<div class="section"><div class="invite-section">${currentInvitation ? `<div class="invite-code-display"><span class="invite-code">${currentInvitation.code}</span><button class="copy-btn" onclick="copyCode('${currentInvitation.code}')">複製</button></div><p class="invite-info">已使用 ${currentInvitation.used_count}/${currentInvitation.max_uses || '∞'} 次${currentInvitation.expires_at ? ` · 有效期至 ${new Date(currentInvitation.expires_at).toLocaleDateString()}` : ''}</p>` : `<div class="empty-state"><div class="empty-icon">🎫</div><p class="empty-text">點擊上方「產生邀請碼」來建立邀請連結</p></div>`}</div></div>`;
         }
         
-        // ==================== Phase 1: 異動申請功能 ====================
-        
-        function initPhase1() {
-            loadMyRequestStatus();
-            if (isAdmin) {
-                loadPendingRequestsCount();
-            }
-        }
-        
-        async function loadPendingRequestsCount() {
-            if (!isAdmin) return;
-            
-            try {
-                const data = await apiGet(`/member-requests/series/${seriesId}`);
-                pendingRequestsCount = data.requests.filter(r => r.status === 'pending').length;
-                updateRequestsBadge();
-            } catch (e) {
-                console.error('Failed to load pending requests count:', e);
-            }
-        }
-        
-        function updateRequestsBadge() {
-            const tab = document.querySelector('[data-tab="requests"]');
-            if (tab && pendingRequestsCount > 0) {
-                tab.innerHTML = `異動申請 <span class="badge">${pendingRequestsCount}</span>`;
-            } else if (tab) {
-                tab.innerHTML = '異動申請';
-            }
-        }
-        
-        async function loadMyRequestStatus() {
-            try {
-                const requests = await apiGet(`/member-requests/my?series_id=${seriesId}`);
-                myPendingRequest = requests.find(r => r.status === 'pending');
-                updateMyRequestUI();
-            } catch (e) {
-                console.error('Failed to load my requests:', e);
-            }
-        }
-        
+        // Phase 1: 異動申請功能
+        function initPhase1() { loadMyRequestStatus(); if (isAdmin) loadPendingRequestsCount(); }
+        async function loadPendingRequestsCount() { if (!isAdmin) return; try { const data = await apiGet(`/member-requests/series/${seriesId}`); pendingRequestsCount = data.requests.filter(r => r.status === 'pending').length; updateRequestsBadge(); } catch (e) { console.error('Failed to load pending requests count:', e); } }
+        function updateRequestsBadge() { const tab = document.querySelector('[data-tab="requests"]'); if (tab && pendingRequestsCount > 0) tab.innerHTML = `異動申請 <span class="badge">${pendingRequestsCount}</span>`; else if (tab) tab.innerHTML = '異動申請'; }
+        async function loadMyRequestStatus() { try { const requests = await apiGet(`/member-requests/my?series_id=${seriesId}`); myPendingRequest = requests.find(r => r.status === 'pending'); updateMyRequestUI(); } catch (e) { console.error('Failed to load my requests:', e); } }
         function updateMyRequestUI() {
-            const container = document.getElementById('my-request-status');
-            if (!container) return;
-            
+            const container = $('my-request-status'); if (!container) return;
             if (myPendingRequest) {
                 const typeText = myPendingRequest.request_type === 'reduce' ? '減碼' : '退出';
-                container.innerHTML = `
-                    <div class="pending-request-card">
-                        <div class="pending-request-info">
-                            <span class="pending-badge">⏳ 待審核</span>
-                            <span>${typeText}申請</span>
-                            ${myPendingRequest.amount ? `<span>$${Number(myPendingRequest.amount).toLocaleString()}</span>` : ''}
-                        </div>
-                        <button class="btn btn-sm btn-secondary" onclick="cancelMyRequest(${myPendingRequest.id})">取消申請</button>
-                    </div>
-                `;
-                // 隱藏減碼退出按鈕
-                const actionBtns = document.getElementById('member-action-btns');
-                if (actionBtns) actionBtns.style.display = 'none';
-            } else {
-                container.innerHTML = '';
-                const actionBtns = document.getElementById('member-action-btns');
-                if (actionBtns) actionBtns.style.display = 'flex';
-            }
+                container.innerHTML = `<div class="pending-request-card"><div class="pending-request-info"><span class="pending-badge">⏳ 待審核</span><span>${typeText}申請</span>${myPendingRequest.amount ? `<span>$${formatMoney(myPendingRequest.amount)}</span>` : ''}</div><button class="btn btn-sm btn-secondary" onclick="cancelMyRequest(${myPendingRequest.id})">取消申請</button></div>`;
+                const actionBtns = $('member-action-btns'); if (actionBtns) actionBtns.style.display = 'none';
+            } else { container.innerHTML = ''; const actionBtns = $('member-action-btns'); if (actionBtns) actionBtns.style.display = 'flex'; }
         }
-        
         async function loadRequests() {
-            const container = document.getElementById('tab-requests');
-            if (!container) return;
-            
+            const container = $('tab-requests'); if (!container) return;
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            
             try {
                 const data = await apiGet(`/member-requests/series/${seriesId}`);
-                
-                if (data.requests.length === 0) {
-                    container.innerHTML = `
-                        <div class="section">
-                            <div class="empty-state">
-                                <div class="empty-icon">📋</div>
-                                <p class="empty-text">目前沒有異動申請</p>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = `
-                    <div class="section">
-                        <div class="request-list">
-                            ${data.requests.map(r => {
-                                const typeText = r.request_type === 'reduce' ? '減碼' : '退出';
-                                const statusText = r.status === 'pending' ? '待審核' : (r.status === 'approved' ? '已核准' : '已拒絕');
-                                return `
-                                    <div class="request-item ${r.status}">
-                                        <div class="request-header">
-                                            <span class="request-user">${r.user_name}</span>
-                                            <span class="request-type-badge ${r.request_type}">${typeText}</span>
-                                            <span class="request-status-badge ${r.status}">${statusText}</span>
-                                        </div>
-                                        <div class="request-details">
-                                            ${r.amount ? `<span>金額: $${Number(r.amount).toLocaleString()}</span>` : '<span>全額退出</span>'}
-                                            <span>原份額: $${Number(r.pool_share_before).toLocaleString()}</span>
-                                            <span>${new Date(r.created_at).toLocaleDateString()}</span>
-                                        </div>
-                                        ${r.reason ? `<div class="request-reason">原因: ${r.reason}</div>` : ''}
-                                        ${r.review_note ? `<div class="request-review-note">審核備註: ${r.review_note}</div>` : ''}
-                                        ${r.status === 'pending' ? `
-                                            <div class="request-actions">
-                                                <button class="btn btn-sm btn-success" onclick="approveRequest(${r.id})">✓ 核准</button>
-                                                <button class="btn btn-sm btn-danger" onclick="showRejectModal(${r.id})">✕ 拒絕</button>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗: ${e.message}</p></div>`;
-            }
+                if (data.requests.length === 0) { container.innerHTML = `<div class="section"><div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">目前沒有異動申請</p></div></div>`; return; }
+                container.innerHTML = `<div class="section"><div class="request-list">${data.requests.map(r => {
+                    const typeText = r.request_type === 'reduce' ? '減碼' : '退出';
+                    const statusText = r.status === 'pending' ? '待審核' : (r.status === 'approved' ? '已核准' : '已拒絕');
+                    return `<div class="request-item ${r.status}"><div class="request-header"><span class="request-user">${r.user_name}</span><span class="request-type-badge ${r.request_type}">${typeText}</span><span class="request-status-badge ${r.status}">${statusText}</span></div><div class="request-details">${r.amount ? `<span>金額: $${formatMoney(r.amount)}</span>` : '<span>全額退出</span>'}<span>原份額: $${formatMoney(r.pool_share_before)}</span><span>${new Date(r.created_at).toLocaleDateString()}</span></div>${r.reason ? `<div class="request-reason">原因: ${r.reason}</div>` : ''}${r.review_note ? `<div class="request-review-note">審核備註: ${r.review_note}</div>` : ''}${r.status === 'pending' ? `<div class="request-actions"><button class="btn btn-sm btn-success" onclick="approveRequest(${r.id})">✓ 核准</button><button class="btn btn-sm btn-danger" onclick="showRejectModal(${r.id})">✕ 拒絕</button></div>` : ''}</div>`;
+                }).join('')}</div></div>`;
+            } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗: ${e.message}</p></div>`; }
         }
         
         function showReduceModal() {
-            // 管理員減碼直接執行，不需檢查 pending request
-            const isAdmin = currentSeries?.my_role === 'admin';
-            if (!isAdmin && myPendingRequest) {
-                showToast('您已有待審核的申請', 'error');
-                return;
-            }
-            const myShare = currentSeries?.my_pool_share || 0;
-            const maxReduce = Math.max(0, myShare - 50);  // 至少保留 50 元
-            
-            // 動態調整標題和按鈕（管理員 vs 成員）
-            const modalTitle = document.querySelector('#reduce-modal .modal-title');
-            const submitBtn = document.querySelector('#reduce-modal .btn-primary');
-            if (isAdmin) {
-                modalTitle.textContent = '📉 減碼';
-                submitBtn.textContent = '確認減碼';
-            } else {
-                modalTitle.textContent = '📉 申請減碼';
-                submitBtn.textContent = '送出申請';
-            }
-            
-            document.getElementById('reduce-current-share').textContent = `$${Number(myShare).toLocaleString()}`;
-            document.getElementById('reduce-max-amount').textContent = `$${Number(maxReduce).toLocaleString()}`;
-            document.getElementById('reduce-amount').max = maxReduce;
-            document.getElementById('reduce-amount').placeholder = `最多 ${maxReduce} 元`;
-            
-            document.getElementById('reduce-modal').classList.add('active');
+            const adminMode = currentSeries?.my_role === 'admin';
+            if (!adminMode && myPendingRequest) { showToast('您已有待審核的申請', 'error'); return; }
+            const myShare = currentSeries?.my_pool_share || 0, maxReduce = Math.max(0, myShare - 50);
+            const modalTitle = document.querySelector('#reduce-modal .modal-title'), submitBtn = document.querySelector('#reduce-modal .btn-primary');
+            modalTitle.textContent = adminMode ? '📉 減碼' : '📉 申請減碼';
+            submitBtn.textContent = adminMode ? '確認減碼' : '送出申請';
+            setText('reduce-current-share', `$${formatMoney(myShare)}`);
+            setText('reduce-max-amount', `$${formatMoney(maxReduce)}`);
+            $('reduce-amount').max = maxReduce; $('reduce-amount').placeholder = `最多 ${maxReduce} 元`;
+            $('reduce-modal').classList.add('active');
         }
-        
-        function showWithdrawModal() {
-            if (myPendingRequest) {
-                showToast('您已有待審核的申請', 'error');
-                return;
-            }
-            const myShare = currentSeries?.my_pool_share || 0;
-            document.getElementById('withdraw-share-display').textContent = `$${Number(myShare).toLocaleString()}`;
-            document.getElementById('withdraw-modal').classList.add('active');
-        }
-        
+        function showWithdrawModal() { if (myPendingRequest) { showToast('您已有待審核的申請', 'error'); return; } setText('withdraw-share-display', `$${formatMoney(currentSeries?.my_pool_share || 0)}`); $('withdraw-modal').classList.add('active'); }
         async function submitReduceRequest() {
-            const amount = parseFloat(document.getElementById('reduce-amount').value);
-            const reason = document.getElementById('reduce-reason').value.trim();
-            
-            if (!amount || amount <= 0) {
-                showToast('請輸入減碼金額', 'error');
-                return;
-            }
-            
+            const amount = parseFloat($('reduce-amount').value), reason = $('reduce-reason').value.trim();
+            if (!amount || amount <= 0) { showToast('請輸入減碼金額', 'error'); return; }
             try {
-                const result = await apiPost(`/member-requests/series/${seriesId}/reduce`, {
-                    amount: amount,
-                    reason: reason || null
-                });
-                
+                const result = await apiPost(`/member-requests/series/${seriesId}/reduce`, { amount, reason: reason || null });
                 closeModal('reduce-modal');
-                
-                // 根據回傳判斷是否直接執行（管理員）或需審核（成員）
-                if (result.auto_approved) {
-                    showToast(`減碼 $${amount} 已執行`, 'success');
-                } else {
-                    showToast('減碼申請已送出，等待管理員審核', 'success');
-                    loadMyRequestStatus();
-                }
-                
-                loadSeriesDetail();
-                
-                document.getElementById('reduce-amount').value = '';
-                document.getElementById('reduce-reason').value = '';
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+                if (result.auto_approved) showToast(`減碼 $${amount} 已執行`, 'success'); else { showToast('減碼申請已送出，等待管理員審核', 'success'); loadMyRequestStatus(); }
+                loadSeriesDetail(); $('reduce-amount').value = ''; $('reduce-reason').value = '';
+            } catch (e) { showToast(e.message, 'error'); }
         }
-        
         async function submitWithdrawRequest() {
-            const reason = document.getElementById('withdraw-reason').value.trim();
-            
-            if (!confirm('確定要申請退出此集資嗎?此操作需經管理員審核。')) {
-                return;
-            }
-            
-            try {
-                await apiPost(`/member-requests/series/${seriesId}/withdraw`, {
-                    reason: reason || null
-                });
-                
-                closeModal('withdraw-modal');
-                showToast('退出申請已送出,等待管理員審核', 'success');
-                
-                loadMyRequestStatus();
-                loadSeriesDetail();
-                
-                document.getElementById('withdraw-reason').value = '';
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            const reason = $('withdraw-reason').value.trim();
+            if (!confirm('確定要申請退出此集資嗎?此操作需經管理員審核。')) return;
+            try { await apiPost(`/member-requests/series/${seriesId}/withdraw`, { reason: reason || null }); closeModal('withdraw-modal'); showToast('退出申請已送出,等待管理員審核', 'success'); loadMyRequestStatus(); loadSeriesDetail(); $('withdraw-reason').value = ''; } catch (e) { showToast(e.message, 'error'); }
         }
+        async function cancelMyRequest(requestId) { if (!confirm('確定要取消此申請嗎?')) return; try { await apiPost(`/member-requests/${requestId}/cancel`, {}); showToast('申請已取消', 'success'); myPendingRequest = null; updateMyRequestUI(); } catch (e) { showToast(e.message, 'error'); } }
+        async function approveRequest(requestId) { if (!confirm('確定要核准此申請嗎?核准後將立即執行減碼/退出。')) return; try { const res = await apiPost(`/member-requests/${requestId}/review`, { approved: true, note: null }); showToast(res.message || '已核准', 'success'); loadRequests(); loadPendingRequestsCount(); loadSeriesDetail(); loadMembers(); } catch (e) { showToast(e.message, 'error'); } }
+        function showRejectModal(requestId) { currentRejectRequestId = requestId; $('reject-note').value = ''; $('reject-modal').classList.add('active'); }
+        async function submitReject() { try { await apiPost(`/member-requests/${currentRejectRequestId}/review`, { approved: false, note: $('reject-note').value.trim() || null }); closeModal('reject-modal'); showToast('已拒絕此申請', 'success'); loadRequests(); loadPendingRequestsCount(); } catch (e) { showToast(e.message, 'error'); } }
         
-        async function cancelMyRequest(requestId) {
-            if (!confirm('確定要取消此申請嗎?')) {
-                return;
-            }
-            
-            try {
-                await apiPost(`/member-requests/${requestId}/cancel`, {});
-                showToast('申請已取消', 'success');
-                myPendingRequest = null;
-                updateMyRequestUI();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-        
-        async function approveRequest(requestId) {
-            if (!confirm('確定要核准此申請嗎?核准後將立即執行減碼/退出。')) {
-                return;
-            }
-            
-            try {
-                const res = await apiPost(`/member-requests/${requestId}/review`, {
-                    approved: true,
-                    note: null
-                });
-                
-                showToast(res.message || '已核准', 'success');
-                loadRequests();
-                loadPendingRequestsCount();
-                loadSeriesDetail();
-                loadMembers();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-        
-        function showRejectModal(requestId) {
-            currentRejectRequestId = requestId;
-            document.getElementById('reject-note').value = '';
-            document.getElementById('reject-modal').classList.add('active');
-        }
-        
-        async function submitReject() {
-            const note = document.getElementById('reject-note').value.trim();
-            
-            try {
-                await apiPost(`/member-requests/${currentRejectRequestId}/review`, {
-                    approved: false,
-                    note: note || null
-                });
-                
-                closeModal('reject-modal');
-                showToast('已拒絕此申請', 'success');
-                loadRequests();
-                loadPendingRequestsCount();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-        
-        // ==================== 原有功能 ====================
-        
-        function getStatusText(status) {
-            const map = {
-                collecting: '集資中',
-                locked: '已鎖定',
-                purchased: '已購買',
-                drawn: '已開獎',
-                settled: '已結算'
-            };
-            return map[status] || status;
-        }
-        
-        function showNewPeriodModal() {
-            document.getElementById('new-period-modal').classList.add('active');
-        }
-        
-        function showInviteModal() {
-            document.getElementById('invite-modal').classList.add('active');
-        }
-        
-        function showTopupModal() {
-            document.getElementById('topup-modal').classList.add('active');
-        }
-        
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-        
+        // 原有功能
+        function showNewPeriodModal() { $('new-period-modal').classList.add('active'); }
+        function showInviteModal() { $('invite-modal').classList.add('active'); }
+        function showTopupModal() { $('topup-modal').classList.add('active'); }
+        function closeModal(id) { $(id).classList.remove('active'); }
         async function createNewPeriod() {
-            const lotteryType = document.getElementById('lottery-type-select').value;
-            const drawTerm = document.getElementById('draw-term').value.trim();
-            const drawDate = document.getElementById('draw-date').value;
-            
-            try {
-                await apiPost(`/series/${seriesId}/groups`, {
-                    lottery_type_code: lotteryType,
-                    draw_term: drawTerm || null,
-                    draw_date: drawDate || null
-                });
-                
-                closeModal('new-period-modal');
-                showToast('新期建立成功!', 'success');
-                loadPeriods();
-                
-                document.getElementById('draw-term').value = '';
-                document.getElementById('draw-date').value = '';
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            const lotteryType = $('lottery-type-select').value, drawTerm = $('draw-term').value.trim(), drawDate = $('draw-date').value;
+            try { await apiPost(`/series/${seriesId}/groups`, { lottery_type_code: lotteryType, draw_term: drawTerm || null, draw_date: drawDate || null }); closeModal('new-period-modal'); showToast('新期建立成功!', 'success'); loadPeriods(); $('draw-term').value = ''; $('draw-date').value = ''; } catch (e) { showToast(e.message, 'error'); }
         }
-        
         async function createInvitation() {
-            const maxUses = parseInt(document.getElementById('max-uses').value);
-            const expiresDays = parseInt(document.getElementById('expires-days').value);
-            
-            try {
-                currentInvitation = await apiPost(`/series/${seriesId}/invitations`, {
-                    max_uses: maxUses,
-                    expires_in_days: expiresDays
-                });
-                
-                closeModal('invite-modal');
-                showToast('邀請碼已產生!', 'success');
-                loadInvitations();
-                
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.querySelector('[data-tab="invites"]').classList.add('active');
-                document.getElementById('tab-invites').classList.add('active');
-                
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            const maxUses = parseInt($('max-uses').value), expiresDays = parseInt($('expires-days').value);
+            try { currentInvitation = await apiPost(`/series/${seriesId}/invitations`, { max_uses: maxUses, expires_in_days: expiresDays }); closeModal('invite-modal'); showToast('邀請碼已產生!', 'success'); loadInvitations(); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.querySelector('[data-tab="invites"]').classList.add('active'); $('tab-invites').classList.add('active'); } catch (e) { showToast(e.message, 'error'); }
         }
-        
         async function topup() {
-            const amount = parseFloat(document.getElementById('topup-amount').value);
-            
-            if (amount < 50) {
-                showToast('加碼金額至少 50 元', 'error');
-                return;
-            }
-            
-            try {
-                await apiPost(`/series/${seriesId}/members/me/topup`, { amount });
-                
-                closeModal('topup-modal');
-                showToast(`成功加碼 $${amount}!`, 'success');
-                
-                seriesData = await apiGet(`/series/${seriesId}`);
-                currentSeries = seriesData;
-                renderContent();
-                initPhase1();
-                
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            const amount = parseFloat($('topup-amount').value);
+            if (amount < 50) { showToast('加碼金額至少 50 元', 'error'); return; }
+            try { await apiPost(`/series/${seriesId}/members/me/topup`, { amount }); closeModal('topup-modal'); showToast(`成功加碼 $${amount}!`, 'success'); seriesData = await apiGet(`/series/${seriesId}`); currentSeries = seriesData; renderContent(); initPhase1(); } catch (e) { showToast(e.message, 'error'); }
         }
-        
-        function copyCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('邀請碼已複製!', 'success');
-            });
-        }
-        
+        function copyCode(code) { navigator.clipboard.writeText(code).then(() => { showToast('邀請碼已複製!', 'success'); }); }
         async function confirmDeleteSeries() {
-            if (!confirm('確定要刪除此集資嗎？此操作無法復原！')) {
-                return;
-            }
-            
-            if (!confirm('再次確認：刪除後所有資料將永久消失，確定繼續？')) {
-                return;
-            }
-            
-            try {
-                await apiDelete(`/series/${seriesId}`);
-                showToast('集資已刪除', 'success');
-                setTimeout(() => {
-                    window.location.href = '/series';
-                }, 1000);
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
+            if (!confirm('確定要刪除此集資嗎？此操作無法復原！')) return;
+            if (!confirm('再次確認：刪除後所有資料將永久消失，確定繼續？')) return;
+            try { await apiDelete(`/series/${seriesId}`); showToast('集資已刪除', 'success'); setTimeout(() => { window.location.href = '/series'; }, 1000); } catch (e) { showToast(e.message, 'error'); }
         }
         
-        async function apiDelete(url) {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`${API_BASE}${url}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.detail || '操作失敗');
-            }
-            
-            return response.json();
-        }
-        
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-        
-        // Modal close on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('active');
-            });
-        });
-        
+        document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); }); });
         loadData();
     </script>
 </body>

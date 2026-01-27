@@ -9,399 +9,92 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.12);
-            --success: #16A34A;
-            --danger: #DC2626;
-            --info: #2563EB;
-        }
-        
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-        }
-        
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-            padding: 16px 20px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .back-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-        
-        .header-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        /* Main Content */
-        main {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            padding-bottom: 40px;
-        }
+        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .header { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); padding: 16px 20px; color: #fff; gap: 12px; position: sticky; box-shadow: var(--shadow-md); }
+        .back-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .header-title { font-size: 18px; font-weight: 700; }
+        main { padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
         
         /* ROI Card */
-        .roi-card {
-            background: linear-gradient(135deg, #1a1a2e, #2d2d44);
-            border-radius: 20px;
-            padding: 24px;
-            color: #fff;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .roi-label {
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 8px;
-        }
-        
-        .roi-value {
-            font-size: 48px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-        
+        .roi-card { background: linear-gradient(135deg, #1a1a2e, #2d2d44); border-radius: 20px; padding: 24px; color: #fff; margin-bottom: 20px; box-shadow: var(--shadow-md); }
+        .roi-label { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+        .roi-value { font-size: 48px; font-weight: 900; margin-bottom: 8px; }
         .roi-value.positive { color: #4ADE80; }
         .roi-value.negative { color: #F87171; }
-        
-        .roi-detail {
-            font-size: 14px;
-            color: rgba(255,255,255,0.8);
-        }
+        .roi-detail { font-size: 14px; color: rgba(255,255,255,0.8); }
         
         /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--sela-orange);
-            margin-bottom: 4px;
-        }
-        
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; text-align: center; }
+        .stat-value { font-size: 20px; font-weight: 700; color: var(--sela-orange); margin-bottom: 4px; }
         .stat-value.green { color: var(--success); }
         .stat-value.blue { color: var(--info); }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); }
         
         /* Section */
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
+        .section { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+        .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 16px; font-weight: 700; }
         
         /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .tab.active {
-            color: var(--sela-orange);
-            background: var(--bg-card);
-        }
-        
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--sela-orange);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bg-secondary); }
+        .tab { flex: 1; padding: 14px; border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.3s; position: relative; }
+        .tab.active { color: var(--sela-orange); background: var(--bg-card); }
+        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--sela-orange); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         
         /* Performance List */
-        .perf-list {
-            padding: 0;
-        }
-        
-        .perf-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .perf-item:last-child {
-            border-bottom: none;
-        }
-        
-        .perf-info {
-            flex: 1;
-        }
-        
-        .perf-name {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-        
-        .perf-detail {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .perf-roi {
-            text-align: right;
-        }
-        
-        .perf-roi-value {
-            font-weight: 700;
-            font-size: 16px;
-        }
-        
+        .perf-list { padding: 0; }
+        .perf-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .perf-item:last-child { border-bottom: none; }
+        .perf-info { flex: 1; }
+        .perf-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .perf-detail { font-size: 12px; color: var(--text-secondary); }
+        .perf-roi { text-align: right; }
+        .perf-roi-value { font-weight: 700; font-size: 16px; }
         .perf-roi-value.positive { color: var(--success); }
         .perf-roi-value.negative { color: var(--danger); }
-        
-        .perf-profit {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .perf-profit { font-size: 12px; color: var(--text-secondary); }
         
         /* Winning List */
-        .win-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .win-item:last-child {
-            border-bottom: none;
-        }
-        
-        .win-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        
-        .win-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .win-amount {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--success);
-        }
-        
-        .win-detail {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .win-item { padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+        .win-item:last-child { border-bottom: none; }
+        .win-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .win-title { font-weight: 600; font-size: 14px; }
+        .win-amount { font-weight: 700; font-size: 16px; color: var(--success); }
+        .win-detail { font-size: 12px; color: var(--text-secondary); }
         
         /* Monthly Chart */
-        .chart-container {
-            padding: 20px;
-        }
-        
-        .chart-bars {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            height: 140px;
-            gap: 8px;
-        }
-        
-        .chart-bar-group {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 50px;
-        }
-        
-        .chart-bar {
-            width: 16px;
-            border-radius: 4px 4px 0 0;
-            transition: height 0.5s ease;
-            min-height: 4px;
-        }
-        
-        .chart-bar.invested {
-            background: linear-gradient(135deg, #94A3B8, #64748B);
-        }
-        
-        .chart-bar.prize {
-            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
-        }
-        
-        .chart-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-        
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 16px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-        }
-        
+        .chart-container { padding: 20px; }
+        .chart-bars { display: flex; justify-content: space-around; align-items: flex-end; height: 140px; gap: 8px; }
+        .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; max-width: 50px; }
+        .chart-bar { width: 16px; border-radius: 4px 4px 0 0; transition: height 0.5s ease; min-height: 4px; }
+        .chart-bar.invested { background: linear-gradient(135deg, #94A3B8, #64748B); }
+        .chart-bar.prize { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); }
+        .chart-label { font-size: 11px; color: var(--text-secondary); margin-top: 8px; }
+        .chart-legend { display: flex; justify-content: center; gap: 20px; margin-top: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
         .legend-dot.invested { background: #64748B; }
         .legend-dot.prize { background: var(--sela-orange); }
         
         /* Empty State */
-        .empty-state {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        
-        .empty-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
+        .empty-state { padding: 40px 20px; text-align: center; }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-text { color: var(--text-secondary); font-size: 14px; }
         
         /* Loading */
-        .loading {
-            padding: 40px 20px;
-            text-align: center;
-        }
+        .loading { padding: 40px 20px; text-align: center; }
+        .spinner { width: 32px; height: 32px; border: 3px solid var(--border-color); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--sela-orange);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Responsive */
         @media (max-width: 360px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            
-            .stat-item {
-                padding: 12px;
-            }
-            
-            .stat-value {
-                font-size: 18px;
-            }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-item { padding: 12px; }
+            .stat-value { font-size: 18px; }
         }
     </style>
 </head>
@@ -412,338 +105,137 @@
     </header>
     
     <main>
-        <!-- ROI Card -->
         <div class="roi-card">
             <div class="roi-label">投資報酬率 (ROI)</div>
             <div class="roi-value positive" id="roi-value">+0%</div>
             <div class="roi-detail" id="roi-detail">載入中...</div>
         </div>
         
-        <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-value" id="total-invested">$0</div>
-                <div class="stat-label">累計投資</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value green" id="total-prize">$0</div>
-                <div class="stat-label">累計獎金</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value blue" id="win-rate">0%</div>
-                <div class="stat-label">中獎率</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="periods-count">0</div>
-                <div class="stat-label">參與期數</div>
-            </div>
+            <div class="stat-item"><div class="stat-value" id="total-invested">$0</div><div class="stat-label">累計投資</div></div>
+            <div class="stat-item"><div class="stat-value green" id="total-prize">$0</div><div class="stat-label">累計獎金</div></div>
+            <div class="stat-item"><div class="stat-value blue" id="win-rate">0%</div><div class="stat-label">中獎率</div></div>
+            <div class="stat-item"><div class="stat-value" id="periods-count">0</div><div class="stat-label">參與期數</div></div>
         </div>
         
-        <!-- Monthly Chart -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-title">📈 月度趨勢</span>
-            </div>
+            <div class="section-header"><span class="section-title">📈 月度趨勢</span></div>
             <div class="chart-container">
-                <div class="chart-bars" id="chart-bars">
-                    <div class="loading"><div class="spinner"></div></div>
-                </div>
+                <div class="chart-bars" id="chart-bars"><div class="loading"><div class="spinner"></div></div></div>
                 <div class="chart-legend">
-                    <div class="legend-item">
-                        <div class="legend-dot invested"></div>
-                        <span>投資</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot prize"></div>
-                        <span>獎金</span>
-                    </div>
+                    <div class="legend-item"><div class="legend-dot invested"></div><span>投資</span></div>
+                    <div class="legend-item"><div class="legend-dot prize"></div><span>獎金</span></div>
                 </div>
             </div>
         </div>
         
-        <!-- Tabs Section -->
         <div class="section">
             <div class="tabs">
                 <button class="tab active" data-tab="performance">系列團績效</button>
                 <button class="tab" data-tab="winning">中獎記錄</button>
                 <button class="tab" data-tab="lottery">彩種分析</button>
             </div>
-            
-            <!-- Performance Tab -->
-            <div class="tab-content active" id="tab-performance">
-                <div class="perf-list" id="perf-list">
-                    <div class="loading"><div class="spinner"></div></div>
-                </div>
-            </div>
-            
-            <!-- Winning Tab -->
-            <div class="tab-content" id="tab-winning">
-                <div class="win-list" id="win-list">
-                    <div class="loading"><div class="spinner"></div></div>
-                </div>
-            </div>
-            
-            <!-- Lottery Type Tab -->
-            <div class="tab-content" id="tab-lottery">
-                <div class="perf-list" id="lottery-list">
-                    <div class="loading"><div class="spinner"></div></div>
-                </div>
-            </div>
+            <div class="tab-content active" id="tab-performance"><div class="perf-list" id="perf-list"><div class="loading"><div class="spinner"></div></div></div></div>
+            <div class="tab-content" id="tab-winning"><div class="win-list" id="win-list"><div class="loading"><div class="spinner"></div></div></div></div>
+            <div class="tab-content" id="tab-lottery"><div class="perf-list" id="lottery-list"><div class="loading"><div class="spinner"></div></div></div></div>
         </div>
     </main>
     
+    <script src="/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
-        
-        // Auth Check
-        async function checkAuth() {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                window.location.href = '/';
-                return false;
-            }
-            return true;
-        }
-        
-        // API Helper
-        async function apiGet(url) {
-            const token = localStorage.getItem('access_token');
-            try {
-                const res = await fetch(`${API_BASE}${url}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) {
-                    if (res.status === 401) {
-                        window.location.href = '/';
-                        return null;
-                    }
-                    throw new Error('API Error');
-                }
-                return res.json();
-            } catch (e) {
-                console.error('API Error:', e);
-                return null;
-            }
-        }
-        
         // Tab Switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                // Update tabs
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
-                // Update content
                 const tabId = tab.dataset.tab;
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(`tab-${tabId}`).classList.add('active');
+                $(`tab-${tabId}`).classList.add('active');
             });
         });
         
-        // Load Overall Stats
         async function loadOverallStats() {
             try {
                 const data = await apiGet('/statistics/overall');
                 if (!data) return;
-                
-                // ROI
-                const roiEl = document.getElementById('roi-value');
+                const roiEl = $('roi-value');
                 roiEl.textContent = `${data.roi_percent >= 0 ? '+' : ''}${data.roi_percent}%`;
                 roiEl.className = `roi-value ${data.roi_percent >= 0 ? 'positive' : 'negative'}`;
-                
-                const profitText = data.total_profit >= 0 
-                    ? `獲利 $${Number(data.total_profit).toLocaleString()}`
-                    : `虧損 $${Math.abs(Number(data.total_profit)).toLocaleString()}`;
-                document.getElementById('roi-detail').textContent = profitText;
-                
-                // Stats
-                document.getElementById('total-invested').textContent = `$${Number(data.total_invested).toLocaleString()}`;
-                document.getElementById('total-prize').textContent = `$${Number(data.total_prize).toLocaleString()}`;
-                document.getElementById('win-rate').textContent = `${data.win_rate}%`;
-                document.getElementById('periods-count').textContent = data.periods_participated;
-                
-            } catch (e) {
-                console.error('Failed to load overall stats:', e);
-            }
+                const profitText = data.total_profit >= 0 ? `獲利 $${formatMoney(data.total_profit)}` : `虧損 $${formatMoney(Math.abs(data.total_profit))}`;
+                setText('roi-detail', profitText);
+                setText('total-invested', `$${formatMoney(data.total_invested)}`);
+                setText('total-prize', `$${formatMoney(data.total_prize)}`);
+                setText('win-rate', `${data.win_rate}%`);
+                setText('periods-count', data.periods_participated);
+            } catch (e) { console.error('Failed to load overall stats:', e); }
         }
         
-        // Load Monthly Stats
         async function loadMonthlyStats() {
             try {
                 const data = await apiGet('/statistics/monthly?months=6');
                 if (!data) return;
-                
-                const container = document.getElementById('chart-bars');
-                
-                if (data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">📈</div>
-                            <p class="empty-text">尚無數據</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // 找最大值
+                const container = $('chart-bars');
+                if (data.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">📈</div><p class="empty-text">尚無數據</p></div>`; return; }
                 let maxVal = 0;
-                data.forEach(d => {
-                    maxVal = Math.max(maxVal, Math.abs(Number(d.invested)), Math.abs(Number(d.prize)));
-                });
+                data.forEach(d => { maxVal = Math.max(maxVal, Math.abs(Number(d.invested)), Math.abs(Number(d.prize))); });
                 maxVal = maxVal || 1;
-                
-                // 反轉順序（最新在右）
                 const reversed = [...data].reverse();
-                
                 container.innerHTML = reversed.map(d => {
                     const investedHeight = Math.abs(Number(d.invested)) / maxVal * 100;
                     const prizeHeight = Math.abs(Number(d.prize)) / maxVal * 100;
                     const month = d.year_month.split('-')[1];
-                    
-                    return `
-                        <div class="chart-bar-group">
-                            <div style="display: flex; gap: 2px; align-items: flex-end; height: 100px;">
-                                <div class="chart-bar invested" style="height: ${Math.max(investedHeight, 2)}%;"></div>
-                                <div class="chart-bar prize" style="height: ${Math.max(prizeHeight, 2)}%;"></div>
-                            </div>
-                            <div class="chart-label">${parseInt(month)}月</div>
-                        </div>
-                    `;
+                    return `<div class="chart-bar-group"><div style="display: flex; gap: 2px; align-items: flex-end; height: 100px;"><div class="chart-bar invested" style="height: ${Math.max(investedHeight, 2)}%;"></div><div class="chart-bar prize" style="height: ${Math.max(prizeHeight, 2)}%;"></div></div><div class="chart-label">${parseInt(month)}月</div></div>`;
                 }).join('');
-                
-            } catch (e) {
-                console.error('Failed to load monthly stats:', e);
-            }
+            } catch (e) { console.error('Failed to load monthly stats:', e); }
         }
         
-        // Load Series Performance
         async function loadSeriesPerformance() {
             try {
                 const data = await apiGet('/statistics/series-performance');
                 if (!data) return;
-                
-                const container = document.getElementById('perf-list');
-                
-                if (data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">🎰</div>
-                            <p class="empty-text">尚未參與任何系列團</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
+                const container = $('perf-list');
+                if (data.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎰</div><p class="empty-text">尚未參與任何系列團</p></div>`; return; }
                 container.innerHTML = data.map(s => `
                     <div class="perf-item">
-                        <div class="perf-info">
-                            <div class="perf-name">${s.series_name}</div>
-                            <div class="perf-detail">
-                                ${s.periods_count} 期 · 
-                                投資 $${Number(s.invested).toLocaleString()} · 
-                                份額 $${Number(s.current_pool_share).toLocaleString()}
-                            </div>
-                        </div>
-                        <div class="perf-roi">
-                            <div class="perf-roi-value ${s.roi_percent >= 0 ? 'positive' : 'negative'}">
-                                ${s.roi_percent >= 0 ? '+' : ''}${s.roi_percent}%
-                            </div>
-                            <div class="perf-profit">
-                                ${s.profit >= 0 ? '+' : ''}$${Number(s.profit).toLocaleString()}
-                            </div>
-                        </div>
+                        <div class="perf-info"><div class="perf-name">${s.series_name}</div><div class="perf-detail">${s.periods_count} 期 · 投資 $${formatMoney(s.invested)} · 份額 $${formatMoney(s.current_pool_share)}</div></div>
+                        <div class="perf-roi"><div class="perf-roi-value ${s.roi_percent >= 0 ? 'positive' : 'negative'}">${s.roi_percent >= 0 ? '+' : ''}${s.roi_percent}%</div><div class="perf-profit">${s.profit >= 0 ? '+' : ''}$${formatMoney(s.profit)}</div></div>
                     </div>
                 `).join('');
-                
-            } catch (e) {
-                console.error('Failed to load series performance:', e);
-            }
+            } catch (e) { console.error('Failed to load series performance:', e); }
         }
         
-        // Load Winning Records
         async function loadWinningRecords() {
             try {
                 const data = await apiGet('/statistics/winning-records?limit=20');
                 if (!data) return;
-                
-                const container = document.getElementById('win-list');
-                
-                if (data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">🎉</div>
-                            <p class="empty-text">尚無中獎記錄</p>
-                            <p class="empty-text" style="margin-top: 8px; font-size: 12px;">繼續加油，好運即將到來！🍀</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
+                const container = $('win-list');
+                if (data.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><p class="empty-text">尚無中獎記錄</p><p class="empty-text" style="margin-top: 8px; font-size: 12px;">繼續加油，好運即將到來！🍀</p></div>`; return; }
                 container.innerHTML = data.map(w => `
                     <div class="win-item">
-                        <div class="win-header">
-                            <div class="win-title">${w.series_name} 第${w.period_number}期</div>
-                            <div class="win-amount">+$${Number(w.my_share).toLocaleString()}</div>
-                        </div>
-                        <div class="win-detail">
-                            ${w.lottery_type}
-                            ${w.draw_date ? ` · ${w.draw_date}` : ''}
-                            · 總獎金 $${Number(w.prize_amount).toLocaleString()}
-                        </div>
+                        <div class="win-header"><div class="win-title">${w.series_name} 第${w.period_number}期</div><div class="win-amount">+$${formatMoney(w.my_share)}</div></div>
+                        <div class="win-detail">${w.lottery_type}${w.draw_date ? ` · ${w.draw_date}` : ''} · 總獎金 $${formatMoney(w.prize_amount)}</div>
                     </div>
                 `).join('');
-                
-            } catch (e) {
-                console.error('Failed to load winning records:', e);
-            }
+            } catch (e) { console.error('Failed to load winning records:', e); }
         }
         
-        // Load Lottery Type Stats
         async function loadLotteryTypeStats() {
             try {
                 const data = await apiGet('/statistics/by-lottery-type');
                 if (!data) return;
-                
-                const container = document.getElementById('lottery-list');
-                
-                if (data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">🎫</div>
-                            <p class="empty-text">尚無數據</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
+                const container = $('lottery-list');
+                if (data.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎫</div><p class="empty-text">尚無數據</p></div>`; return; }
                 container.innerHTML = data.map(l => `
                     <div class="perf-item">
-                        <div class="perf-info">
-                            <div class="perf-name">${l.lottery_name}</div>
-                            <div class="perf-detail">
-                                ${l.periods} 期 · 
-                                投資 $${Number(l.invested).toLocaleString()} · 
-                                獎金 $${Number(l.prize).toLocaleString()}
-                            </div>
-                        </div>
-                        <div class="perf-roi">
-                            <div class="perf-roi-value ${l.roi_percent >= 0 ? 'positive' : 'negative'}">
-                                ${l.roi_percent >= 0 ? '+' : ''}${l.roi_percent}%
-                            </div>
-                        </div>
+                        <div class="perf-info"><div class="perf-name">${l.lottery_name}</div><div class="perf-detail">${l.periods} 期 · 投資 $${formatMoney(l.invested)} · 獎金 $${formatMoney(l.prize)}</div></div>
+                        <div class="perf-roi"><div class="perf-roi-value ${l.roi_percent >= 0 ? 'positive' : 'negative'}">${l.roi_percent >= 0 ? '+' : ''}${l.roi_percent}%</div></div>
                     </div>
                 `).join('');
-                
-            } catch (e) {
-                console.error('Failed to load lottery type stats:', e);
-            }
+            } catch (e) { console.error('Failed to load lottery type stats:', e); }
         }
         
-        // Initialize
         async function init() {
             if (!await checkAuth()) return;
-            
-            // Load all data
             loadOverallStats();
             loadMonthlyStats();
             loadSeriesPerformance();
