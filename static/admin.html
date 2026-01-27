@@ -6,158 +6,239 @@
     <meta name="theme-color" content="#F26522">
     <title>管理後台 - SELA 樂透一路發</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
             --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
             --bg-card: #FFFFFF;
             --text-primary: #2D2420;
             --text-secondary: #8B7355;
             --border-color: rgba(242, 101, 34, 0.12);
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
+            --success: #16A34A;
+            --danger: #DC2626;
+            --warning: #F59E0B;
+            --info: #2196F3;
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
         }
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
             color: var(--text-primary);
             min-height: 100vh;
             padding-bottom: 40px;
         }
+        
+        /* ===== Header 統一樣式（返回鍵右上角）===== */
         .header {
-            background: white;
-            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: var(--shadow-md);
         }
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .logo { width: 36px; height: 36px; border-radius: 8px; }
-        .brand { font-size: 18px; font-weight: 700; color: var(--sela-orange); }
-        .back-btn {
-            color: var(--sela-orange);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 16px;
-            border: 1px solid var(--sela-orange);
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo {
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
         }
-        .main { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .header .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* ===== Main ===== */
+        .main {
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
         
         /* 統計卡片 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         @media (min-width: 600px) {
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
         }
         .stat-card {
-            background: white;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             text-align: center;
-            box-shadow: var(--shadow-sm);
         }
+        .stat-icon { font-size: 24px; margin-bottom: 6px; }
         .stat-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--sela-orange);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .stat-label { font-size: 11px; color: var(--text-secondary); }
         
-        /* 區塊 */
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* 快捷功能 */
+        /* 快捷操作 */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        @media (min-width: 600px) {
-            .quick-actions { grid-template-columns: repeat(4, 1fr); }
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .action-btn {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            padding: 16px;
-            background: var(--bg-primary);
+            padding: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             text-decoration: none;
             color: var(--text-primary);
-            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 14px;
         }
-        .action-btn:hover { background: #FFE8DB; }
-        .action-icon { font-size: 28px; }
-        .action-label { font-size: 13px; font-weight: 500; }
+        .action-btn:hover { background: var(--bg-secondary); }
+        .action-btn .icon { font-size: 20px; }
         
-        /* 列表項目 */
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .section-header {
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title { font-size: 15px; font-weight: 700; }
+        .section-action {
+            color: var(--sela-orange);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            overflow-x: auto;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+        .tab.active { color: var(--sela-orange); background: var(--bg-card); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* List Items */
+        .list-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .list-item:last-child { border-bottom: none; }
-        .item-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            overflow: hidden;
-        }
-        .item-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .item-info { flex: 1; min-width: 0; }
-        .item-name { font-weight: 600; font-size: 14px; }
-        .item-meta { font-size: 12px; color: var(--text-secondary); }
+        .item-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-detail { font-size: 12px; color: var(--text-secondary); }
+        .item-actions { display: flex; gap: 8px; }
         .item-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
         }
-        .badge-admin { background: #DCFCE7; color: #16A34A; }
-        .badge-user { background: #E3F2FD; color: #2196F3; }
+        .badge-admin { background: #FEE2E2; color: #DC2626; }
+        .badge-user { background: #E5E7EB; color: #6B7280; }
         .badge-active { background: #DCFCE7; color: #16A34A; }
         .badge-closed { background: #F3F4F6; color: #6B7280; }
         
-        .loading-text { text-align: center; padding: 20px; color: var(--text-secondary); }
-        .error-text { text-align: center; padding: 20px; color: #DC2626; }
+        /* Action Buttons */
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: var(--sela-orange); color: white; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn-danger { background: #FEE2E2; color: #DC2626; }
+        
+        /* Empty & Loading */
+        .empty-state { padding: 30px; text-align: center; color: var(--text-secondary); }
+        .empty-icon { font-size: 36px; margin-bottom: 10px; }
+        .loading { display: flex; justify-content: center; padding: 30px; }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--bg-secondary);
+            border-top-color: var(--sela-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
     </style>
 </head>
 <body>
@@ -173,178 +254,176 @@
         <!-- 統計卡片 -->
         <div class="stats-grid">
             <div class="stat-card">
+                <div class="stat-icon">👥</div>
                 <div class="stat-value" id="total-users">-</div>
                 <div class="stat-label">總用戶數</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">📋</div>
                 <div class="stat-value" id="total-series">-</div>
-                <div class="stat-label">系列團數</div>
+                <div class="stat-label">總集資數</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">💰</div>
                 <div class="stat-value" id="total-invested">-</div>
-                <div class="stat-label">總投資額</div>
+                <div class="stat-label">總投入</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🏆</div>
                 <div class="stat-value" id="total-prize">-</div>
                 <div class="stat-label">總獎金</div>
             </div>
         </div>
         
-        <!-- 快捷功能 -->
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+            <a href="/admin/lottery" class="action-btn">
+                <span class="icon">🎰</span>
+                <span>開獎同步</span>
+            </a>
+            <a href="/stats" class="action-btn">
+                <span class="icon">📊</span>
+                <span>號碼統計</span>
+            </a>
+        </div>
+        
+        <!-- 用戶管理 -->
         <div class="section">
-            <h2 class="section-title">⚡ 快捷功能</h2>
-            <div class="quick-actions">
-                <a href="/admin/lottery" class="action-btn">
-                    <span class="action-icon">🎰</span>
-                    <span class="action-label">開獎同步</span>
-                </a>
-                <a href="/statistics" class="action-btn">
-                    <span class="action-icon">📊</span>
-                    <span class="action-label">統計分析</span>
-                </a>
-                <a href="/series" class="action-btn">
-                    <span class="action-icon">👥</span>
-                    <span class="action-label">系列團管理</span>
-                </a>
-                <a href="/settings" class="action-btn">
-                    <span class="action-icon">⚙️</span>
-                    <span class="action-label">系統設定</span>
-                </a>
+            <div class="section-header">
+                <span class="section-title">👥 用戶管理</span>
+                <span class="section-action" id="user-count">0 位用戶</span>
+            </div>
+            <div id="user-list">
+                <div class="loading"><div class="spinner"></div></div>
             </div>
         </div>
         
-        <!-- 用戶列表 -->
+        <!-- 集資管理 -->
         <div class="section">
-            <h2 class="section-title">👤 最近用戶</h2>
-            <div id="user-list"><div class="loading-text">載入中...</div></div>
-        </div>
-        
-        <!-- 系列團列表 -->
-        <div class="section">
-            <h2 class="section-title">📋 系列團</h2>
-            <div id="series-list"><div class="loading-text">載入中...</div></div>
+            <div class="section-header">
+                <span class="section-title">📋 集資管理</span>
+                <span class="section-action" id="series-count">0 個集資</span>
+            </div>
+            <div id="series-list">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
         </div>
     </main>
     
+    <div id="toast" class="toast"></div>
+    
     <script>
-        // ==================== 工具函數 ====================
+        // ==================== 完全自包含，不依賴 common.js ====================
         const API_BASE = '/api/v1';
         
         function getToken() {
-            try {
-                return localStorage.getItem('access_token');
-            } catch (e) {
-                console.error('localStorage 錯誤:', e);
-                return null;
-            }
+            try { return localStorage.getItem('access_token'); } 
+            catch (e) { return null; }
         }
         
         async function api(url) {
             const token = getToken();
-            console.log('[API] 呼叫:', url, 'Token:', token ? '有' : '無');
-            
-            if (!token) {
-                throw new Error('未登入');
-            }
-            
             const response = await fetch(API_BASE + url, {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
-            
-            console.log('[API] 回應狀態:', response.status);
-            
+            if (response.status === 401) {
+                window.location.href = '/';
+                return null;
+            }
             if (!response.ok) {
                 const data = await response.json().catch(() => ({}));
-                throw new Error(data.detail || 'API 錯誤: ' + response.status);
+                throw new Error(data.detail || 'API 錯誤');
             }
-            
             return response.json();
+        }
+        
+        async function apiPost(url, data) {
+            const token = getToken();
+            const response = await fetch(API_BASE + url, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.detail || 'API 錯誤');
+            }
+            return response.json();
+        }
+        
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + (type || '') + ' show';
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
         
         function formatMoney(amount) {
             const num = Number(amount) || 0;
-            if (num >= 100000000) {
-                return '$' + (num / 100000000).toFixed(1) + '億';
-            } else if (num >= 10000) {
-                return '$' + (num / 10000).toFixed(1) + '萬';
-            }
-            return '$' + num.toLocaleString();
+            if (num >= 100000000) return (num / 100000000).toFixed(1) + '億';
+            if (num >= 10000) return (num / 10000).toFixed(1) + '萬';
+            return num.toLocaleString();
         }
         
-        // ==================== 載入函數 ====================
+        // ==================== 載入資料 ====================
         async function loadStats() {
-            console.log('[Admin] 載入統計...');
             try {
                 const stats = await api('/admin/stats');
-                console.log('[Admin] 統計資料:', stats);
-                
                 document.getElementById('total-users').textContent = stats.total_users ?? 0;
                 document.getElementById('total-series').textContent = stats.total_series ?? 0;
-                document.getElementById('total-invested').textContent = formatMoney(stats.total_pool);
-                document.getElementById('total-prize').textContent = formatMoney(stats.total_prize);
-                
-                console.log('[Admin] 統計顯示完成');
+                document.getElementById('total-invested').textContent = '$' + formatMoney(stats.total_pool);
+                document.getElementById('total-prize').textContent = '$' + formatMoney(stats.total_prize);
             } catch (e) {
-                console.error('[Admin] 載入統計失敗:', e);
-                document.getElementById('total-users').textContent = 'E';
-                document.getElementById('total-series').textContent = 'E';
-                document.getElementById('total-invested').textContent = 'E';
-                document.getElementById('total-prize').textContent = 'E';
+                console.error('載入統計失敗:', e);
             }
         }
         
         async function loadUsers() {
-            console.log('[Admin] 載入用戶...');
-            const container = document.getElementById('user-list');
             try {
-                const users = await api('/admin/users?limit=10');
-                console.log('[Admin] 用戶資料:', users);
+                const users = await api('/admin/users');
+                const list = document.getElementById('user-list');
+                document.getElementById('user-count').textContent = users.length + ' 位用戶';
                 
                 if (!users || users.length === 0) {
-                    container.innerHTML = '<div class="loading-text">暫無用戶</div>';
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><p>尚無用戶</p></div>';
                     return;
                 }
                 
-                container.innerHTML = users.map(u => `
+                list.innerHTML = users.slice(0, 10).map(u => `
                     <div class="list-item">
-                        <div class="item-avatar">
-                            ${u.picture_url 
-                                ? `<img src="${u.picture_url}" alt="">` 
-                                : (u.display_name || '?')[0]}
-                        </div>
                         <div class="item-info">
-                            <div class="item-name">${u.nickname || u.display_name}</div>
-                            <div class="item-meta">ID: ${u.id} | 參與 ${u.series_count || 0} 個系列團</div>
+                            <div class="item-name">${u.display_name || u.line_name || '用戶'}</div>
+                            <div class="item-detail">${u.email || u.line_user_id?.substring(0, 15) + '...' || '-'}</div>
                         </div>
                         <span class="item-badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">
-                            ${u.role === 'admin' ? '管理員' : '會員'}
+                            ${u.role === 'admin' ? '管理員' : '用戶'}
                         </span>
                     </div>
                 `).join('');
             } catch (e) {
-                console.error('[Admin] 載入用戶失敗:', e);
-                container.innerHTML = '<div class="error-text">載入失敗: ' + e.message + '</div>';
+                document.getElementById('user-list').innerHTML = '<div class="empty-state">載入失敗</div>';
             }
         }
         
         async function loadSeries() {
-            console.log('[Admin] 載入系列團...');
-            const container = document.getElementById('series-list');
             try {
-                const series = await api('/admin/series?limit=10');
-                console.log('[Admin] 系列團資料:', series);
+                const series = await api('/admin/series');
+                const list = document.getElementById('series-list');
+                document.getElementById('series-count').textContent = series.length + ' 個集資';
                 
                 if (!series || series.length === 0) {
-                    container.innerHTML = '<div class="loading-text">暫無系列團</div>';
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>尚無集資</p></div>';
                     return;
                 }
                 
-                container.innerHTML = series.map(s => `
+                list.innerHTML = series.slice(0, 10).map(s => `
                     <div class="list-item">
-                        <div class="item-avatar">📋</div>
                         <div class="item-info">
                             <div class="item-name">${s.name}</div>
-                            <div class="item-meta">${s.member_count} 人 | ${s.total_periods} 期 | ${formatMoney(s.current_pool)}</div>
+                            <div class="item-detail">👥 ${s.member_count || 0} 人 · 💰 $${formatMoney(s.total_pool)}</div>
                         </div>
                         <span class="item-badge ${s.status === 'active' ? 'badge-active' : 'badge-closed'}">
                             ${s.status === 'active' ? '進行中' : '已結束'}
@@ -352,52 +431,35 @@
                     </div>
                 `).join('');
             } catch (e) {
-                console.error('[Admin] 載入系列團失敗:', e);
-                container.innerHTML = '<div class="error-text">載入失敗: ' + e.message + '</div>';
+                document.getElementById('series-list').innerHTML = '<div class="empty-state">載入失敗</div>';
             }
         }
         
-        // ==================== 主程式 ====================
+        // ==================== 初始化 ====================
         async function init() {
-            console.log('[Admin] 頁面初始化...');
-            
-            // 檢查登入狀態
             const token = getToken();
             if (!token) {
-                console.log('[Admin] 未登入，跳轉首頁');
                 window.location.href = '/';
                 return;
             }
             
-            // 檢查管理員權限
             try {
                 const user = await api('/users/me');
-                console.log('[Admin] 當前用戶:', user);
-                
-                if (user.role !== 'admin') {
-                    alert('需要管理員權限');
-                    window.location.href = '/dashboard';
+                if (!user || user.role !== 'admin') {
+                    showToast('需要管理員權限', 'error');
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
                     return;
                 }
+                
+                // 並行載入
+                await Promise.all([loadStats(), loadUsers(), loadSeries()]);
             } catch (e) {
-                console.error('[Admin] 權限檢查失敗:', e);
-                alert('驗證失敗，請重新登入');
-                window.location.href = '/';
-                return;
+                console.error('初始化失敗:', e);
+                showToast('載入失敗', 'error');
             }
-            
-            // 載入資料（並行執行）
-            await Promise.all([
-                loadStats(),
-                loadUsers(),
-                loadSeries()
-            ]);
-            
-            console.log('[Admin] 初始化完成');
         }
         
-        // 頁面載入後執行
-        init();
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

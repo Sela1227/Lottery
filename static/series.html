@@ -4,89 +4,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#F26522">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>SELA 樂透一路發 - 我的集資</title>
+    <title>我的集資 - SELA 樂透一路發</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-        body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
-        .header { padding: 12px 20px; justify-content: space-between; position: sticky; }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
-        .page-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-light)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #fff; overflow: hidden; }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .main { padding: 20px; max-width: 800px; margin: 0 auto; }
-        .action-bar { display: flex; gap: 12px; margin-bottom: 20px; }
-        .btn { padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; display: flex; align-items: center; gap: 8px; }
-        .btn-primary { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); color: #fff; box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(242, 101, 34, 0.4); }
-        .btn-secondary { background: var(--bg-card); color: var(--sela-orange); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: var(--bg-secondary); }
-        .series-list { display: flex; flex-direction: column; gap: 16px; }
-        .series-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.3s; text-decoration: none; color: inherit; }
-        .series-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--sela-orange); }
-        .series-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-        .series-name { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
-        .series-lottery-types { display: flex; gap: 8px; flex-wrap: wrap; }
-        .lottery-tag { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--bg-secondary); color: var(--sela-orange); font-weight: 500; }
-        .series-status { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; }
-        .status-active { background: rgba(22, 163, 74, 0.1); color: var(--success); }
-        .status-ended { background: rgba(139, 115, 85, 0.1); color: var(--text-secondary); }
-        .series-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-top: 16px; border-top: 1px solid var(--border-color); }
-        .stat-item { text-align: center; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-        .stat-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
-        .stat-value.orange { color: var(--sela-orange); }
-        .stat-value.green { color: var(--success); }
-        .my-role { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--sela-orange); color: #fff; margin-left: 8px; }
-        .empty-state { text-align: center; padding: 60px 20px; background: var(--bg-card); border: 2px dashed var(--border-color); border-radius: 16px; }
-        .empty-icon { font-size: 64px; margin-bottom: 16px; }
-        .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-        .empty-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal { background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.3s; }
-        .modal-overlay.active .modal { transform: translateY(0); }
-        .modal-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .modal-title { font-size: 18px; font-weight: 700; }
-        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-secondary); cursor: pointer; font-size: 18px; }
-        .modal-body { padding: 20px; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-        .form-input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; font-family: inherit; transition: border-color 0.3s; }
-        .form-input:focus { outline: none; border-color: var(--sela-orange); }
-        .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
-        .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        .radio-item { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border: 2px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all 0.3s; flex: 1; min-width: 120px; }
-        .radio-item:has(input:checked) { background: var(--bg-secondary); border-color: var(--sela-orange); }
-        .radio-item input { accent-color: var(--sela-orange); }
-        .radio-item .lottery-info { display: flex; flex-direction: column; }
-        .radio-item .lottery-name { font-weight: 600; color: var(--text-primary); }
-        .radio-item .lottery-price { font-size: 12px; color: var(--text-secondary); }
-        .modal-footer { padding: 20px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: flex-end; }
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --success: #16A34A;
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        /* ===== Header 統一樣式（返回鍵右上角）===== */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+        .header .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* ===== Main ===== */
+        .main { padding: 16px; max-width: 600px; margin: 0 auto; }
+        
+        /* Action Bar */
+        .action-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: var(--sela-orange); color: white; }
+        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .stat-value { font-size: 20px; font-weight: 700; color: var(--sela-orange); }
+        .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        
+        /* Series List */
+        .series-list { display: flex; flex-direction: column; gap: 12px; }
+        .series-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .series-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .series-name { font-size: 16px; font-weight: 700; }
+        .series-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .badge-active { background: #DCFCE7; color: #16A34A; }
+        .badge-closed { background: #F3F4F6; color: #6B7280; }
+        .series-info { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+        .series-stats { display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border-color); }
+        .series-stat { text-align: center; }
+        .series-stat-value { font-size: 15px; font-weight: 700; color: var(--sela-orange); }
+        .series-stat-label { font-size: 11px; color: var(--text-secondary); }
+        
+        /* Empty & Loading */
+        .empty-state { padding: 40px 20px; text-align: center; color: var(--text-secondary); }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
         .loading { display: flex; justify-content: center; padding: 40px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid var(--bg-secondary); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 36px; height: 36px; border: 3px solid var(--bg-secondary); border-top-color: var(--sela-orange); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text-primary); color: #fff; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 2000; opacity: 0; transition: all 0.3s; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 16px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary); }
+        .modal-body { padding: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; }
+        .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .radio-group { display: flex; flex-direction: column; gap: 8px; }
+        .radio-item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; }
+        .radio-item:has(input:checked) { background: var(--bg-secondary); border-color: var(--sela-orange); }
+        .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; }
+        .modal-footer .btn { flex: 1; }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text-primary); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 2000; opacity: 0; transition: all 0.3s; }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        @media (max-width: 600px) {
-            .series-stats { grid-template-columns: repeat(2, 1fr); }
-            .action-bar { flex-direction: column; }
-            .btn { justify-content: center; }
-            .radio-group { flex-direction: column; }
-            .radio-item { min-width: 100%; }
-        }
+        .toast.error { background: #DC2626; }
     </style>
 </head>
 <body>
-        <header class="header">
+    <header class="header">
         <div class="header-left">
             <img src="/static/logo.jpg" alt="SELA" class="logo">
             <span class="brand">我的集資</span>
@@ -95,49 +168,46 @@
     </header>
     
     <main class="main">
-        <div class="action-bar" id="action-bar"></div>
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="openModal('create-modal')">➕ 建立集資</button>
+            <button class="btn btn-secondary" onclick="openModal('join-modal')">🔗 加入集資</button>
+        </div>
+        
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">參與集資</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-invested">$0</div><div class="stat-label">總投入</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-prize">$0</div><div class="stat-label">總獎金</div></div>
+        </div>
+        
         <div class="series-list" id="series-list">
             <div class="loading"><div class="spinner"></div></div>
         </div>
     </main>
     
     <!-- Create Modal -->
-    <div class="modal-overlay" id="create-modal">
-        <div class="modal">
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">建立集資</h2>
-                <button class="modal-close" onclick="closeModal('create-modal')">✕</button>
+                <span class="modal-title">建立集資</span>
+                <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">集資名稱</label>
-                    <input type="text" class="form-input" id="series-name" placeholder="例如:家族樂透團">
+                    <input type="text" class="form-input" id="create-name" placeholder="例：辦公室樂透團">
                 </div>
                 <div class="form-group">
                     <label class="form-label">選擇彩種</label>
                     <div class="radio-group" id="lottery-types"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">初始份額(元)</label>
-                    <input type="number" class="form-input" id="initial-pool" value="500" min="100" step="100">
-                    <p class="form-hint" id="pool-hint">請先選擇彩種</p>
+                    <label class="form-label">每份金額</label>
+                    <input type="number" class="form-input" id="create-share" placeholder="100">
+                    <div class="form-hint">需為彩種價格的倍數</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">運作模式</label>
-                    <div class="radio-group">
-                        <label class="radio-item">
-                            <input type="radio" name="withdrawal_policy" value="flexible" checked>
-                            <div class="lottery-info"><span class="lottery-name">🔄 彈性模式</span><span class="lottery-price">允許成員申請減碼/退出</span></div>
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="withdrawal_policy" value="no_withdraw">
-                            <div class="lottery-info"><span class="lottery-name">🔒 死戰到底</span><span class="lottery-price">只進不出，中獎才結束</span></div>
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">備註(選填)</label>
-                    <textarea class="form-input" id="series-description" rows="3" placeholder="團規說明..."></textarea>
+                    <label class="form-label">您的初始份額</label>
+                    <input type="number" class="form-input" id="create-amount" placeholder="500">
                 </div>
             </div>
             <div class="modal-footer">
@@ -148,21 +218,20 @@
     </div>
     
     <!-- Join Modal -->
-    <div class="modal-overlay" id="join-modal">
-        <div class="modal">
+    <div class="modal" id="join-modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">使用邀請碼加入</h2>
-                <button class="modal-close" onclick="closeModal('join-modal')">✕</button>
+                <span class="modal-title">加入集資</span>
+                <button class="modal-close" onclick="closeModal('join-modal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">邀請碼</label>
-                    <input type="text" class="form-input" id="invite-code" placeholder="輸入 8 位邀請碼" maxlength="8" style="text-transform: uppercase;">
+                    <input type="text" class="form-input" id="join-code" placeholder="輸入邀請碼">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">初始份額(元)</label>
-                    <input type="number" class="form-input" id="join-pool" value="500" min="50" step="50">
-                    <p class="form-hint">加入時投入的金額</p>
+                    <label class="form-label">初始份額金額</label>
+                    <input type="number" class="form-input" id="join-amount" placeholder="500">
                 </div>
             </div>
             <div class="modal-footer">
@@ -172,177 +241,141 @@
         </div>
     </div>
     
-    <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
     
     <script src="/static/js/common.js"></script>
     <script>
-        // ==================== 備援函數（防止 common.js 載入失敗）====================
+        // 備援函數
         if (typeof $ === 'undefined') window.$ = id => document.getElementById(id);
-        if (typeof setText === 'undefined') window.setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-        if (typeof setHtml === 'undefined') window.setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+        if (typeof setText === 'undefined') window.setText = (id, t) => { const e = $(id); if(e) e.textContent = t; };
         if (typeof getToken === 'undefined') window.getToken = () => { try { return localStorage.getItem('access_token'); } catch(e) { return null; } };
-        if (typeof removeToken === 'undefined') window.removeToken = () => { try { localStorage.removeItem('access_token'); } catch(e) {} };
-        if (typeof checkAuth === 'undefined') window.checkAuth = () => { if (!getToken()) { window.location.href = '/'; return false; } return true; };
         if (typeof apiGet === 'undefined') window.apiGet = async (url) => { const r = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof apiPost === 'undefined') window.apiPost = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiPut === 'undefined') window.apiPut = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
-        if (typeof apiDelete === 'undefined') window.apiDelete = async (url) => { const r = await fetch('/api/v1' + url, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
-        if (typeof showToast === 'undefined') window.showToast = (msg, type) => { const t = document.getElementById('toast'); if (t) { t.textContent = msg; t.className = 'toast ' + (type||'info') + ' show'; setTimeout(() => t.classList.remove('show'), 3000); } else { console.log('[Toast]', type, msg); alert(msg); } };
+        if (typeof apiPost === 'undefined') window.apiPost = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'Error'); } return r.json(); };
         if (typeof formatMoney === 'undefined') window.formatMoney = (n) => Number(n||0).toLocaleString();
-        if (typeof formatDate === 'undefined') window.formatDate = (d) => { if (!d) return ''; const dt = new Date(d); return dt.getFullYear() + '/' + (dt.getMonth()+1) + '/' + dt.getDate(); };
-        if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', paused:'已暫停', closed:'已結束', collecting:'集資中', locked:'已鎖定', purchased:'已購買', drawn:'已開獎', settled:'已結算' }[s] || s);
-
+        if (typeof showToast === 'undefined') window.showToast = (msg, type) => { const t = $('toast'); if(t) { t.textContent = msg; t.className = 'toast ' + (type||'') + ' show'; setTimeout(() => t.classList.remove('show'), 3000); } };
+        if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', closed:'已結束' }[s] || s);
+        
         let lotteryTypes = [];
-        let selectedLotteryType = null;
         const LOTTERY_PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
+        
+        function openModal(id) { $(id).classList.add('active'); }
+        function closeModal(id) { $(id).classList.remove('active'); }
         
         async function loadLotteryTypes() {
             try {
                 lotteryTypes = await apiGet('/lottery-types');
-                renderLotteryTypeRadios();
-            } catch (e) { console.error('Failed to load lottery types:', e); }
+                const container = $('lottery-types');
+                container.innerHTML = lotteryTypes.map(lt => `
+                    <label class="radio-item">
+                        <input type="radio" name="lottery-type" value="${lt.code}" ${lt.code === 'power' ? 'checked' : ''}>
+                        <span>${lt.name} ($${lt.price}/注)</span>
+                    </label>
+                `).join('');
+            } catch (e) { console.error('loadLotteryTypes:', e); }
         }
         
-        function renderLotteryTypeRadios() {
-            const container = $('lottery-types');
-            container.innerHTML = lotteryTypes.map(lt => `
-                <label class="radio-item">
-                    <input type="radio" name="lottery_type" value="${lt.code}" onchange="onLotteryTypeChange('${lt.code}')">
-                    <div class="lottery-info"><span class="lottery-name">${lt.name}</span><span class="lottery-price">每注 ${lt.price_per_bet} 元</span></div>
-                </label>
-            `).join('');
-        }
-        
-        function onLotteryTypeChange(code) {
-            selectedLotteryType = code;
-            const price = LOTTERY_PRICES[code] || 50;
-            const poolInput = $('initial-pool');
-            poolInput.min = price;
-            poolInput.step = price;
-            poolInput.value = price * 5;
-            const lt = lotteryTypes.find(t => t.code === code);
-            setText('pool-hint', `${lt ? lt.name : code}每注 ${price} 元,建議 ${price * 5}~${price * 20} 元`);
-        }
-        
-        async function loadSeriesList() {
-            const container = $('series-list');
+        async function loadSeries() {
             try {
-                const seriesList = await apiGet('/series');
-                if (seriesList.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🎰</div><h3 class="empty-title">還沒有加入任何集資</h3><p class="empty-desc">建立一個新的集資,或使用邀請碼加入</p></div>`;
+                const data = await apiGet('/series');
+                const list = $('series-list');
+                
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>尚無集資</p><p style="font-size:13px;margin-top:8px;">點擊上方按鈕建立或加入</p></div>';
                     return;
                 }
-                container.innerHTML = seriesList.map(s => `
+                
+                let totalInvested = 0, totalPrize = 0;
+                data.forEach(s => {
+                    totalInvested += s.my_share || 0;
+                    totalPrize += s.my_prize || 0;
+                });
+                
+                setText('stat-total', data.length);
+                setText('stat-invested', '$' + formatMoney(totalInvested));
+                setText('stat-prize', '$' + formatMoney(totalPrize));
+                
+                list.innerHTML = data.map(s => `
                     <a href="/series/${s.id}" class="series-card">
                         <div class="series-header">
-                            <div>
-                                <div class="series-name">${s.name}${s.my_role === 'admin' ? '<span class="my-role">管理員</span>' : ''}</div>
-                                <div class="series-lottery-types">${(s.lottery_types || []).map(lt => `<span class="lottery-tag">${getLotteryTypeName(lt)}</span>`).join('')}</div>
-                            </div>
-                            <span class="series-status ${s.status === 'active' ? 'status-active' : 'status-ended'}">${s.status === 'active' ? '進行中' : '已結束'}</span>
+                            <div class="series-name">${s.name}</div>
+                            <span class="series-badge ${s.status === 'active' ? 'badge-active' : 'badge-closed'}">${getStatusText(s.status)}</span>
+                        </div>
+                        <div class="series-info">
+                            <span>🎰 ${s.lottery_type_name || s.lottery_type}</span>
+                            <span>👥 ${s.member_count || 0} 人</span>
                         </div>
                         <div class="series-stats">
-                            <div class="stat-item"><div class="stat-label">成員數</div><div class="stat-value">${s.member_count}</div></div>
-                            <div class="stat-item"><div class="stat-label">資金池</div><div class="stat-value orange">$${formatMoney(s.current_pool)}</div></div>
-                            <div class="stat-item"><div class="stat-label">已開期數</div><div class="stat-value">${s.total_periods}</div></div>
-                            <div class="stat-item"><div class="stat-label">我的份額</div><div class="stat-value green">$${formatMoney(s.my_pool_share)}</div></div>
+                            <div class="series-stat">
+                                <div class="series-stat-value">$${formatMoney(s.my_share)}</div>
+                                <div class="series-stat-label">我的份額</div>
+                            </div>
+                            <div class="series-stat">
+                                <div class="series-stat-value">${(s.my_ratio * 100).toFixed(1)}%</div>
+                                <div class="series-stat-label">佔比</div>
+                            </div>
+                            <div class="series-stat">
+                                <div class="series-stat-value">$${formatMoney(s.total_pool)}</div>
+                                <div class="series-stat-label">資金池</div>
+                            </div>
                         </div>
-                    </a>`).join('');
+                    </a>
+                `).join('');
             } catch (e) {
-                container.innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><h3 class="empty-title">載入失敗</h3><p class="empty-desc">${e.message}</p></div>`;
+                $('series-list').innerHTML = '<div class="empty-state">載入失敗</div>';
             }
         }
         
-        function getLotteryTypeName(code) {
-            const lt = lotteryTypes.find(t => t.code === code);
-            return lt ? lt.name : code;
-        }
-        
-        function showCreateModal() {
-            selectedLotteryType = null;
-            $('series-name').value = '';
-            $('series-description').value = '';
-            $('initial-pool').value = '500';
-            setText('pool-hint', '請先選擇彩種');
-            document.querySelectorAll('input[name="lottery_type"]').forEach(el => el.checked = false);
-            $('create-modal').classList.add('active');
-        }
-        
-        function showJoinModal() { $('join-modal').classList.add('active'); }
-        function closeModal(id) { $(id).classList.remove('active'); }
-        
         async function createSeries() {
-            const name = $('series-name').value.trim();
-            const initialPool = parseFloat($('initial-pool').value);
-            const description = $('series-description').value.trim();
-            const selectedType = document.querySelector('input[name="lottery_type"]:checked');
-            const selectedPolicy = document.querySelector('input[name="withdrawal_policy"]:checked');
+            const name = $('create-name').value.trim();
+            const lotteryType = document.querySelector('input[name="lottery-type"]:checked')?.value;
+            const shareAmount = parseInt($('create-share').value);
+            const initialAmount = parseInt($('create-amount').value);
             
-            if (!name) { showToast('請輸入集資名稱', 'error'); return; }
-            if (!selectedType) { showToast('請選擇一種彩種', 'error'); return; }
-            
-            const lotteryCode = selectedType.value;
-            const price = LOTTERY_PRICES[lotteryCode] || 50;
-            const withdrawalPolicy = selectedPolicy ? selectedPolicy.value : 'flexible';
-            
-            if (initialPool < price) { showToast(`初始份額至少 ${price} 元`, 'error'); return; }
-            if (initialPool % price !== 0) { showToast(`份額必須是 ${price} 的倍數`, 'error'); return; }
+            if (!name || !lotteryType || !shareAmount || !initialAmount) {
+                showToast('請填寫完整資料', 'error');
+                return;
+            }
             
             try {
-                await apiPost('/series', { name, initial_pool_share: initialPool, description: description || null, allowed_lottery_types: [lotteryCode], withdrawal_policy: withdrawalPolicy });
+                await apiPost('/series', {
+                    name,
+                    lottery_type: lotteryType,
+                    share_amount: shareAmount,
+                    initial_amount: initialAmount
+                });
+                showToast('建立成功！', 'success');
                 closeModal('create-modal');
-                showToast('集資建立成功!', 'success');
-                loadSeriesList();
-            } catch (e) { showToast(e.message, 'error'); }
+                loadSeries();
+            } catch (e) {
+                showToast(e.message || '建立失敗', 'error');
+            }
         }
         
         async function joinSeries() {
-            const code = $('invite-code').value.trim().toUpperCase();
-            const initialPool = parseFloat($('join-pool').value);
+            const code = $('join-code').value.trim();
+            const amount = parseInt($('join-amount').value);
             
-            if (!code || code.length < 6) { showToast('請輸入有效的邀請碼', 'error'); return; }
-            if (initialPool < 50) { showToast('初始份額至少 50 元', 'error'); return; }
+            if (!code || !amount) {
+                showToast('請填寫完整資料', 'error');
+                return;
+            }
             
             try {
-                await apiPost('/series/join', { invitation_code: code, initial_pool_share: initialPool });
+                await apiPost('/series/join', { invitation_code: code, initial_amount: amount });
+                showToast('加入成功！', 'success');
                 closeModal('join-modal');
-                showToast('成功加入集資!', 'success');
-                loadSeriesList();
-                $('invite-code').value = '';
-                $('join-pool').value = '500';
-            } catch (e) { showToast(e.message, 'error'); }
+                loadSeries();
+            } catch (e) {
+                showToast(e.message || '加入失敗', 'error');
+            }
         }
         
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getToken()) { window.location.href = '/'; return; }
+            loadLotteryTypes();
+            loadSeries();
         });
-        
-        async function init() {
-            const token = getToken();
-            if (!token) { window.location.href = '/'; return; }
-            try {
-                const user = await apiGet('/users/me');
-                const avatarEl = $('user-avatar');
-                if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="">`;
-                else avatarEl.textContent = (user.nickname || user.display_name || '?')[0];
-                
-                const actionBar = $('action-bar');
-                let buttons = '';
-                if (user.is_admin) buttons += '<button class="btn btn-primary" onclick="showCreateModal()">➕ 建立集資</button>';
-                buttons += '<button class="btn btn-secondary" onclick="showJoinModal()">🎫 使用邀請碼加入</button>';
-                actionBar.innerHTML = buttons;
-                
-                await loadLotteryTypes();
-                await loadSeriesList();
-            } catch (e) { localStorage.removeItem('access_token'); window.location.href = '/'; }
-        }
-        
-        // 確保 common.js 載入完成後再執行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
     </script>
 </body>
 </html>
