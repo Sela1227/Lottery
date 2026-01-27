@@ -382,7 +382,7 @@
             
             // 載入統計
             try {
-                const statsRes = await fetch(`${API_BASE}/admin/dashboard`, {
+                const statsRes = await fetch(`${API_BASE}/admin/stats`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 

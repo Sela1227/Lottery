@@ -63,7 +63,7 @@ class SeriesAdminResponse(BaseModel):
     status: str
     current_pool: Decimal
     total_invested: Decimal
-    total_prize_distributed: Decimal
+    total_prize: Decimal
     total_periods: int
     member_count: int
     created_at: datetime
@@ -289,7 +289,7 @@ async def list_all_series(
             status=series.status.value,
             current_pool=series.current_pool,
             total_invested=series.total_invested,
-            total_prize_distributed=series.total_prize_distributed,
+            total_prize=series.total_prize,
             total_periods=series.total_periods,
             member_count=member_count,
             created_at=series.created_at,
