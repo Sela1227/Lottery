@@ -2,18 +2,61 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
     <title>管理後台 - SELA 樂透一路發</title>
-    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 管理後台專用樣式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --sela-orange: #F26522;
+            --bg-primary: #FFF8F4;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
+        }
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { width: 36px; height: 36px; border-radius: 8px; }
+        .brand { font-size: 18px; font-weight: 700; color: var(--sela-orange); }
+        .back-btn {
+            color: var(--sela-orange);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--sela-orange);
+            border-radius: 8px;
+        }
+        .main { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        
+        /* 統計卡片 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 600px) {
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
         }
         .stat-card {
@@ -21,97 +64,109 @@
             border-radius: 12px;
             padding: 16px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-sm);
         }
         .stat-value {
             font-size: 24px;
             font-weight: 700;
             color: var(--sela-orange);
+            margin-bottom: 4px;
         }
         .stat-label {
             font-size: 12px;
             color: var(--text-secondary);
-            margin-top: 4px;
         }
+        
+        /* 區塊 */
         .section {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
         .section-title {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+        
+        /* 快捷功能 */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+        }
+        @media (min-width: 600px) {
+            .quick-actions { grid-template-columns: repeat(4, 1fr); }
         }
         .action-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            padding: 20px;
-            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-            border-radius: 16px;
-            color: white;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: 12px;
             text-decoration: none;
-            transition: transform 0.2s;
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
-        .action-btn:hover { transform: translateY(-2px); }
-        .action-btn.green { background: linear-gradient(135deg, #10B981, #059669); }
-        .action-btn.blue { background: linear-gradient(135deg, #3B82F6, #2563EB); }
-        .action-icon { font-size: 32px; }
-        .action-label { font-size: 14px; font-weight: 500; }
-        .user-list { display: flex; flex-direction: column; gap: 12px; }
-        .user-item {
+        .action-btn:hover { background: #FFE8DB; }
+        .action-icon { font-size: 28px; }
+        .action-label { font-size: 13px; font-weight: 500; }
+        
+        /* 列表項目 */
+        .list-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
         }
-        .user-avatar {
-            width: 44px; height: 44px;
+        .list-item:last-child { border-bottom: none; }
+        .item-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--sela-orange);
-            color: white;
+            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-weight: 600;
+            font-size: 16px;
             overflow: hidden;
         }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-info { flex: 1; }
-        .user-name { font-weight: 600; }
-        .user-role { font-size: 12px; color: var(--text-secondary); }
-        .role-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
+        .item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .item-info { flex: 1; min-width: 0; }
+        .item-name { font-weight: 600; font-size: 14px; }
+        .item-meta { font-size: 12px; color: var(--text-secondary); }
+        .item-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
         }
-        .role-admin { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
-        .role-user { background: rgba(107, 114, 128, 0.1); color: #6B7280; }
-        .loading { text-align: center; color: var(--text-secondary); padding: 20px; }
+        .badge-admin { background: #DCFCE7; color: #16A34A; }
+        .badge-user { background: #E3F2FD; color: #2196F3; }
+        .badge-active { background: #DCFCE7; color: #16A34A; }
+        .badge-closed { background: #F3F4F6; color: #6B7280; }
+        
+        .loading-text { text-align: center; padding: 20px; color: var(--text-secondary); }
+        .error-text { text-align: center; padding: 20px; color: #DC2626; }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-left">
-            <a href="/dashboard" class="back-btn">←</a>
-            <span class="header-title">🔧 管理後台</span>
+            <img src="/static/logo.jpg" alt="SELA" class="logo">
+            <span class="brand">管理後台</span>
         </div>
+        <a href="/dashboard" class="back-btn">← 返回</a>
     </header>
     
     <main class="main">
@@ -141,184 +196,208 @@
             <div class="quick-actions">
                 <a href="/admin/lottery" class="action-btn">
                     <span class="action-icon">🎰</span>
-                    <span class="action-label">開獎資訊同步</span>
+                    <span class="action-label">開獎同步</span>
                 </a>
-                <a href="#" class="action-btn green" onclick="showToast('功能開發中', 'info'); return false;">
-                    <span class="action-icon">📢</span>
-                    <span class="action-label">發送公告</span>
-                </a>
-                <a href="/statistics" class="action-btn blue">
+                <a href="/statistics" class="action-btn">
                     <span class="action-icon">📊</span>
-                    <span class="action-label">系統報表</span>
+                    <span class="action-label">統計分析</span>
+                </a>
+                <a href="/series" class="action-btn">
+                    <span class="action-icon">👥</span>
+                    <span class="action-label">系列團管理</span>
+                </a>
+                <a href="/settings" class="action-btn">
+                    <span class="action-icon">⚙️</span>
+                    <span class="action-label">系統設定</span>
                 </a>
             </div>
         </div>
         
-        <!-- 用戶管理 -->
+        <!-- 用戶列表 -->
         <div class="section">
-            <h2 class="section-title">👥 用戶管理</h2>
-            <div class="user-list" id="user-list">
-                <div class="loading">載入中...</div>
-            </div>
+            <h2 class="section-title">👤 最近用戶</h2>
+            <div id="user-list"><div class="loading-text">載入中...</div></div>
         </div>
         
-        <!-- 系列團管理 -->
+        <!-- 系列團列表 -->
         <div class="section">
-            <h2 class="section-title">📋 系列團管理</h2>
-            <div class="user-list" id="series-list">
-                <div class="loading">載入中...</div>
-            </div>
+            <h2 class="section-title">📋 系列團</h2>
+            <div id="series-list"><div class="loading-text">載入中...</div></div>
         </div>
     </main>
     
-    <div class="toast" id="toast"></div>
-    
-    <script src="/static/js/common.js"></script>
     <script>
-        // 備援函數（防止 common.js 載入失敗）
-        if (typeof $ === 'undefined') {
-            window.$ = id => document.getElementById(id);
-        }
-        if (typeof apiGet === 'undefined') {
-            window.apiGet = async (url) => {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch('/api/v1' + url, { 
-                    headers: { 'Authorization': 'Bearer ' + token } 
-                });
-                if (!res.ok) throw new Error('API Error: ' + res.status);
-                return res.json();
-            };
-        }
-        if (typeof showToast === 'undefined') {
-            window.showToast = (msg, type) => { 
-                console.log('[Toast]', type, msg);
-                alert(msg); 
-            };
-        }
-        if (typeof formatMoney === 'undefined') {
-            window.formatMoney = (amount) => '$' + Number(amount || 0).toLocaleString();
-        }
-        if (typeof formatDate === 'undefined') {
-            window.formatDate = (dateStr) => {
-                if (!dateStr) return '';
-                const d = new Date(dateStr);
-                return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
-            };
+        // ==================== 工具函數 ====================
+        const API_BASE = '/api/v1';
+        
+        function getToken() {
+            try {
+                return localStorage.getItem('access_token');
+            } catch (e) {
+                console.error('localStorage 錯誤:', e);
+                return null;
+            }
         }
         
-        async function checkAdminAuth() {
-            // 先檢查 token 是否存在
-            const token = localStorage.getItem('access_token');
+        async function api(url) {
+            const token = getToken();
+            console.log('[API] 呼叫:', url, 'Token:', token ? '有' : '無');
+            
             if (!token) {
-                window.location.href = '/';
-                return null;
+                throw new Error('未登入');
             }
             
-            // 獲取用戶資訊並檢查管理員權限
+            const response = await fetch(API_BASE + url, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            
+            console.log('[API] 回應狀態:', response.status);
+            
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.detail || 'API 錯誤: ' + response.status);
+            }
+            
+            return response.json();
+        }
+        
+        function formatMoney(amount) {
+            const num = Number(amount) || 0;
+            if (num >= 100000000) {
+                return '$' + (num / 100000000).toFixed(1) + '億';
+            } else if (num >= 10000) {
+                return '$' + (num / 10000).toFixed(1) + '萬';
+            }
+            return '$' + num.toLocaleString();
+        }
+        
+        // ==================== 載入函數 ====================
+        async function loadStats() {
+            console.log('[Admin] 載入統計...');
             try {
-                const user = await apiGet('/users/me');
-                if (!user || user.role !== 'admin') {
-                    showToast('需要管理員權限', 'error');
-                    setTimeout(() => window.location.href = '/dashboard', 1500);
-                    return null;
+                const stats = await api('/admin/stats');
+                console.log('[Admin] 統計資料:', stats);
+                
+                document.getElementById('total-users').textContent = stats.total_users ?? 0;
+                document.getElementById('total-series').textContent = stats.total_series ?? 0;
+                document.getElementById('total-invested').textContent = formatMoney(stats.total_pool);
+                document.getElementById('total-prize').textContent = formatMoney(stats.total_prize);
+                
+                console.log('[Admin] 統計顯示完成');
+            } catch (e) {
+                console.error('[Admin] 載入統計失敗:', e);
+                document.getElementById('total-users').textContent = 'E';
+                document.getElementById('total-series').textContent = 'E';
+                document.getElementById('total-invested').textContent = 'E';
+                document.getElementById('total-prize').textContent = 'E';
+            }
+        }
+        
+        async function loadUsers() {
+            console.log('[Admin] 載入用戶...');
+            const container = document.getElementById('user-list');
+            try {
+                const users = await api('/admin/users?limit=10');
+                console.log('[Admin] 用戶資料:', users);
+                
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<div class="loading-text">暫無用戶</div>';
+                    return;
                 }
-                return user;
-            } catch (e) {
-                window.location.href = '/';
-                return null;
-            }
-        }
-        
-        async function loadDashboard() {
-            const user = await checkAdminAuth();
-            if (!user) return;
-            
-            // 載入統計
-            try {
-                const stats = await apiGet('/admin/stats');
-                console.log('Admin stats:', stats);
-                if ($('total-users')) $('total-users').textContent = stats.total_users || 0;
-                if ($('total-series')) $('total-series').textContent = stats.total_series || 0;
-                if ($('total-invested')) $('total-invested').textContent = formatMoney(stats.total_pool || 0);
-                if ($('total-prize')) $('total-prize').textContent = formatMoney(stats.total_prize || 0);
-            } catch (e) {
-                console.error('載入統計失敗', e);
-                // 顯示錯誤狀態
-                if ($('total-users')) $('total-users').textContent = '錯誤';
-                if ($('total-series')) $('total-series').textContent = '錯誤';
-            }
-            
-            // 載入用戶列表
-            try {
-                const users = await apiGet('/admin/users?limit=10');
-                renderUserList(users);
-            } catch (e) {
-                $('user-list').innerHTML = '<div class="loading">載入失敗</div>';
-            }
-            
-            // 載入系列團列表
-            try {
-                const series = await apiGet('/admin/series?limit=10');
-                renderSeriesList(series);
-            } catch (e) {
-                $('series-list').innerHTML = '<div class="loading">載入失敗</div>';
-            }
-        }
-        
-        function renderUserList(users) {
-            const container = $('user-list');
-            if (!users || users.length === 0) {
-                container.innerHTML = '<div class="loading">暫無用戶</div>';
-                return;
-            }
-            container.innerHTML = users.map(user => `
-                <div class="user-item">
-                    <div class="user-avatar">
-                        ${user.picture_url 
-                            ? `<img src="${user.picture_url}" alt="">`
-                            : (user.display_name || '?').charAt(0)}
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">${user.nickname || user.display_name}</div>
-                        <div class="user-role">ID: ${user.id} | 參與 ${user.series_count || 0} 個系列團</div>
-                    </div>
-                    <span class="role-badge ${user.role === 'admin' ? 'role-admin' : 'role-user'}">
-                        ${user.role === 'admin' ? '管理員' : '會員'}
-                    </span>
-                </div>
-            `).join('');
-        }
-        
-        function renderSeriesList(series) {
-            const container = $('series-list');
-            if (!series || series.length === 0) {
-                container.innerHTML = '<div class="loading">暫無系列團</div>';
-                return;
-            }
-            container.innerHTML = series.map(s => `
-                <div class="user-item">
-                    <div class="user-avatar">📋</div>
-                    <div class="user-info">
-                        <div class="user-name">${s.name}</div>
-                        <div class="user-role">
-                            ${s.member_count} 人 | 
-                            ${s.total_periods} 期 | 
-                            累計 ${formatMoney(s.total_invested || 0)}
+                
+                container.innerHTML = users.map(u => `
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            ${u.picture_url 
+                                ? `<img src="${u.picture_url}" alt="">` 
+                                : (u.display_name || '?')[0]}
                         </div>
+                        <div class="item-info">
+                            <div class="item-name">${u.nickname || u.display_name}</div>
+                            <div class="item-meta">ID: ${u.id} | 參與 ${u.series_count || 0} 個系列團</div>
+                        </div>
+                        <span class="item-badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">
+                            ${u.role === 'admin' ? '管理員' : '會員'}
+                        </span>
                     </div>
-                    <span class="role-badge ${s.status === 'active' ? 'role-admin' : 'role-user'}">
-                        ${s.status === 'active' ? '進行中' : '已結束'}
-                    </span>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (e) {
+                console.error('[Admin] 載入用戶失敗:', e);
+                container.innerHTML = '<div class="error-text">載入失敗: ' + e.message + '</div>';
+            }
         }
         
-        // 確保 common.js 載入完成後再執行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadDashboard);
-        } else {
-            loadDashboard();
+        async function loadSeries() {
+            console.log('[Admin] 載入系列團...');
+            const container = document.getElementById('series-list');
+            try {
+                const series = await api('/admin/series?limit=10');
+                console.log('[Admin] 系列團資料:', series);
+                
+                if (!series || series.length === 0) {
+                    container.innerHTML = '<div class="loading-text">暫無系列團</div>';
+                    return;
+                }
+                
+                container.innerHTML = series.map(s => `
+                    <div class="list-item">
+                        <div class="item-avatar">📋</div>
+                        <div class="item-info">
+                            <div class="item-name">${s.name}</div>
+                            <div class="item-meta">${s.member_count} 人 | ${s.total_periods} 期 | ${formatMoney(s.current_pool)}</div>
+                        </div>
+                        <span class="item-badge ${s.status === 'active' ? 'badge-active' : 'badge-closed'}">
+                            ${s.status === 'active' ? '進行中' : '已結束'}
+                        </span>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('[Admin] 載入系列團失敗:', e);
+                container.innerHTML = '<div class="error-text">載入失敗: ' + e.message + '</div>';
+            }
         }
+        
+        // ==================== 主程式 ====================
+        async function init() {
+            console.log('[Admin] 頁面初始化...');
+            
+            // 檢查登入狀態
+            const token = getToken();
+            if (!token) {
+                console.log('[Admin] 未登入，跳轉首頁');
+                window.location.href = '/';
+                return;
+            }
+            
+            // 檢查管理員權限
+            try {
+                const user = await api('/users/me');
+                console.log('[Admin] 當前用戶:', user);
+                
+                if (user.role !== 'admin') {
+                    alert('需要管理員權限');
+                    window.location.href = '/dashboard';
+                    return;
+                }
+            } catch (e) {
+                console.error('[Admin] 權限檢查失敗:', e);
+                alert('驗證失敗，請重新登入');
+                window.location.href = '/';
+                return;
+            }
+            
+            // 載入資料（並行執行）
+            await Promise.all([
+                loadStats(),
+                loadUsers(),
+                loadSeries()
+            ]);
+            
+            console.log('[Admin] 初始化完成');
+        }
+        
+        // 頁面載入後執行
+        init();
     </script>
 </body>
 </html>
