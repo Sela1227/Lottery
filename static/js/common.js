@@ -63,11 +63,32 @@ function clearRedirectCount() {
 
 const $ = id => document.getElementById(id);
 
+/**
+ * 取得 Token（優先 URL 參數，其次 localStorage）
+ * LINE 瀏覽器的 localStorage 可能不穩定
+ */
 function getToken() {
+    // 先檢查 URL 參數（用於 LINE 瀏覽器備援）
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('_t');
+        if (urlToken) {
+            // 嘗試同時存入 localStorage
+            try {
+                localStorage.setItem('access_token', urlToken);
+            } catch (e) {
+                // ignore
+            }
+            return urlToken;
+        }
+    } catch (e) {
+        // ignore
+    }
+    
+    // 從 localStorage 取得
     try {
         return localStorage.getItem('access_token');
     } catch (e) {
-        // 某些瀏覽器可能限制 localStorage 存取
         console.error('無法存取 localStorage:', e);
         return null;
     }

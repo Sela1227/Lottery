@@ -443,16 +443,49 @@
         }
         
         async function initDashboard() {
-            const token = getToken();
+            // 從 URL 參數取得 token（LINE 瀏覽器 localStorage 備援機制）
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlToken = urlParams.get('_t');
+            
+            if (urlToken) {
+                // 嘗試儲存到 localStorage
+                try {
+                    localStorage.setItem('access_token', urlToken);
+                } catch (e) {
+                    console.warn('localStorage 儲存失敗，使用 URL token');
+                }
+                // 清除 URL 參數（保持乾淨的 URL）
+                window.history.replaceState({}, '', '/dashboard');
+            }
+            
+            // 優先使用 URL token，其次使用 localStorage
+            const token = urlToken || getToken();
+            
             if (!token) { 
                 safeRedirect('/'); 
                 return; 
             }
+            
             try {
-                const user = await apiGet('/users/me');
-                if (!user) return;
+                // 直接用 token 呼叫 API（不依賴 getToken）
+                const res = await fetch('/api/v1/users/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 
-                // 成功載入，清除重定向計數
+                if (!res.ok) {
+                    throw new Error('Token 驗證失敗');
+                }
+                
+                const user = await res.json();
+                
+                // 成功載入，確保 token 存在 localStorage
+                try {
+                    localStorage.setItem('access_token', token);
+                } catch (e) {
+                    console.warn('localStorage 儲存失敗');
+                }
+                
+                // 清除重定向計數
                 if (typeof clearRedirectCount === 'function') {
                     clearRedirectCount();
                 }

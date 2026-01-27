@@ -338,7 +338,8 @@
             
             // 處理登入成功（從 LINE 回來帶 token）
             if (accessToken) {
-                safeSetItem('access_token', accessToken);
+                // 嘗試儲存到 localStorage
+                const stored = safeSetItem('access_token', accessToken);
                 
                 if (isNew === '1') {
                     safeSetItem('is_new_user', '1');
@@ -346,7 +347,10 @@
                 
                 window.history.replaceState({}, '', '/');
                 clearRedirectCount();
-                window.location.href = '/dashboard';
+                
+                // 無論 localStorage 是否成功，都用 URL 參數帶 token 到 dashboard
+                // 這樣即使 localStorage 在 LINE 瀏覽器中失效，dashboard 也能取得 token
+                window.location.href = '/dashboard?_t=' + encodeURIComponent(accessToken);
                 return;
             }
             
