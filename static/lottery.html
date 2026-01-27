@@ -4,364 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#F26522">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>SELA 樂透一路發 - 開獎專區</title>
     <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* 開獎專區專用樣式 */
+        --power-gradient: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+        --super-gradient: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        --daily-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
         
-        :root {
-            --sela-orange: #F26522;
-            --sela-orange-dark: #D85A1E;
-            --sela-orange-light: #FF8547;
-            --bg-primary: #FFF8F4;
-            --bg-secondary: #FFF0E8;
-            --bg-card: #FFFFFF;
-            --border-color: rgba(242, 101, 34, 0.12);
-            --text-primary: #2D2420;
-            --text-secondary: #8B7355;
-            --shadow-sm: 0 2px 8px rgba(242, 101, 34, 0.08);
-            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
-            --success: #16A34A;
-            --power-gradient: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
-            --super-gradient: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-            --daily-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
-        }
+        .page-title { margin-bottom: 24px; }
+        .page-title h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .page-title p { color: var(--text-secondary); font-size: 14px; }
         
-        body {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            color: var(--text-primary);
-        }
-        
-        /* ===== Header ===== */
-        .header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .logo { width: 36px; height: 36px; border-radius: 8px; box-shadow: var(--shadow-sm); }
-        .brand { font-size: 16px; font-weight: 700; color: var(--sela-orange); }
-        
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--sela-orange);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-        }
-        .back-btn:hover { background: var(--sela-orange); color: #fff; }
-        
-        .main { padding: 20px; max-width: 800px; margin: 0 auto; }
-        
-        /* ===== 頁面標題 ===== */
-        .page-title {
-            margin-bottom: 24px;
-        }
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .page-title p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        /* ===== 彩種卡片 ===== */
-        .lottery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        
-        .lottery-card {
-            border-radius: 16px;
-            padding: 20px;
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-        .lottery-card.power { background: var(--power-gradient); }
-        .lottery-card.super { background: var(--super-gradient); }
-        .lottery-card.daily { background: var(--daily-gradient); }
-        
-        .lottery-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .lottery-card-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .lottery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .lottery-card { border-radius: 16px; padding: 20px; color: white; box-shadow: var(--shadow-md); }
+        .lottery-card.power { background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); }
+        .lottery-card.super { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); }
+        .lottery-card.daily { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .lottery-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .lottery-card-title { display: flex; align-items: center; gap: 10px; }
         .lottery-icon { font-size: 28px; }
         .lottery-name { font-size: 20px; font-weight: 700; }
-        .lottery-date {
-            font-size: 12px;
-            opacity: 0.85;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-        
-        .lottery-numbers {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .lottery-ball {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.95);
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .lottery-date { font-size: 12px; opacity: 0.85; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; }
+        .lottery-numbers { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .lottery-ball { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #333; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .lottery-ball.special { background: #FFD700; }
         .lottery-ball.second-zone { background: #FF4757; color: white; }
-        .lottery-divider {
-            width: 2px;
-            height: 36px;
-            background: rgba(255,255,255,0.4);
-            margin: 0 4px;
-        }
-        
-        .lottery-jackpot {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
+        .lottery-divider { width: 2px; height: 36px; background: rgba(255,255,255,0.4); margin: 0 4px; }
+        .lottery-jackpot { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
         .jackpot-label { opacity: 0.9; font-size: 14px; }
         .jackpot-amount { font-size: 22px; font-weight: 700; }
+        .lottery-updated { text-align: right; font-size: 11px; opacity: 0.7; margin-top: 8px; }
+        .loading-card { opacity: 0.7; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 0.5; } }
         
-        .lottery-updated {
-            text-align: right;
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 8px;
-        }
+        .history-section { background: var(--bg-card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .section-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         
-        .loading-card {
-            opacity: 0.7;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0.5; }
-        }
+        .lottery-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .lottery-tab { padding: 10px 16px; border-radius: 20px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; background: var(--bg-secondary); color: var(--text-secondary); }
+        .lottery-tab.active { background: var(--sela-orange); color: white; }
         
-        /* ===== 歷史記錄區 ===== */
-        .history-section {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 24px;
-        }
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; }
+        .history-info { min-width: 100px; }
+        .history-term { font-size: 14px; font-weight: 700; color: var(--sela-orange); }
+        .history-date { font-size: 12px; color: var(--text-secondary); }
+        .history-numbers { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+        .history-ball { width: 30px; height: 30px; border-radius: 50%; background: var(--sela-orange); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+        .history-ball.special { background: #FFD700; color: #333; }
+        .history-ball.second { background: #FF4757; }
+        .history-divider { width: 1px; height: 24px; background: var(--border-color); margin: 0 4px; }
         
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .load-more { width: 100%; padding: 14px; border: 1px dashed var(--border-color); background: transparent; border-radius: 12px; font-size: 14px; color: var(--text-secondary); cursor: pointer; margin-top: 16px; transition: all 0.3s; }
+        .load-more:hover { border-color: var(--sela-orange); color: var(--sela-orange); }
         
-        /* 彩種切換 Tab */
-        .lottery-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .lottery-tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: none;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        .lottery-tab.active {
-            background: var(--sela-orange);
-            color: white;
-        }
-        .lottery-tab:hover:not(.active) {
-            background: var(--bg-primary);
-        }
-        
-        /* 歷史列表 */
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .history-item {
-            display: flex;
-            align-items: center;
-            padding: 14px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .history-item:hover {
-            background: var(--bg-primary);
-            transform: translateX(4px);
-        }
-        
-        .history-date {
-            min-width: 90px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        
-        .history-numbers {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            flex: 1;
-        }
-        .history-ball {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: white;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-            box-shadow: var(--shadow-sm);
-        }
-        .history-ball.special { background: #FFD700; }
-        .history-ball.second-zone { background: #FF4757; color: white; }
-        .history-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border-color);
-            margin: 0 2px;
-        }
-        
-        .load-more {
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            background: var(--bg-secondary);
-            border: 1px dashed var(--border-color);
-            border-radius: 12px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .load-more:hover {
-            background: var(--sela-orange);
-            color: white;
-            border-color: var(--sela-orange);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-        
-        /* ===== 底部導航 ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            padding-bottom: calc(8px + env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 16px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .nav-item .icon { font-size: 22px; }
-        .nav-item.active { color: var(--sela-orange); }
-        .nav-item:hover { color: var(--sela-orange); }
-        
-        /* ===== 響應式 ===== */
-        @media (max-width: 480px) {
-            .lottery-grid {
-                grid-template-columns: 1fr;
-            }
-            .lottery-ball {
-                width: 32px;
-                height: 32px;
-                font-size: 13px;
-            }
-            .history-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-        
-        /* 給底部導航留空間 */
-        .main { padding-bottom: 80px; }
     </style>
 </head>
 <body>
@@ -370,385 +72,165 @@
             <img src="/static/logo.jpg" alt="SELA" class="logo">
             <span class="brand">開獎專區</span>
         </div>
-        <a href="/dashboard" class="back-btn">
-            ← 返回
-        </a>
+        <a href="/dashboard" class="back-btn">← 返回</a>
     </header>
     
     <main class="main">
-        <!-- 頁面標題 -->
         <div class="page-title">
             <h1>🎰 最新開獎</h1>
-            <p>台灣彩券即時開獎資訊</p>
+            <p>即時查看各彩種開獎結果</p>
         </div>
         
-        <!-- 彩種卡片 -->
-        <div class="lottery-grid" id="lottery-grid">
-            <!-- 威力彩 -->
+        <div class="lottery-grid">
             <div class="lottery-card power loading-card" id="card-power">
                 <div class="lottery-card-header">
-                    <div class="lottery-card-title">
-                        <span class="lottery-icon">🔴</span>
-                        <span class="lottery-name">威力彩</span>
-                    </div>
+                    <div class="lottery-card-title"><span class="lottery-icon">🔴</span><span class="lottery-name">威力彩</span></div>
                     <span class="lottery-date">載入中...</span>
                 </div>
                 <div class="lottery-numbers">載入中...</div>
             </div>
-            
-            <!-- 大樂透 -->
             <div class="lottery-card super loading-card" id="card-super">
                 <div class="lottery-card-header">
-                    <div class="lottery-card-title">
-                        <span class="lottery-icon">🔵</span>
-                        <span class="lottery-name">大樂透</span>
-                    </div>
+                    <div class="lottery-card-title"><span class="lottery-icon">🔵</span><span class="lottery-name">大樂透</span></div>
                     <span class="lottery-date">載入中...</span>
                 </div>
                 <div class="lottery-numbers">載入中...</div>
             </div>
-            
-            <!-- 今彩539 -->
             <div class="lottery-card daily loading-card" id="card-daily539">
                 <div class="lottery-card-header">
-                    <div class="lottery-card-title">
-                        <span class="lottery-icon">🟢</span>
-                        <span class="lottery-name">今彩539</span>
-                    </div>
+                    <div class="lottery-card-title"><span class="lottery-icon">🟢</span><span class="lottery-name">今彩539</span></div>
                     <span class="lottery-date">載入中...</span>
                 </div>
                 <div class="lottery-numbers">載入中...</div>
             </div>
         </div>
         
-        <!-- 歷史記錄區 -->
         <div class="history-section">
-            <div class="section-header">
-                <h2 class="section-title">📋 開獎歷史</h2>
-            </div>
-            
-            <!-- 彩種切換 -->
+            <div class="section-header"><h2 class="section-title">📋 開獎歷史</h2></div>
             <div class="lottery-tabs">
                 <button class="lottery-tab active" data-type="power">威力彩</button>
                 <button class="lottery-tab" data-type="super">大樂透</button>
                 <button class="lottery-tab" data-type="daily539">今彩539</button>
             </div>
-            
-            <!-- 歷史列表 -->
-            <div class="history-list" id="history-list">
-                <div class="empty-state">
-                    <div class="icon">📊</div>
-                    <p>載入中...</p>
-                </div>
-            </div>
-            
-            <!-- 載入更多按鈕 -->
-            <button class="load-more" id="load-more" style="display: none;">
-                載入更多
-            </button>
+            <div class="history-list" id="history-list"><div class="empty-state"><div class="icon">📊</div><p>載入中...</p></div></div>
+            <button class="load-more" id="load-more" style="display: none;">載入更多</button>
         </div>
     </main>
     
-    <!-- 底部導航 -->
     <nav class="bottom-nav">
-        <a href="/dashboard" class="nav-item">
-            <span class="icon">🏠</span>
-            <span>首頁</span>
-        </a>
-        <a href="/lottery" class="nav-item active">
-            <span class="icon">🎰</span>
-            <span>開獎</span>
-        </a>
-        <a href="/series" class="nav-item">
-            <span class="icon">👥</span>
-            <span>團購</span>
-        </a>
-        <a href="/statistics" class="nav-item">
-            <span class="icon">📊</span>
-            <span>統計</span>
-        </a>
-        <a href="/settings" class="nav-item">
-            <span class="icon">⚙️</span>
-            <span>設定</span>
-        </a>
+        <a href="/dashboard" class="nav-item"><span class="nav-icon">🏠</span><span>首頁</span></a>
+        <a href="/lottery" class="nav-item active"><span class="nav-icon">🎰</span><span>開獎</span></a>
+        <a href="/series" class="nav-item"><span class="nav-icon">👥</span><span>團購</span></a>
+        <a href="/statistics" class="nav-item"><span class="nav-icon">📊</span><span>統計</span></a>
+        <a href="/settings" class="nav-item"><span class="nav-icon">⚙️</span><span>設定</span></a>
     </nav>
     
+    <script src="/static/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
-        let currentType = 'power';
-        let historyOffset = 0;
+        let currentType = 'power', historyOffset = 0;
         const historyLimit = 10;
         
-        // ==================== 認證 ====================
-        async function checkAuth() {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                window.location.href = '/';
-                return null;
-            }
-            return token;
-        }
-        
-        // ==================== 頁面載入 ====================
         async function init() {
-            const token = await checkAuth();
-            if (!token) return;
-            
+            const user = await checkAuth();
+            if (!user) return;
             await loadLatestDraws();
             await loadHistory();
-            
-            // 綁定 Tab 切換
-            document.querySelectorAll('.lottery-tab').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.type));
-            });
-            
-            // 綁定載入更多
-            document.getElementById('load-more').addEventListener('click', loadMoreHistory);
+            document.querySelectorAll('.lottery-tab').forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.type)));
+            $('load-more').addEventListener('click', loadMoreHistory);
         }
         
-        // ==================== 載入最新開獎 ====================
         async function loadLatestDraws() {
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/lottery/latest`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!res.ok) throw new Error('載入失敗');
-                
-                const data = await res.json();
+                const data = await apiGet('/lottery/latest');
                 renderLatestCards(data.lotteries);
-            } catch (e) {
-                console.error('載入開獎資訊失敗:', e);
-            }
+            } catch (e) { console.error('載入開獎資訊失敗:', e); }
         }
         
         function renderLatestCards(lotteries) {
-            const types = [
-                { key: 'power', id: 'card-power' },
-                { key: 'super', id: 'card-super' },
-                { key: 'daily539', id: 'card-daily539' }
-            ];
-            
-            types.forEach(({ key, id }) => {
-                const card = document.getElementById(id);
-                const data = lotteries[key];
-                
-                if (data) {
-                    renderCard(card, data, key);
-                } else {
-                    card.classList.remove('loading-card');
-                    card.querySelector('.lottery-numbers').innerHTML = '暫無資料';
-                }
+            [{ key: 'power', id: 'card-power' }, { key: 'super', id: 'card-super' }, { key: 'daily539', id: 'card-daily539' }].forEach(({ key, id }) => {
+                const card = $(id), data = lotteries[key];
+                if (data) renderCard(card, data, key);
+                else { card.classList.remove('loading-card'); card.querySelector('.lottery-numbers').innerHTML = '暫無資料'; }
             });
         }
         
         function renderCard(card, data, type) {
             card.classList.remove('loading-card');
-            
             const draw = data.latest_draw;
-            if (!draw) {
-                card.querySelector('.lottery-numbers').innerHTML = '暫無資料';
-                return;
-            }
-            
-            // 更新日期
+            if (!draw) { card.querySelector('.lottery-numbers').innerHTML = '暫無資料'; return; }
             card.querySelector('.lottery-date').textContent = formatDate(draw.draw_date);
-            
-            // 更新號碼
             card.querySelector('.lottery-numbers').innerHTML = renderNumbers(draw.numbers, type);
-            
-            // 更新獎金
-            const oldJackpot = card.querySelector('.lottery-jackpot');
-            if (oldJackpot) oldJackpot.remove();
-            
-            if (data.jackpot_display) {
-                const jackpotHtml = `
-                    <div class="lottery-jackpot">
-                        <span class="jackpot-label">💰 頭獎</span>
-                        <span class="jackpot-amount">${data.jackpot_display}</span>
-                    </div>
-                `;
-                card.insertAdjacentHTML('beforeend', jackpotHtml);
-            }
-            
-            // 更新時間
-            const oldUpdated = card.querySelector('.lottery-updated');
-            if (oldUpdated) oldUpdated.remove();
-            
-            if (data.updated_at) {
-                const updatedHtml = `<div class="lottery-updated">更新: ${data.updated_at}</div>`;
-                card.insertAdjacentHTML('beforeend', updatedHtml);
-            }
+            const oldJackpot = card.querySelector('.lottery-jackpot'); if (oldJackpot) oldJackpot.remove();
+            if (data.jackpot_display) card.insertAdjacentHTML('beforeend', `<div class="lottery-jackpot"><span class="jackpot-label">💰 頭獎</span><span class="jackpot-amount">${data.jackpot_display}</span></div>`);
+            const oldUpdated = card.querySelector('.lottery-updated'); if (oldUpdated) oldUpdated.remove();
+            if (data.updated_at) card.insertAdjacentHTML('beforeend', `<div class="lottery-updated">更新: ${data.updated_at}</div>`);
         }
         
         function renderNumbers(numbers, type) {
             let html = '';
-            
             if (type === 'power') {
-                if (numbers.first_zone) {
-                    numbers.first_zone.forEach(num => {
-                        html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.second_zone !== undefined && numbers.second_zone !== null) {
-                    html += `<span class="lottery-divider"></span>`;
-                    html += `<span class="lottery-ball second-zone">${String(numbers.second_zone).padStart(2, '0')}</span>`;
-                }
+                if (numbers.first_zone) numbers.first_zone.forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.second_zone != null) html += `<span class="lottery-divider"></span><span class="lottery-ball second-zone">${String(numbers.second_zone).padStart(2, '0')}</span>`;
             } else if (type === 'super') {
-                if (numbers.main) {
-                    numbers.main.forEach(num => {
-                        html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.special !== undefined && numbers.special !== null) {
-                    html += `<span class="lottery-divider"></span>`;
-                    html += `<span class="lottery-ball special">${String(numbers.special).padStart(2, '0')}</span>`;
-                }
+                if (numbers.main) numbers.main.forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.special != null) html += `<span class="lottery-divider"></span><span class="lottery-ball special">${String(numbers.special).padStart(2, '0')}</span>`;
             } else {
                 const nums = numbers.numbers || numbers.main || [];
-                nums.forEach(num => {
-                    html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`;
-                });
+                nums.forEach(num => { html += `<span class="lottery-ball">${String(num).padStart(2, '0')}</span>`; });
             }
-            
-            return html || '暫無資料';
+            return html || '-';
         }
         
-        // ==================== 歷史記錄 ====================
         async function loadHistory(append = false) {
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await fetch(`${API_BASE}/lottery/history/${currentType}?limit=${historyLimit}&offset=${historyOffset}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!res.ok) throw new Error('載入失敗');
-                
-                const data = await res.json();
-                renderHistory(data, append);
-                
-                // 顯示/隱藏載入更多按鈕
-                const loadMoreBtn = document.getElementById('load-more');
-                if (historyOffset + historyLimit < data.total_count) {
-                    loadMoreBtn.style.display = 'block';
-                } else {
-                    loadMoreBtn.style.display = 'none';
+                const data = await apiGet(`/lottery/history/${currentType}?limit=${historyLimit}&offset=${historyOffset}`);
+                const container = $('history-list');
+                if (!append) container.innerHTML = '';
+                if (!data.draws || data.draws.length === 0) {
+                    if (!append) container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>暫無歷史記錄</p></div>';
+                    $('load-more').style.display = 'none';
+                    return;
                 }
-            } catch (e) {
-                console.error('載入歷史記錄失敗:', e);
-                if (!append) {
-                    document.getElementById('history-list').innerHTML = `
-                        <div class="empty-state">
-                            <div class="icon">😢</div>
-                            <p>載入失敗，請稍後再試</p>
-                        </div>
-                    `;
-                }
-            }
+                data.draws.forEach(draw => { container.insertAdjacentHTML('beforeend', renderHistoryItem(draw)); });
+                $('load-more').style.display = data.draws.length >= historyLimit ? 'block' : 'none';
+            } catch (e) { console.error('載入歷史失敗:', e); $('history-list').innerHTML = '<div class="empty-state"><p>載入失敗</p></div>'; }
         }
         
-        function renderHistory(data, append) {
-            const list = document.getElementById('history-list');
-            
-            if (!append) {
-                list.innerHTML = '';
-            }
-            
-            if (data.items.length === 0 && !append) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <p>尚無歷史記錄</p>
-                        <p style="font-size: 12px; margin-top: 8px;">請先同步開獎資料</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            data.items.forEach(item => {
-                const itemHtml = `
-                    <div class="history-item">
-                        <div class="history-date">${formatDate(item.draw_date)}</div>
-                        <div class="history-numbers">
-                            ${renderHistoryNumbers(item.numbers, currentType)}
-                        </div>
-                    </div>
-                `;
-                list.insertAdjacentHTML('beforeend', itemHtml);
-            });
+        function renderHistoryItem(draw) {
+            return `<div class="history-item"><div class="history-info"><div class="history-term">${draw.draw_term || '-'}</div><div class="history-date">${formatDate(draw.draw_date)}</div></div><div class="history-numbers">${renderHistoryNumbers(draw.numbers, currentType)}</div></div>`;
         }
         
         function renderHistoryNumbers(numbers, type) {
             let html = '';
-            
             if (type === 'power') {
-                if (numbers.first_zone) {
-                    numbers.first_zone.forEach(num => {
-                        html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.second_zone !== undefined && numbers.second_zone !== null) {
-                    html += `<span class="history-divider"></span>`;
-                    html += `<span class="history-ball second-zone">${String(numbers.second_zone).padStart(2, '0')}</span>`;
-                }
+                if (numbers.first_zone) numbers.first_zone.forEach(num => { html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.second_zone != null) html += `<span class="history-divider"></span><span class="history-ball second">${String(numbers.second_zone).padStart(2, '0')}</span>`;
             } else if (type === 'super') {
-                if (numbers.main) {
-                    numbers.main.forEach(num => {
-                        html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`;
-                    });
-                }
-                if (numbers.special !== undefined && numbers.special !== null) {
-                    html += `<span class="history-divider"></span>`;
-                    html += `<span class="history-ball special">${String(numbers.special).padStart(2, '0')}</span>`;
-                }
+                if (numbers.main) numbers.main.forEach(num => { html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`; });
+                if (numbers.special != null) html += `<span class="history-divider"></span><span class="history-ball special">${String(numbers.special).padStart(2, '0')}</span>`;
             } else {
                 const nums = numbers.numbers || numbers.main || [];
-                nums.forEach(num => {
-                    html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`;
-                });
+                nums.forEach(num => { html += `<span class="history-ball">${String(num).padStart(2, '0')}</span>`; });
             }
-            
             return html || '-';
         }
         
         function switchTab(type) {
-            currentType = type;
-            historyOffset = 0;
-            
-            // 更新 Tab 狀態
-            document.querySelectorAll('.lottery-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.type === type);
-            });
-            
-            // 重新載入歷史
-            document.getElementById('history-list').innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">⏳</div>
-                    <p>載入中...</p>
-                </div>
-            `;
+            currentType = type; historyOffset = 0;
+            document.querySelectorAll('.lottery-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.type === type));
+            $('history-list').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>載入中...</p></div>';
             loadHistory();
         }
         
-        function loadMoreHistory() {
-            historyOffset += historyLimit;
-            loadHistory(true);
-        }
+        function loadMoreHistory() { historyOffset += historyLimit; loadHistory(true); }
         
-        // ==================== 工具函數 ====================
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            const date = new Date(dateStr);
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
-            const weekDay = weekDays[date.getDay()];
-            return `${month}/${day} (${weekDay})`;
+            const date = new Date(dateStr), weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+            return `${date.getMonth() + 1}/${date.getDate()} (${weekDays[date.getDay()]})`;
         }
         
-        // 頁面載入
-        document.addEventListener('DOMContentLoaded', init);
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
     </script>
 </body>
 </html>
