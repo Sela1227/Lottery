@@ -64,6 +64,22 @@ function clearRedirectCount() {
 const $ = id => document.getElementById(id);
 
 /**
+ * 設定元素文字內容
+ */
+function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+/**
+ * 設定元素 HTML 內容
+ */
+function setHtml(id, html) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+}
+
+/**
  * 取得 Token（優先 URL 參數，其次 localStorage）
  * LINE 瀏覽器的 localStorage 可能不穩定
  */
@@ -389,7 +405,7 @@ function safeInit(initFn) {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        API_BASE, $, getToken, setToken, removeToken,
+        API_BASE, $, setText, setHtml, getToken, setToken, removeToken,
         checkAuth, checkAuthAndGetUser, logout,
         apiGet, apiPost, apiPut, apiDelete,
         showToast, formatMoney, formatDate, formatDateTime,
