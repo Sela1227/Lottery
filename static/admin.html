@@ -176,15 +176,26 @@
     <script src="/static/js/common.js"></script>
     <script>
         async function checkAdminAuth() {
-            const user = await checkAuth();
-            if (!user) return null;
-            
-            if (user.role !== 'admin') {
-                showToast('需要管理員權限', 'error');
-                setTimeout(() => window.location.href = '/dashboard', 1500);
+            // 先檢查 token 是否存在
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/';
                 return null;
             }
-            return user;
+            
+            // 獲取用戶資訊並檢查管理員權限
+            try {
+                const user = await apiGet('/users/me');
+                if (!user || user.role !== 'admin') {
+                    showToast('需要管理員權限', 'error');
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
+                    return null;
+                }
+                return user;
+            } catch (e) {
+                window.location.href = '/';
+                return null;
+            }
         }
         
         async function loadDashboard() {
