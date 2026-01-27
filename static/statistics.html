@@ -143,6 +143,22 @@
     
     <script src="/static/js/common.js"></script>
     <script>
+        // ==================== 備援函數（防止 common.js 載入失敗）====================
+        if (typeof $ === 'undefined') window.$ = id => document.getElementById(id);
+        if (typeof setText === 'undefined') window.setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+        if (typeof setHtml === 'undefined') window.setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+        if (typeof getToken === 'undefined') window.getToken = () => { try { return localStorage.getItem('access_token'); } catch(e) { return null; } };
+        if (typeof removeToken === 'undefined') window.removeToken = () => { try { localStorage.removeItem('access_token'); } catch(e) {} };
+        if (typeof checkAuth === 'undefined') window.checkAuth = () => { if (!getToken()) { window.location.href = '/'; return false; } return true; };
+        if (typeof apiGet === 'undefined') window.apiGet = async (url) => { const r = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
+        if (typeof apiPost === 'undefined') window.apiPost = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
+        if (typeof apiPut === 'undefined') window.apiPut = async (url, data) => { const r = await fetch('/api/v1' + url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || 'API Error'); } return r.json(); };
+        if (typeof apiDelete === 'undefined') window.apiDelete = async (url) => { const r = await fetch('/api/v1' + url, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
+        if (typeof showToast === 'undefined') window.showToast = (msg, type) => { const t = document.getElementById('toast'); if (t) { t.textContent = msg; t.className = 'toast ' + (type||'info') + ' show'; setTimeout(() => t.classList.remove('show'), 3000); } else { console.log('[Toast]', type, msg); alert(msg); } };
+        if (typeof formatMoney === 'undefined') window.formatMoney = (n) => Number(n||0).toLocaleString();
+        if (typeof formatDate === 'undefined') window.formatDate = (d) => { if (!d) return ''; const dt = new Date(d); return dt.getFullYear() + '/' + (dt.getMonth()+1) + '/' + dt.getDate(); };
+        if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', paused:'已暫停', closed:'已結束', collecting:'集資中', locked:'已鎖定', purchased:'已購買', drawn:'已開獎', settled:'已結算' }[s] || s);
+
         // Tab Switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
