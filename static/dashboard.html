@@ -283,6 +283,51 @@
     
     <script src="/static/js/common.js"></script>
     <script>
+        // 備援：確保 $ 函數存在
+        if (typeof $ === 'undefined') {
+            window.$ = id => document.getElementById(id);
+        }
+        if (typeof getToken === 'undefined') {
+            window.getToken = () => {
+                try { return localStorage.getItem('access_token'); } catch(e) { return null; }
+            };
+        }
+        if (typeof removeToken === 'undefined') {
+            window.removeToken = () => {
+                try { localStorage.removeItem('access_token'); } catch(e) {}
+            };
+        }
+        if (typeof safeRedirect === 'undefined') {
+            window.safeRedirect = (url) => { window.location.href = url; };
+        }
+        if (typeof showToast === 'undefined') {
+            window.showToast = (msg, type) => { alert(msg); };
+        }
+        if (typeof apiGet === 'undefined') {
+            window.apiGet = async (url) => {
+                const token = getToken();
+                const res = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) throw new Error('API Error');
+                return res.json();
+            };
+        }
+        if (typeof apiPost === 'undefined') {
+            window.apiPost = async (url, data) => {
+                const token = getToken();
+                const res = await fetch('/api/v1' + url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (!res.ok) throw new Error('API Error');
+                return res.json();
+            };
+        }
+        if (typeof apiPut === 'undefined') {
+            window.apiPut = async (url, data) => {
+                const token = getToken();
+                const res = await fetch('/api/v1' + url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (!res.ok) throw new Error('API Error');
+                return res.json();
+            };
+        }
+        
         // ==================== 彈窗 ====================
         function showJoinModal() { $('join-modal').style.display = 'flex'; }
         function closeJoinModal() { $('join-modal').style.display = 'none'; }
@@ -396,15 +441,25 @@
         }
         
         // ==================== 主邏輯 ====================
+        // 輔助函數：設定文字內容
+        function setText(id, text) {
+            const el = $(id);
+            if (el) el.textContent = text;
+        }
+        
         function updateUI(user) {
-            const displayName = user.nickname || user.display_name;
+            const displayName = user.nickname || user.display_name || '用戶';
             setText('user-name', displayName);
             setText('welcome-name', displayName);
             const avatarEl = $('user-avatar');
-            if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`;
-            else avatarEl.textContent = displayName.charAt(0);
-            if (user.role === 'admin') $('admin-btn').style.display = 'block';
-            $('loading-overlay').classList.add('hidden');
+            if (avatarEl) {
+                if (user.picture_url) avatarEl.innerHTML = `<img src="${user.picture_url}" alt="avatar">`;
+                else avatarEl.textContent = displayName.charAt(0);
+            }
+            const adminBtn = $('admin-btn');
+            if (adminBtn && user.role === 'admin') adminBtn.style.display = 'block';
+            const loadingOverlay = $('loading-overlay');
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
         }
         
         async function loadDashboardData() {
@@ -490,14 +545,35 @@
                     clearRedirectCount();
                 }
                 
-                updateUI(user);
-                checkFirstLogin(user);
-                loadLotteryInfo();
-                loadDashboardData();
+                // 分開執行，避免一個錯誤導致全部失敗
+                try { updateUI(user); } catch (e) { console.error('updateUI error:', e); }
+                try { checkFirstLogin(user); } catch (e) { console.error('checkFirstLogin error:', e); }
+                try { loadLotteryInfo(); } catch (e) { console.error('loadLotteryInfo error:', e); }
+                try { loadDashboardData(); } catch (e) { console.error('loadDashboardData error:', e); }
+                
+                // 隱藏 loading
+                const loadingOverlay = $('loading-overlay');
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                
             } catch (error) {
                 console.error('Auth error:', error);
-                removeToken();
-                safeRedirect('/');
+                // 不要立即重定向，避免循環
+                // 顯示錯誤訊息讓用戶可以手動處理
+                const loadingOverlay = $('loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.innerHTML = `
+                        <div style="text-align:center;padding:20px;">
+                            <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+                            <h3 style="margin-bottom:8px;color:#F26522;">登入驗證失敗</h3>
+                            <p style="color:#666;margin-bottom:20px;">請重新登入</p>
+                            <a href="/" style="display:inline-block;padding:12px 24px;background:#F26522;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;">返回首頁</a>
+                        </div>
+                    `;
+                } else {
+                    // 備援：如果沒有 loading overlay，才重定向
+                    removeToken();
+                    safeRedirect('/');
+                }
             }
         }
         
