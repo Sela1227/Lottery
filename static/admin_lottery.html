@@ -13,19 +13,18 @@
         .back-btn { color: white; text-decoration: none; font-size: 14px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; }
         .main { padding: 16px; max-width: 600px; margin: 0 auto; }
         .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .sync-btn { width: 100%; padding: 16px; background: var(--sela-gradient); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .sync-btn { width: 100%; padding: 16px; background: var(--sela-gradient); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
         .sync-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .sync-btn .spinner { display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
         .sync-btn.loading .spinner { display: inline-block; }
         .sync-btn.loading .btn-text { display: none; }
+        .sync-btn.loading .loading-text { display: inline !important; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .result { margin-top: 16px; padding: 16px; border-radius: 10px; display: none; }
         .result.success { display: block; background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
         .result.error { display: block; background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
-        .result pre { white-space: pre-wrap; font-size: 14px; margin-top: 8px; }
         .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
         .info-text { font-size: 14px; color: #666; line-height: 1.6; }
-        .draws-container { margin-top: 12px; }
         .draw-type { font-weight: 600; font-size: 15px; margin: 12px 0 6px; }
         .draw-type:first-child { margin-top: 0; }
         .draw-item { font-size: 14px; color: #555; padding: 4px 0; }
@@ -34,8 +33,8 @@
 </head>
 <body>
     <header class="header">
-        <h1>📊 開獎資訊同步</h1>
-        <a href="/admin" class="back-btn">← 返回管理</a>
+        <h1>&#x1F4CA; 開獎資訊同步</h1>
+        <a href="/admin" class="back-btn">&larr; 返回管理</a>
     </header>
 
     <main class="main">
@@ -44,7 +43,7 @@
             <p class="info-text">從台灣彩券官方 API 抓取最近 2 個月的開獎號碼與獎金資料，自動儲存並觸發對獎。</p>
             <button class="sync-btn" id="sync-btn" onclick="doSync()">
                 <span class="spinner"></span>
-                <span class="btn-text">🔄 立即同步</span>
+                <span class="btn-text">&#x1F504; 立即同步</span>
                 <span class="loading-text" style="display:none">同步中...</span>
             </button>
             <div class="result" id="result"></div>
@@ -55,7 +54,7 @@
                 <span class="section-title">資料庫現有資料</span>
                 <span id="draw-count" style="font-size:14px;color:#999;"></span>
             </div>
-            <div class="draws-container" id="recent-draws">
+            <div id="recent-draws">
                 <div class="info-text">載入中...</div>
             </div>
         </div>
@@ -64,78 +63,88 @@
     <script src="/static/js/common.js"></script>
     <script>
         function getToken() {
-            return localStorage.getItem('token') || new URLSearchParams(location.search).get('token');
+            return localStorage.getItem('access_token') || new URLSearchParams(location.search).get('token');
         }
 
-        async function api(url, options = {}) {
-            const token = getToken();
-            const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', ...(options.headers || {}) };
-            return fetch('/api/v1' + url, { ...options, headers });
+        function apiCall(url, options) {
+            var token = getToken();
+            var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+            if (options && options.headers) {
+                for (var k in options.headers) headers[k] = options.headers[k];
+            }
+            var opts = Object.assign({}, options || {}, { headers: headers });
+            return fetch('/api/v1' + url, opts);
         }
 
-        async function doSync() {
-            const btn = document.getElementById('sync-btn');
-            const result = document.getElementById('result');
+        function doSync() {
+            var btn = document.getElementById('sync-btn');
+            var result = document.getElementById('result');
             btn.classList.add('loading');
-            btn.querySelector('.btn-text').style.display = 'none';
-            btn.querySelector('.loading-text').style.display = 'inline';
             btn.disabled = true;
             result.className = 'result';
             result.style.display = 'none';
 
-            try {
-                const resp = await api('/lottery/sync', { method: 'POST' });
-                const data = await resp.json();
-
-                if (resp.ok && data.success) {
-                    result.className = 'result success';
-                    result.innerHTML = '<strong>✅ ' + data.message.replace('\n', '<br>') + '</strong>';
-                    if (data.auto_check_result) {
-                        result.innerHTML += '<pre>對獎: ' + JSON.stringify(data.auto_check_result) + '</pre>';
+            apiCall('/lottery/sync', { method: 'POST' })
+                .then(function(resp) { return resp.json().then(function(data) { return { ok: resp.ok, data: data }; }); })
+                .then(function(res) {
+                    if (res.ok && res.data.success) {
+                        result.className = 'result success';
+                        var msg = (res.data.message || '').replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+                        result.innerHTML = '<strong>&#x2705; ' + msg + '</strong>';
+                    } else {
+                        result.className = 'result error';
+                        result.innerHTML = '<strong>&#x274C; ' + (res.data.message || res.data.detail || '同步失敗') + '</strong>';
                     }
-                } else {
+                })
+                .catch(function(e) {
                     result.className = 'result error';
-                    result.innerHTML = '<strong>❌ ' + (data.message || data.detail || '同步失敗') + '</strong>';
-                }
-            } catch (e) {
-                result.className = 'result error';
-                result.innerHTML = '<strong>❌ 網路錯誤: ' + e.message + '</strong>';
-            } finally {
-                btn.classList.remove('loading');
-                btn.querySelector('.btn-text').style.display = 'inline';
-                btn.querySelector('.loading-text').style.display = 'none';
-                btn.disabled = false;
-                loadRecentDraws();
-            }
+                    result.innerHTML = '<strong>&#x274C; 網路錯誤: ' + e.message + '</strong>';
+                })
+                .finally(function() {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    loadRecentDraws();
+                });
         }
 
-        async function loadRecentDraws() {
-            const container = document.getElementById('recent-draws');
-            const countEl = document.getElementById('draw-count');
-            try {
-                let total = 0;
-                let html = '';
-                for (const [type, name] of [['power', '🔴 威力彩'], ['super', '🔵 大樂透'], ['daily539', '🟢 今彩539']]) {
-                    const resp = await api('/lottery/history/' + type + '?limit=3');
-                    if (!resp.ok) continue;
-                    const data = await resp.json();
-                    const items = data.items || [];
-                    total += data.total_count || 0;
-                    html += '<div class="draw-type">' + name + ' (' + (data.total_count || 0) + ' 筆)</div>';
-                    if (items.length === 0) {
-                        html += '<div class="draw-item">尚無資料</div>';
-                    } else {
-                        for (const d of items) {
-                            const jp = d.jackpot_display ? ' · 頭獎 ' + d.jackpot_display : '';
-                            html += '<div class="draw-item">' + (d.draw_term || '-') + ' · ' + (d.draw_date || '') + jp + '</div>';
+        function loadRecentDraws() {
+            var container = document.getElementById('recent-draws');
+            var countEl = document.getElementById('draw-count');
+            var types = [['power', '&#x1F534; 威力彩'], ['super', '&#x1F535; 大樂透'], ['daily539', '&#x1F7E2; 今彩539']];
+            var total = 0;
+            var html = '';
+            var done = 0;
+
+            types.forEach(function(t) {
+                var typeCode = t[0];
+                var typeName = t[1];
+                apiCall('/lottery/history/' + typeCode + '?limit=3')
+                    .then(function(resp) { return resp.ok ? resp.json() : { items: [], total_count: 0 }; })
+                    .then(function(data) {
+                        var items = data.items || [];
+                        total += data.total_count || 0;
+                        var section = '<div class="draw-type">' + typeName + ' (' + (data.total_count || 0) + ' 筆)</div>';
+                        if (items.length === 0) {
+                            section += '<div class="draw-item">尚無資料</div>';
+                        } else {
+                            items.forEach(function(d) {
+                                var jp = d.jackpot_display ? ' &middot; 頭獎 ' + d.jackpot_display : '';
+                                section += '<div class="draw-item">' + (d.draw_term || '-') + ' &middot; ' + (d.draw_date || '') + jp + '</div>';
+                            });
                         }
-                    }
-                }
-                container.innerHTML = html;
-                countEl.textContent = '共 ' + total + ' 筆';
-            } catch (e) {
-                container.innerHTML = '<div class="info-text">載入失敗</div>';
-            }
+                        html += section;
+                    })
+                    .catch(function() {
+                        html += '<div class="draw-type">' + typeName + '</div><div class="draw-item">載入失敗</div>';
+                    })
+                    .finally(function() {
+                        done++;
+                        if (done === types.length) {
+                            container.innerHTML = html;
+                            countEl.textContent = '共 ' + total + ' 筆';
+                        }
+                    });
+            });
         }
 
         loadRecentDraws();
