@@ -387,12 +387,12 @@
                 if (!response.ok) throw new Error('載入失敗');
                 
                 const data = await response.json();
-                if (!data.items || data.items.length === 0) {
+                if (!data.draws || data.draws.length === 0) {
                     container.innerHTML = '<div class="empty-state">尚無開獎記錄</div>';
                     return;
                 }
                 
-                container.innerHTML = data.items.map(draw => {
+                container.innerHTML = data.draws.map(draw => {
                     let numbersHtml = '';
                     const ballClass = currentType === 'power' ? 'ball-power' : currentType === 'super' ? 'ball-super' : 'ball-539';
                     
