@@ -2,311 +2,457 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>開獎資訊同步 - SELA 樂透一路發</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
+    <title>開獎管理 - SELA 樂透一路發</title>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <style>
-        .lottery-card { transition: all 0.3s ease; }
-        .lottery-card:hover { transform: translateY(-2px); }
-        .number-ball { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; margin: 2px; }
-        .ball-red { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-        .ball-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .ball-green { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-        .ball-yellow { background: linear-gradient(135deg, #eab308, #ca8a04); color: white; }
-        .jackpot-glow { animation: glow 2s ease-in-out infinite alternate; }
-        @keyframes glow { from { text-shadow: 0 0 5px #fbbf24, 0 0 10px #fbbf24; } to { text-shadow: 0 0 10px #f59e0b, 0 0 20px #f59e0b; } }
-        .spin { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        :root {
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --success: #16A34A;
+            --danger: #DC2626;
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header .logo { width: 36px; height: 36px; border-radius: 8px; }
+        .header .brand { color: white; font-size: 18px; font-weight: 700; }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .main { padding: 16px; max-width: 600px; margin: 0 auto; }
+        
+        /* Notice */
+        .notice {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+        .notice-title { font-weight: 700; color: #92400E; margin-bottom: 4px; }
+        .notice-text { font-size: 13px; color: #78350F; }
+        
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .section-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .section-body { padding: 16px; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        .tab.active { background: var(--sela-orange); color: white; }
+        
+        /* Form */
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .form-input:focus { outline: none; border-color: var(--sela-orange); }
+        .form-hint { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+        
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            margin-top: 8px;
+        }
+        .btn-primary { background: var(--sela-orange); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        /* Recent Draws */
+        .draw-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .draw-item:last-child { border-bottom: none; }
+        .draw-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .draw-term { font-weight: 700; }
+        .draw-date { font-size: 13px; color: var(--text-secondary); }
+        .draw-numbers { display: flex; flex-wrap: wrap; gap: 6px; }
+        .number-ball {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: white;
+        }
+        .ball-power { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .ball-super { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .ball-539 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .ball-special { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        
+        .empty-state { padding: 30px; text-align: center; color: var(--text-secondary); }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-lg">
-        <div class="max-w-4xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl">🎰</span>
-                    <h1 class="text-xl font-bold">開獎資訊同步</h1>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <img src="/static/logo.jpg" alt="SELA" class="logo">
+            <span class="brand">開獎管理</span>
+        </div>
+        <a href="/admin" class="back-btn">← 返回</a>
+    </header>
+    
+    <main class="main">
+        <!-- 注意事項 -->
+        <div class="notice">
+            <div class="notice-title">⚠️ 注意</div>
+            <div class="notice-text">由於伺服器網路限制，無法自動同步外部開獎資訊。請手動輸入開獎號碼，或使用本地腳本匯入。</div>
+        </div>
+        
+        <!-- 手動輸入開獎 -->
+        <div class="section">
+            <div class="section-header">✏️ 手動輸入開獎號碼</div>
+            <div class="section-body">
+                <div class="tabs">
+                    <button class="tab active" data-type="power" onclick="switchType('power')">威力彩</button>
+                    <button class="tab" data-type="super" onclick="switchType('super')">大樂透</button>
+                    <button class="tab" data-type="daily539" onclick="switchType('daily539')">今彩539</button>
                 </div>
-                <a href="/admin" class="flex items-center space-x-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition">
-                    <span>←</span><span>返回管理</span>
-                </a>
+                
+                <form id="draw-form" onsubmit="submitDraw(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">期號</label>
+                            <input type="text" class="form-input" id="draw-term" placeholder="例: 114000012" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">開獎日期</label>
+                            <input type="date" class="form-input" id="draw-date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" id="numbers-label">開獎號碼（6個數字，逗號分隔）</label>
+                        <input type="text" class="form-input" id="draw-numbers" placeholder="例: 03,08,12,26,32,38" required>
+                        <div class="form-hint" id="numbers-hint">威力彩：6個第一區號碼 + 1個第二區號碼</div>
+                    </div>
+                    
+                    <div class="form-group" id="special-group">
+                        <label class="form-label" id="special-label">第二區號碼</label>
+                        <input type="text" class="form-input" id="draw-special" placeholder="例: 04">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">頭獎獎金</label>
+                            <input type="number" class="form-input" id="draw-jackpot" placeholder="例: 770000000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">貳獎獎金（選填）</label>
+                            <input type="number" class="form-input" id="draw-second" placeholder="例: 5000000">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="submit-btn">💾 儲存開獎資料</button>
+                </form>
             </div>
         </div>
-    </nav>
-
-    <main class="max-w-4xl mx-auto px-4 py-6">
-        <!-- 同步按鈕區 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800">即時同步開獎資訊</h2>
-                    <p class="text-sm text-gray-500 mt-1">從 lotto-8.com 抓取最新開獎號碼與累積獎金</p>
-                </div>
-                <button id="syncBtn" onclick="syncLotteryData()" class="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
-                    <span id="syncIcon">🔄</span>
-                    <span id="syncText">立即同步</span>
-                </button>
-            </div>
-            <div id="syncStatus" class="hidden mt-4 p-4 rounded-lg"></div>
-            <div id="lastSync" class="mt-4 text-center text-sm text-gray-400"></div>
-        </div>
-
-        <!-- 歷史資料匯入區 -->
-        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800">📥 匯入歷史資料</h2>
-                    <p class="text-sm text-gray-500 mt-1">從 lotto-8.com 爬取過去的開獎記錄</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <select id="importLimit" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        <option value="30">最近 30 期</option>
-                        <option value="50">最近 50 期</option>
-                        <option value="100">最近 100 期</option>
-                    </select>
-                    <button id="importBtn" onclick="importHistoryData()" class="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
-                        <span id="importIcon">📥</span>
-                        <span id="importText">匯入歷史</span>
-                    </button>
-                </div>
-            </div>
-            <div id="importStatus" class="hidden mt-4 p-4 rounded-lg"></div>
-            <div id="dbStats" class="mt-4 grid grid-cols-3 gap-4 text-center">
-                <div class="bg-red-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-red-600" id="stat-power">-</div>
-                    <div class="text-xs text-gray-500">威力彩</div>
-                </div>
-                <div class="bg-blue-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600" id="stat-super">-</div>
-                    <div class="text-xs text-gray-500">大樂透</div>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-green-600" id="stat-daily539">-</div>
-                    <div class="text-xs text-gray-500">今彩539</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 彩種資訊卡片 -->
-        <div class="grid gap-4">
-            <!-- 威力彩 -->
-            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-3xl">🔴</span>
-                            <div><h3 class="text-xl font-bold">威力彩</h3><p class="text-red-100 text-sm">每週一、四開獎</p></div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-red-100">頭獎累積</p>
-                            <p id="jackpot-power" class="text-2xl font-bold jackpot-glow">載入中...</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-500">最新開獎</span>
-                        <span id="date-power" class="text-sm font-medium text-gray-700">--</span>
-                    </div>
-                    <div id="numbers-power" class="flex flex-wrap items-center gap-1"><span class="text-gray-400">尚未載入</span></div>
-                </div>
-            </div>
-            <!-- 大樂透 -->
-            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-3xl">🔵</span>
-                            <div><h3 class="text-xl font-bold">大樂透</h3><p class="text-blue-100 text-sm">每週二、五開獎</p></div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-blue-100">頭獎累積</p>
-                            <p id="jackpot-super" class="text-2xl font-bold jackpot-glow">載入中...</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-500">最新開獎</span>
-                        <span id="date-super" class="text-sm font-medium text-gray-700">--</span>
-                    </div>
-                    <div id="numbers-super" class="flex flex-wrap items-center gap-1"><span class="text-gray-400">尚未載入</span></div>
-                </div>
-            </div>
-            <!-- 今彩539 -->
-            <div class="lottery-card bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-3xl">🟢</span>
-                            <div><h3 class="text-xl font-bold">今彩539</h3><p class="text-green-100 text-sm">每天開獎</p></div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-green-100">頭獎獎金</p>
-                            <p id="jackpot-daily539" class="text-2xl font-bold">800 萬</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-500">最新開獎</span>
-                        <span id="date-daily539" class="text-sm font-medium text-gray-700">--</span>
-                    </div>
-                    <div id="numbers-daily539" class="flex flex-wrap items-center gap-1"><span class="text-gray-400">尚未載入</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 說明區 -->
-        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <div class="flex items-start space-x-3">
-                <span class="text-xl">💡</span>
-                <div class="text-sm text-amber-800">
-                    <p class="font-bold mb-1">使用說明</p>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li>「立即同步」可抓取最新開獎資訊</li>
-                        <li>「匯入歷史」可一次匯入多期歷史記錄</li>
-                        <li>資料來源：lotto-8.com（非官方，僅供參考）</li>
-                        <li>建議在開獎後 10-30 分鐘再進行同步</li>
-                    </ul>
-                </div>
+        
+        <!-- 最近開獎記錄 -->
+        <div class="section">
+            <div class="section-header">📋 最近開獎記錄</div>
+            <div class="section-body" id="recent-draws">
+                <div class="empty-state">載入中...</div>
             </div>
         </div>
     </main>
-
-    <script src="/static/js/common.js"></script>
+    
+    <div id="toast" class="toast"></div>
+    
     <script>
-        const $ = id => document.getElementById(id);
+        const API_BASE = '/api/v1';
+        let currentType = 'power';
         
-        // API 請求（需要返回 response 對象）
-        async function apiRequest(endpoint, options = {}) {
-            const token = localStorage.getItem('access_token');
-            if (!token) { window.location.href = '/'; return null; }
-            const response = await fetch(`/api/v1${endpoint}`, {
+        function getToken() {
+            try { return localStorage.getItem('access_token'); }
+            catch (e) { return null; }
+        }
+        
+        async function api(url, options = {}) {
+            const token = getToken();
+            const response = await fetch(API_BASE + url, {
                 ...options,
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...options.headers }
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
             });
-            if (response.status === 401) { localStorage.removeItem('access_token'); window.location.href = '/'; return null; }
+            if (response.status === 401) {
+                window.location.href = '/';
+                return null;
+            }
             return response;
         }
         
-        function formatDate(dateStr) {
-            if (!dateStr) return '--';
-            const date = new Date(dateStr);
-            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-            return `${date.getMonth() + 1}/${date.getDate()} (${weekdays[date.getDay()]})`;
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + (type || '') + ' show';
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
         
-        function renderPowerNumbers(numbers) {
-            if (!numbers) return '<span class="text-gray-400">無資料</span>';
-            let html = '';
-            if (numbers.first_zone) numbers.first_zone.forEach(n => { html += `<span class="number-ball ball-red">${n.toString().padStart(2, '0')}</span>`; });
-            if (numbers.second_zone !== undefined) html += `<span class="mx-2 text-gray-400">+</span><span class="number-ball ball-yellow">${numbers.second_zone.toString().padStart(2, '0')}</span>`;
-            return html;
+        function switchType(type) {
+            currentType = type;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            
+            const specialGroup = document.getElementById('special-group');
+            const numbersLabel = document.getElementById('numbers-label');
+            const numbersHint = document.getElementById('numbers-hint');
+            const specialLabel = document.getElementById('special-label');
+            
+            if (type === 'power') {
+                numbersLabel.textContent = '第一區號碼（6個數字）';
+                numbersHint.textContent = '威力彩：01-38 選 6 個';
+                specialLabel.textContent = '第二區號碼';
+                specialGroup.style.display = 'block';
+            } else if (type === 'super') {
+                numbersLabel.textContent = '主要號碼（6個數字）';
+                numbersHint.textContent = '大樂透：01-49 選 6 個';
+                specialLabel.textContent = '特別號';
+                specialGroup.style.display = 'block';
+            } else {
+                numbersLabel.textContent = '開獎號碼（5個數字）';
+                numbersHint.textContent = '今彩539：01-39 選 5 個';
+                specialGroup.style.display = 'none';
+            }
+            
+            loadRecentDraws();
         }
         
-        function renderSuperNumbers(numbers) {
-            if (!numbers) return '<span class="text-gray-400">無資料</span>';
-            let html = '';
-            if (numbers.main) numbers.main.forEach(n => { html += `<span class="number-ball ball-blue">${n.toString().padStart(2, '0')}</span>`; });
-            if (numbers.special !== undefined) html += `<span class="mx-2 text-gray-400">特</span><span class="number-ball ball-yellow">${numbers.special.toString().padStart(2, '0')}</span>`;
-            return html;
-        }
-        
-        function renderDailyNumbers(numbers) {
-            if (!numbers) return '<span class="text-gray-400">無資料</span>';
-            let numArray = numbers.numbers || numbers;
-            if (!Array.isArray(numArray)) return '<span class="text-gray-400">無資料</span>';
-            return numArray.map(n => `<span class="number-ball ball-green">${n.toString().padStart(2, '0')}</span>`).join('');
-        }
-        
-        function updateCard(type, data) {
-            const jackpotEl = $(`jackpot-${type}`), dateEl = $(`date-${type}`), numbersEl = $(`numbers-${type}`);
-            if (!data) { jackpotEl.textContent = '無法取得'; dateEl.textContent = '--'; numbersEl.innerHTML = '<span class="text-gray-400">同步失敗</span>'; return; }
-            if (data.jackpot_display) jackpotEl.textContent = data.jackpot_display;
-            if (data.latest_draw) {
-                dateEl.textContent = formatDate(data.latest_draw.draw_date);
-                const renderers = { power: renderPowerNumbers, super: renderSuperNumbers, daily539: renderDailyNumbers };
-                numbersEl.innerHTML = renderers[type](data.latest_draw.numbers);
+        async function submitDraw(e) {
+            e.preventDefault();
+            
+            const term = document.getElementById('draw-term').value.trim();
+            const date = document.getElementById('draw-date').value;
+            const numbersStr = document.getElementById('draw-numbers').value.trim();
+            const special = document.getElementById('draw-special').value.trim();
+            const jackpot = parseInt(document.getElementById('draw-jackpot').value) || 0;
+            const secondPrize = parseInt(document.getElementById('draw-second').value) || 0;
+            
+            // 解析號碼
+            const numbers = numbersStr.split(/[,，\s]+/).map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            
+            // 驗證
+            const expectedCount = currentType === 'daily539' ? 5 : 6;
+            if (numbers.length !== expectedCount) {
+                showToast(`請輸入 ${expectedCount} 個號碼`, 'error');
+                return;
+            }
+            
+            if (currentType !== 'daily539' && !special) {
+                showToast('請輸入特別號/第二區號碼', 'error');
+                return;
+            }
+            
+            // 組合資料
+            let payload = {
+                lottery_type: currentType,
+                draw_term: term,
+                draw_date: date,
+                jackpot: jackpot,
+                second_prize: secondPrize
+            };
+            
+            if (currentType === 'power') {
+                payload.numbers = { first_zone: numbers, second_zone: parseInt(special) };
+            } else if (currentType === 'super') {
+                payload.numbers = { main: numbers, special: parseInt(special) };
+            } else {
+                payload.numbers = { numbers: numbers };
+            }
+            
+            try {
+                document.getElementById('submit-btn').disabled = true;
+                const response = await api('/admin/lottery/draw', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    showToast('儲存成功！', 'success');
+                    document.getElementById('draw-form').reset();
+                    loadRecentDraws();
+                } else {
+                    const err = await response.json().catch(() => ({}));
+                    showToast(err.detail || '儲存失敗', 'error');
+                }
+            } catch (e) {
+                showToast('儲存失敗: ' + e.message, 'error');
+            } finally {
+                document.getElementById('submit-btn').disabled = false;
             }
         }
         
-        function showSyncStatus(success, message) {
-            const el = $('syncStatus');
-            el.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
-            el.classList.add(success ? 'bg-green-100' : 'bg-red-100', success ? 'text-green-800' : 'text-red-800');
-            el.innerHTML = `<span class="font-bold">${success ? '✓ 同步成功！' : '✗ 同步失敗'}</span> ${message}`;
-        }
-        
-        function showImportStatus(success, message) {
-            const el = $('importStatus');
-            el.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
-            el.classList.add(success ? 'bg-green-100' : 'bg-red-100', success ? 'text-green-800' : 'text-red-800');
-            el.innerHTML = `<span class="font-bold">${success ? '✓ 匯入成功！' : '✗ 匯入失敗'}</span> ${message}`;
-        }
-        
-        async function syncLotteryData() {
-            const btn = $('syncBtn'), icon = $('syncIcon'), text = $('syncText');
-            btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
-            icon.innerHTML = '<svg class="w-5 h-5 spin inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-            text.textContent = '同步中...';
+        async function loadRecentDraws() {
+            const container = document.getElementById('recent-draws');
             try {
-                const response = await apiRequest('/lottery/sync', { method: 'POST' });
-                if (!response) return;
-                const result = await response.json();
-                if (result.success) {
-                    showSyncStatus(true, result.message);
-                    $('lastSync').textContent = `上次同步：${new Date(result.updated_at).toLocaleString('zh-TW')}`;
-                    await loadLotteryData(); await loadDbStats();
-                } else { showSyncStatus(false, result.message); }
-            } catch (error) { showSyncStatus(false, error.message); }
-            finally { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); icon.textContent = '🔄'; text.textContent = '立即同步'; }
-        }
-        
-        async function importHistoryData() {
-            const btn = $('importBtn'), icon = $('importIcon'), text = $('importText'), limit = $('importLimit').value;
-            btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
-            icon.innerHTML = '<svg class="w-5 h-5 spin inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-            text.textContent = '匯入中...';
-            try {
-                const response = await apiRequest(`/lottery/import-history?limit=${limit}`, { method: 'POST' });
-                if (!response) return;
-                const result = await response.json();
-                if (result.success) {
-                    showImportStatus(true, `已匯入 ${result.imported_count || 0} 筆記錄`);
-                    await loadDbStats();
-                } else { showImportStatus(false, result.message || '匯入失敗'); }
-            } catch (error) { showImportStatus(false, error.message); }
-            finally { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); icon.textContent = '📥'; text.textContent = '匯入歷史'; }
-        }
-        
-        async function loadDbStats() {
-            try {
-                for (const type of ['power', 'super', 'daily539']) {
-                    const response = await apiRequest(`/lottery/history/${type}?limit=1`);
-                    if (response) { const data = await response.json(); $(`stat-${type}`).textContent = data.total_count || 0; }
-                }
-            } catch (error) { console.error('載入統計失敗:', error); }
-        }
-        
-        async function loadLotteryData() {
-            try {
-                const response = await apiRequest('/lottery/latest');
-                if (!response) return;
+                const response = await api(`/lottery/history/${currentType}?limit=5`);
+                if (!response.ok) throw new Error('載入失敗');
+                
                 const data = await response.json();
-                if (data.lotteries) { updateCard('power', data.lotteries.power); updateCard('super', data.lotteries.super); updateCard('daily539', data.lotteries.daily539); }
-                $('lastSync').textContent = `資料時間：${new Date(data.updated_at).toLocaleString('zh-TW')}`;
-            } catch (error) { console.error('載入失敗:', error); }
+                if (!data.draws || data.draws.length === 0) {
+                    container.innerHTML = '<div class="empty-state">尚無開獎記錄</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.draws.map(draw => {
+                    let numbersHtml = '';
+                    const ballClass = currentType === 'power' ? 'ball-power' : currentType === 'super' ? 'ball-super' : 'ball-539';
+                    
+                    if (draw.numbers) {
+                        const nums = draw.numbers.first_zone || draw.numbers.main || draw.numbers.numbers || [];
+                        nums.forEach(n => {
+                            numbersHtml += `<span class="number-ball ${ballClass}">${String(n).padStart(2, '0')}</span>`;
+                        });
+                        
+                        const special = draw.numbers.second_zone ?? draw.numbers.special;
+                        if (special != null) {
+                            numbersHtml += `<span class="number-ball ball-special">${String(special).padStart(2, '0')}</span>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="draw-item">
+                            <div class="draw-header">
+                                <span class="draw-term">第 ${draw.draw_term || '-'} 期</span>
+                                <span class="draw-date">${draw.draw_date || ''}</span>
+                            </div>
+                            <div class="draw-numbers">${numbersHtml || '-'}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (e) {
+                container.innerHTML = '<div class="empty-state">載入失敗</div>';
+            }
         }
         
         async function init() {
-            const token = localStorage.getItem('access_token');
-            if (!token) { window.location.href = '/'; return; }
-            loadLotteryData();
-            loadDbStats();
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // 檢查管理員權限
+            try {
+                const response = await api('/users/me');
+                if (!response.ok) throw new Error();
+                const user = await response.json();
+                if (user.role !== 'admin') {
+                    showToast('需要管理員權限', 'error');
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
+                    return;
+                }
+            } catch (e) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // 設定今天日期
+            document.getElementById('draw-date').value = new Date().toISOString().split('T')[0];
+            
+            loadRecentDraws();
         }
         
-        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
