@@ -157,8 +157,7 @@ def fetch_power_api(session, year, month):
         period = item.get("period", "")
         first_zone = [int(n) for n in numbers[:6]]
         second_zone = int(numbers[6])
-        jp_assign = item.get("super638JackpotAssign", {})
-        jp = (jp_assign.get("prize", 0) or 0) + (jp_assign.get("lastPrize", 0) or 0) or None
+        jp = parse_jackpot(item.get("jackPot") or item.get("jackpot"))
         results.append({
             "lottery_type": "power",
             "draw_term": str(period) if period else f"power_{draw_date}",
@@ -187,8 +186,7 @@ def fetch_super_api(session, year, month):
         period = item.get("period", "")
         main_numbers = [int(n) for n in numbers[:6]]
         special = int(numbers[6])
-        jp_assign = item.get("jackpotAssign", {})
-        jp = (jp_assign.get("prize", 0) or 0) + (jp_assign.get("lastPrize", 0) or 0) or None
+        jp = parse_jackpot(item.get("jackPot") or item.get("jackpot"))
         results.append({
             "lottery_type": "super",
             "draw_term": str(period) if period else f"super_{draw_date}",
