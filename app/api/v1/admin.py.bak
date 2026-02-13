@@ -2,7 +2,7 @@
 SELA 樂透一路發 - 管理員 API
 """
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -16,7 +16,6 @@ from app.models.series import GroupSeries, SeriesStatus
 from app.models.member import GroupMember, MemberStatus
 from app.models.group import Group, GroupStatus
 from app.models.ledger import EventLog, EventCategory
-from app.models.lottery_draw import LotteryDraw
 
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -90,17 +89,6 @@ class EventLogResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
-
-
-class DrawInput(BaseModel):
-    """管理員手動輸入開獎資料"""
-    lottery_type: str
-    draw_term: str
-    draw_date: str
-    numbers: dict
-    jackpot: Optional[int] = 0
-    second_prize: Optional[int] = 0
 
 # ==================== 系統總覽 ====================
 
@@ -365,67 +353,3 @@ async def send_broadcast(
         "message": "公告功能尚未實作",
         "preview": message
     }
-
-
-# ==================== 開獎管理 ====================
-
-@router.post("/lottery/draw")
-async def create_or_update_draw(
-    data: DrawInput,
-    admin_id: int = Depends(require_admin),
-    db: Session = Depends(get_db)
-):
-    """管理員手動輸入/更新開獎結果"""
-    # 驗證彩種
-    if data.lottery_type not in ["power", "super", "daily539"]:
-        raise HTTPException(status_code=400, detail="不支援的彩種")
-
-    # 驗證號碼
-    numbers = data.numbers
-    if data.lottery_type == "power":
-        if not numbers.get("first_zone") or len(numbers["first_zone"]) != 6:
-            raise HTTPException(status_code=400, detail="威力彩需要6個第一區號碼")
-        if numbers.get("second_zone") is None:
-            raise HTTPException(status_code=400, detail="威力彩需要第二區號碼")
-    elif data.lottery_type == "super":
-        if not numbers.get("main") or len(numbers["main"]) != 6:
-            raise HTTPException(status_code=400, detail="大樂透需要6個主號碼")
-        if numbers.get("special") is None:
-            raise HTTPException(status_code=400, detail="大樂透需要特別號")
-    else:
-        if not numbers.get("numbers") or len(numbers["numbers"]) != 5:
-            raise HTTPException(status_code=400, detail="今彩539需要5個號碼")
-
-    # 解析日期
-    try:
-        draw_date_parsed = date.fromisoformat(data.draw_date)
-    except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="日期格式錯誤，請使用 YYYY-MM-DD")
-
-    # 檢查是否已存在（依 lottery_type + draw_term）
-    existing = db.query(LotteryDraw).filter(
-        LotteryDraw.lottery_type == data.lottery_type,
-        LotteryDraw.draw_term == data.draw_term
-    ).first()
-
-    if existing:
-        # 更新
-        existing.draw_date = draw_date_parsed
-        existing.numbers = numbers
-        existing.jackpot = data.jackpot
-        db.commit()
-        return {"message": f"已更新第 {data.draw_term} 期開獎結果", "action": "updated", "id": existing.id}
-    else:
-        # 新增
-        draw = LotteryDraw(
-            lottery_type=data.lottery_type,
-            draw_term=data.draw_term,
-            draw_date=draw_date_parsed,
-            numbers=numbers,
-            jackpot=data.jackpot
-        )
-        db.add(draw)
-        db.commit()
-        db.refresh(draw)
-        return {"message": f"已新增第 {data.draw_term} 期開獎結果", "action": "created", "id": draw.id}
-
