@@ -40,9 +40,6 @@
             z-index: 100;
             box-shadow: var(--shadow-md);
         }
-        @media (min-width: 700px) {
-            .header { padding: 12px calc((100% - 600px) / 2 + 16px); }
-        }
         .header-left {
             display: flex;
             align-items: center;
@@ -260,7 +257,6 @@
         
         let lotteryTypes = [];
         const LOTTERY_PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
-        const LOTTERY_NAMES = { 'power': '威力彩', 'super': '大樂透', 'daily539': '今彩539' };
         
         function openModal(id) { $(id).classList.add('active'); }
         function closeModal(id) { $(id).classList.remove('active'); }
@@ -272,7 +268,7 @@
                 container.innerHTML = lotteryTypes.map(lt => `
                     <label class="radio-item">
                         <input type="radio" name="lottery-type" value="${lt.code}" ${lt.code === 'power' ? 'checked' : ''}>
-                        <span>${lt.name} ($${lt.price_per_bet}/注)</span>
+                        <span>${lt.name} ($${lt.price}/注)</span>
                     </label>
                 `).join('');
             } catch (e) { console.error('loadLotteryTypes:', e); }
@@ -290,13 +286,13 @@
                 
                 let totalInvested = 0, totalPrize = 0;
                 data.forEach(s => {
-                    totalInvested += Number(s.my_pool_share) || 0;
-                    totalPrize += Number(s.total_prize) || 0;
+                    totalInvested += s.my_share || 0;
+                    totalPrize += s.my_prize || 0;
                 });
                 
                 setText('stat-total', data.length);
-                setText('stat-invested', formatMoney(totalInvested));
-                setText('stat-prize', formatMoney(totalPrize));
+                setText('stat-invested', '$' + formatMoney(totalInvested));
+                setText('stat-prize', '$' + formatMoney(totalPrize));
                 
                 list.innerHTML = data.map(s => `
                     <a href="/series/${s.id}" class="series-card">
@@ -305,20 +301,20 @@
                             <span class="series-badge ${s.status === 'active' ? 'badge-active' : 'badge-closed'}">${getStatusText(s.status)}</span>
                         </div>
                         <div class="series-info">
-                            <span>🎰 ${LOTTERY_NAMES[s.lottery_types?.[0]] || s.lottery_types?.[0] || '?'}</span>
+                            <span>🎰 ${s.lottery_type_name || s.lottery_type}</span>
                             <span>👥 ${s.member_count || 0} 人</span>
                         </div>
                         <div class="series-stats">
                             <div class="series-stat">
-                                <div class="series-stat-value">${formatMoney(s.my_pool_share)}</div>
+                                <div class="series-stat-value">$${formatMoney(s.my_share)}</div>
                                 <div class="series-stat-label">我的份額</div>
                             </div>
                             <div class="series-stat">
-                                <div class="series-stat-value">${s.current_pool > 0 ? ((s.my_pool_share / s.current_pool) * 100).toFixed(1) : '0.0'}%</div>
+                                <div class="series-stat-value">${(s.my_ratio * 100).toFixed(1)}%</div>
                                 <div class="series-stat-label">佔比</div>
                             </div>
                             <div class="series-stat">
-                                <div class="series-stat-value">${formatMoney(s.current_pool)}</div>
+                                <div class="series-stat-value">$${formatMoney(s.total_pool)}</div>
                                 <div class="series-stat-label">資金池</div>
                             </div>
                         </div>
