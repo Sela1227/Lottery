@@ -10,13 +10,7 @@
     <link rel="stylesheet" href="/static/css/common.css">
     <style>
         body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; }
-        .header { padding: 12px 20px; justify-content: space-between; position: sticky; display: flex; align-items: center; background: linear-gradient(135deg, var(--sela-orange, #F26522), var(--sela-orange-dark, #D85A1E)); top: 0; z-index: 100; }
-        .logo { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
-        .page-title, .header a, .header span { color: white; }
-        .back-btn { color: var(--text-primary); }
-        @media (min-width: 900px) {
-            .header { padding: 12px calc((100% - 800px) / 2 + 20px); }
-        }
+        .header { padding: 12px 20px; justify-content: space-between; position: sticky; }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
         .page-title { font-size: 18px; font-weight: 700; }
@@ -305,9 +299,9 @@
                     <div class="info-header"><div><h2 class="info-title">${s.name}</h2><span class="mode-badge ${modeClass}">${modeText}</span></div><span class="status-badge ${s.status === 'active' ? 'status-active' : 'status-ended'}">${s.status === 'active' ? '進行中' : '已結束'}</span></div>
                     <div class="info-stats">
                         <div class="info-stat"><div class="info-stat-label">成員數</div><div class="info-stat-value">${s.member_count}</div></div>
-                        <div class="info-stat"><div class="info-stat-label">資金池</div><div class="info-stat-value orange">${formatMoney(s.current_pool)}</div></div>
+                        <div class="info-stat"><div class="info-stat-label">資金池</div><div class="info-stat-value orange">$${formatMoney(s.current_pool)}</div></div>
                         <div class="info-stat"><div class="info-stat-label">已開期數</div><div class="info-stat-value">${s.total_periods}</div></div>
-                        <div class="info-stat"><div class="info-stat-label">我的份額</div><div class="info-stat-value green">${formatMoney(s.my_pool_share)}</div></div>
+                        <div class="info-stat"><div class="info-stat-label">我的份額</div><div class="info-stat-value green">$${formatMoney(s.my_pool_share)}</div></div>
                     </div>
                     ${s.description ? `<p class="info-desc">${s.description}</p>` : ''}
                 </div>
@@ -339,7 +333,7 @@
             try {
                 const groups = await apiGet(`/series/${seriesId}/groups`);
                 if (groups.length === 0) { container.innerHTML = `<div class="section"><div class="empty-state"><div class="empty-icon">📋</div><p class="empty-text">還沒有開過期,${isAdmin ? '點擊「開新期」開始' : '等待管理員開新期'}</p></div></div>`; return; }
-                container.innerHTML = `<div class="section"><div class="group-list">${groups.map(g => `<a href="/group/${g.id}" class="group-item"><div class="group-info"><div class="group-title">第 ${g.period_number} 期<span class="group-status ${g.status}">${getStatusText(g.status)}</span></div><div class="group-meta"><span>🎰 ${g.lottery_type_name}</span>${g.draw_term ? `<span>📅 ${g.draw_term}</span>` : ''}<span>💰 池 ${formatMoney(g.total_pool)}</span></div></div>${g.total_prize > 0 ? `<div class="group-prize">+${formatMoney(g.total_prize)}</div>` : '<span style="color: var(--text-secondary);">→</span>'}</a>`).join('')}</div></div>`;
+                container.innerHTML = `<div class="section"><div class="group-list">${groups.map(g => `<a href="/group/${g.id}" class="group-item"><div class="group-info"><div class="group-title">第 ${g.period_number} 期<span class="group-status ${g.status}">${getStatusText(g.status)}</span></div><div class="group-meta"><span>🎰 ${g.lottery_type_name}</span>${g.draw_term ? `<span>📅 ${g.draw_term}</span>` : ''}<span>💰 池 $${formatMoney(g.total_pool)}</span></div></div>${g.total_prize > 0 ? `<div class="group-prize">+$${formatMoney(g.total_prize)}</div>` : '<span style="color: var(--text-secondary);">→</span>'}</a>`).join('')}</div></div>`;
             } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗:${e.message}</p></div>`; }
         }
         
@@ -348,7 +342,7 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             try {
                 const members = await apiGet(`/series/${seriesId}/members`);
-                container.innerHTML = `<div class="section"><div class="member-list">${members.map(m => `<div class="member-item"><div class="member-info"><div class="member-avatar">${m.picture_url ? `<img src="${m.picture_url}">` : m.display_name[0]}</div><div><span class="member-name">${m.display_name}</span>${m.role === 'admin' ? '<span class="member-role">管理員</span>' : ''}</div></div><div class="member-share">${formatMoney(m.pool_share)}</div></div>`).join('')}</div></div>`;
+                container.innerHTML = `<div class="section"><div class="member-list">${members.map(m => `<div class="member-item"><div class="member-info"><div class="member-avatar">${m.picture_url ? `<img src="${m.picture_url}">` : m.display_name[0]}</div><div><span class="member-name">${m.display_name}</span>${m.role === 'admin' ? '<span class="member-role">管理員</span>' : ''}</div></div><div class="member-share">$${formatMoney(m.pool_share)}</div></div>`).join('')}</div></div>`;
             } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗</p></div>`; }
         }
         
@@ -367,7 +361,7 @@
             const container = $('my-request-status'); if (!container) return;
             if (myPendingRequest) {
                 const typeText = myPendingRequest.request_type === 'reduce' ? '減碼' : '退出';
-                container.innerHTML = `<div class="pending-request-card"><div class="pending-request-info"><span class="pending-badge">⏳ 待審核</span><span>${typeText}申請</span>${myPendingRequest.amount ? `<span>${formatMoney(myPendingRequest.amount)}</span>` : ''}</div><button class="btn btn-sm btn-secondary" onclick="cancelMyRequest(${myPendingRequest.id})">取消申請</button></div>`;
+                container.innerHTML = `<div class="pending-request-card"><div class="pending-request-info"><span class="pending-badge">⏳ 待審核</span><span>${typeText}申請</span>${myPendingRequest.amount ? `<span>$${formatMoney(myPendingRequest.amount)}</span>` : ''}</div><button class="btn btn-sm btn-secondary" onclick="cancelMyRequest(${myPendingRequest.id})">取消申請</button></div>`;
                 const actionBtns = $('member-action-btns'); if (actionBtns) actionBtns.style.display = 'none';
             } else { container.innerHTML = ''; const actionBtns = $('member-action-btns'); if (actionBtns) actionBtns.style.display = 'flex'; }
         }
@@ -380,7 +374,7 @@
                 container.innerHTML = `<div class="section"><div class="request-list">${data.requests.map(r => {
                     const typeText = r.request_type === 'reduce' ? '減碼' : '退出';
                     const statusText = r.status === 'pending' ? '待審核' : (r.status === 'approved' ? '已核准' : '已拒絕');
-                    return `<div class="request-item ${r.status}"><div class="request-header"><span class="request-user">${r.user_name}</span><span class="request-type-badge ${r.request_type}">${typeText}</span><span class="request-status-badge ${r.status}">${statusText}</span></div><div class="request-details">${r.amount ? `<span>金額: ${formatMoney(r.amount)}</span>` : '<span>全額退出</span>'}<span>原份額: ${formatMoney(r.pool_share_before)}</span><span>${new Date(r.created_at).toLocaleDateString()}</span></div>${r.reason ? `<div class="request-reason">原因: ${r.reason}</div>` : ''}${r.review_note ? `<div class="request-review-note">審核備註: ${r.review_note}</div>` : ''}${r.status === 'pending' ? `<div class="request-actions"><button class="btn btn-sm btn-success" onclick="approveRequest(${r.id})">✓ 核准</button><button class="btn btn-sm btn-danger" onclick="showRejectModal(${r.id})">✕ 拒絕</button></div>` : ''}</div>`;
+                    return `<div class="request-item ${r.status}"><div class="request-header"><span class="request-user">${r.user_name}</span><span class="request-type-badge ${r.request_type}">${typeText}</span><span class="request-status-badge ${r.status}">${statusText}</span></div><div class="request-details">${r.amount ? `<span>金額: $${formatMoney(r.amount)}</span>` : '<span>全額退出</span>'}<span>原份額: $${formatMoney(r.pool_share_before)}</span><span>${new Date(r.created_at).toLocaleDateString()}</span></div>${r.reason ? `<div class="request-reason">原因: ${r.reason}</div>` : ''}${r.review_note ? `<div class="request-review-note">審核備註: ${r.review_note}</div>` : ''}${r.status === 'pending' ? `<div class="request-actions"><button class="btn btn-sm btn-success" onclick="approveRequest(${r.id})">✓ 核准</button><button class="btn btn-sm btn-danger" onclick="showRejectModal(${r.id})">✕ 拒絕</button></div>` : ''}</div>`;
                 }).join('')}</div></div>`;
             } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗: ${e.message}</p></div>`; }
         }
@@ -392,12 +386,12 @@
             const modalTitle = document.querySelector('#reduce-modal .modal-title'), submitBtn = document.querySelector('#reduce-modal .btn-primary');
             modalTitle.textContent = adminMode ? '📉 減碼' : '📉 申請減碼';
             submitBtn.textContent = adminMode ? '確認減碼' : '送出申請';
-            setText('reduce-current-share', `${formatMoney(myShare)}`);
-            setText('reduce-max-amount', `${formatMoney(maxReduce)}`);
+            setText('reduce-current-share', `$${formatMoney(myShare)}`);
+            setText('reduce-max-amount', `$${formatMoney(maxReduce)}`);
             $('reduce-amount').max = maxReduce; $('reduce-amount').placeholder = `最多 ${maxReduce} 元`;
             $('reduce-modal').classList.add('active');
         }
-        function showWithdrawModal() { if (myPendingRequest) { showToast('您已有待審核的申請', 'error'); return; } setText('withdraw-share-display', `${formatMoney(currentSeries?.my_pool_share || 0)}`); $('withdraw-modal').classList.add('active'); }
+        function showWithdrawModal() { if (myPendingRequest) { showToast('您已有待審核的申請', 'error'); return; } setText('withdraw-share-display', `$${formatMoney(currentSeries?.my_pool_share || 0)}`); $('withdraw-modal').classList.add('active'); }
         async function submitReduceRequest() {
             const amount = parseFloat($('reduce-amount').value), reason = $('reduce-reason').value.trim();
             if (!amount || amount <= 0) { showToast('請輸入減碼金額', 'error'); return; }
