@@ -509,18 +509,7 @@ async def batch_import_draws(
             ).first()
             
             if existing:
-                # 更新已存在記錄的 jackpot 和 numbers
-                updated = False
-                if item.jackpot is not None and existing.jackpot != item.jackpot:
-                    existing.jackpot = item.jackpot
-                    updated = True
-                if item.numbers and existing.numbers != item.numbers:
-                    existing.numbers = item.numbers
-                    updated = True
-                if updated:
-                    imported += 1
-                else:
-                    skipped += 1
+                skipped += 1
                 continue
             
             # è§£æžæ—¥æœŸ
