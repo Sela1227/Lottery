@@ -300,9 +300,9 @@
             </div>
             <div class="filter-tabs">
                 <button class="filter-tab active" onclick="filterTx('all')">全部</button>
-                <button class="filter-tab" onclick="filterTx('topup')">加碼</button>
-                <button class="filter-tab" onclick="filterTx('prize')">獎金</button>
-                <button class="filter-tab" onclick="filterTx('purchase')">購買</button>
+                <button class="filter-tab" onclick="filterTx('pool_topup')">加碼</button>
+                <button class="filter-tab" onclick="filterTx('pool_prize')">獎金</button>
+                <button class="filter-tab" onclick="filterTx('pool_purchase')">購買</button>
             </div>
             <div class="tx-list" id="tx-list">
                 <div class="loading"><div class="spinner"></div></div>
@@ -362,27 +362,28 @@
         
         async function loadTransactions() {
             try {
-                const url = currentFilter === 'all' ? '/wallet/transactions' : `/wallet/transactions?type=${currentFilter}`;
+                const url = currentFilter === 'all' ? '/wallet/transactions' : `/wallet/transactions?transaction_type=${currentFilter}`;
                 const data = await apiGet(url);
                 const list = $('tx-list');
-                if (!data || data.length === 0) {
+                const txList = data.transactions || [];
+                if (txList.length === 0) {
                     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><p>尚無交易記錄</p></div>';
                     return;
                 }
-                list.innerHTML = data.map(tx => {
-                    const isPositive = ['prize', 'topup', 'deposit'].includes(tx.type);
-                    const typeNames = { topup: '加碼', prize: '獎金分配', purchase: '購買彩券', deposit: '充值', withdraw: '提領' };
+                list.innerHTML = txList.map(tx => {
+                    const amt = parseFloat(tx.amount) || 0;
+                    const isPositive = amt > 0;
                     return `
                         <div class="tx-item">
                             <div class="tx-info">
-                                <div class="tx-type">${typeNames[tx.type] || tx.type}</div>
+                                <div class="tx-type">${tx.transaction_type_display || tx.transaction_type}</div>
                                 <div class="tx-date">${formatDate(tx.created_at)}</div>
                             </div>
-                            <div class="tx-amount ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : '-'}$${formatMoney(Math.abs(tx.amount))}</div>
+                            <div class="tx-amount ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : ''}$${formatMoney(Math.abs(amt))}</div>
                         </div>
                     `;
                 }).join('');
-            } catch (e) { $('tx-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
+            } catch (e) { console.error('loadTransactions error:', e); $('tx-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
         }
         
         function filterTx(type) {
