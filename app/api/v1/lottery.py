@@ -1,5 +1,5 @@
 """
-SELA 樂透一路發 - 彩券開獎資訊 API
+SELA æ¨‚é€ä¸€è·¯ç™¼ - å½©åˆ¸é–‹çŽè³‡è¨Š API
 """
 from typing import Optional, List
 from datetime import datetime, date, timezone, timedelta
@@ -9,20 +9,19 @@ from sqlalchemy import desc
 from pydantic import BaseModel
 
 from app.core.database import get_db
-from app.core.security import get_current_user_id
-from app.api.v1.admin import require_admin
+from app.core.security import get_current_user_id, require_admin
 from app.services.lottery_crawler import lottery_crawler
 from app.models.lottery_draw import LotteryDraw
 from app.constants import LOTTERY_NAMES
 
-# 嘗試導入歷史爬蟲（可能不存在）
+# å˜—è©¦å°Žå…¥æ­·å²çˆ¬èŸ²ï¼ˆå¯èƒ½ä¸å­˜åœ¨ï¼‰
 try:
     from app.services.history_crawler import history_crawler
     HAS_HISTORY_CRAWLER = True
 except ImportError:
     HAS_HISTORY_CRAWLER = False
 
-# 嘗試導入自動對獎服務
+# å˜—è©¦å°Žå…¥è‡ªå‹•å°çŽæœå‹™
 try:
     from app.services.auto_check import auto_check_service
     HAS_AUTO_CHECK = True
@@ -32,29 +31,29 @@ except ImportError:
 
 router = APIRouter(prefix="/lottery", tags=["Lottery"])
 
-# 台灣時區 (GMT+8)
+# å°ç£æ™‚å€ (GMT+8)
 TW_TIMEZONE = timezone(timedelta(hours=8))
 
 
 # ==================== Schema ====================
 
 class DrawNumbers(BaseModel):
-    """開獎號碼"""
-    first_zone: Optional[List[int]] = None  # 威力彩第一區
-    second_zone: Optional[int] = None        # 威力彩第二區
-    main: Optional[List[int]] = None         # 大樂透主號
-    special: Optional[int] = None            # 大樂透特別號
-    numbers: Optional[List[int]] = None      # 今彩539
+    """é–‹çŽè™Ÿç¢¼"""
+    first_zone: Optional[List[int]] = None  # å¨åŠ›å½©ç¬¬ä¸€å€
+    second_zone: Optional[int] = None        # å¨åŠ›å½©ç¬¬äºŒå€
+    main: Optional[List[int]] = None         # å¤§æ¨‚é€ä¸»è™Ÿ
+    special: Optional[int] = None            # å¤§æ¨‚é€ç‰¹åˆ¥è™Ÿ
+    numbers: Optional[List[int]] = None      # ä»Šå½©539
 
 
 class LatestDraw(BaseModel):
-    """最新開獎"""
+    """æœ€æ–°é–‹çŽ"""
     draw_date: str
     numbers: dict
 
 
 class LotteryInfo(BaseModel):
-    """彩種資訊"""
+    """å½©ç¨®è³‡è¨Š"""
     lottery_type: str
     lottery_name: str
     jackpot: Optional[int] = None
@@ -63,7 +62,7 @@ class LotteryInfo(BaseModel):
 
 
 class SyncResult(BaseModel):
-    """同步結果"""
+    """åŒæ­¥çµæžœ"""
     success: bool
     message: str
     updated_at: str
@@ -73,19 +72,19 @@ class SyncResult(BaseModel):
 # ==================== Helper ====================
 
 def format_jackpot(amount: Optional[int]) -> Optional[str]:
-    """格式化獎金顯示"""
+    """æ ¼å¼åŒ–çŽé‡‘é¡¯ç¤º"""
     if amount is None:
         return None
     if amount >= 100000000:
-        return f"{amount / 100000000:.1f} 億"
+        return f"{amount / 100000000:.1f} å„„"
     elif amount >= 10000:
-        return f"{amount / 10000:.0f} 萬"
+        return f"{amount / 10000:.0f} è¬"
     else:
         return f"{amount:,}"
 
 
 def parse_date(date_str: str) -> date:
-    """解析日期字串"""
+    """è§£æžæ—¥æœŸå­—ä¸²"""
     if not date_str:
         return date.today()
     for fmt in ['%Y/%m/%d', '%Y-%m-%d', '%Y.%m.%d']:
@@ -96,10 +95,10 @@ def parse_date(date_str: str) -> date:
     return date.today()
 
 
-# ==================== 資料庫操作 ====================
+# ==================== è³‡æ–™åº«æ“ä½œ ====================
 
 def get_latest_from_db(db: Session, lottery_type: str) -> Optional[LotteryDraw]:
-    """從資料庫取得最新一期"""
+    """å¾žè³‡æ–™åº«å–å¾—æœ€æ–°ä¸€æœŸ"""
     return db.query(LotteryDraw).filter(
         LotteryDraw.lottery_type == lottery_type
     ).order_by(desc(LotteryDraw.draw_date), desc(LotteryDraw.draw_term)).first()
@@ -107,20 +106,20 @@ def get_latest_from_db(db: Session, lottery_type: str) -> Optional[LotteryDraw]:
 
 def save_to_db(db: Session, lottery_type: str, draw_term: str, 
                draw_date: date, numbers: dict, jackpot: Optional[int] = None):
-    """儲存或更新開獎記錄"""
+    """å„²å­˜æˆ–æ›´æ–°é–‹çŽè¨˜éŒ„"""
     existing = db.query(LotteryDraw).filter(
         LotteryDraw.lottery_type == lottery_type,
         LotteryDraw.draw_term == draw_term
     ).first()
     
     if existing:
-        # 只更新獎金（號碼不會變）
+        # åªæ›´æ–°çŽé‡‘ï¼ˆè™Ÿç¢¼ä¸æœƒè®Šï¼‰
         if jackpot is not None:
             existing.jackpot = jackpot
             existing.updated_at = datetime.utcnow()
         return existing
     else:
-        # 新增記錄
+        # æ–°å¢žè¨˜éŒ„
         new_draw = LotteryDraw(
             lottery_type=lottery_type,
             draw_term=draw_term,
@@ -132,14 +131,14 @@ def save_to_db(db: Session, lottery_type: str, draw_term: str,
         return new_draw
 
 
-# ==================== API 端點 ====================
+# ==================== API ç«¯é»ž ====================
 
 @router.get("/db-status")
 async def check_db_status(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
-    """檢查資料庫狀態（測試用）"""
+    """æª¢æŸ¥è³‡æ–™åº«ç‹€æ…‹ï¼ˆæ¸¬è©¦ç”¨ï¼‰"""
     try:
         count = db.query(LotteryDraw).count()
         latest = get_latest_from_db(db, 'power')
@@ -163,14 +162,14 @@ async def get_latest_draw(
     user_id: int = Depends(get_current_user_id)
 ):
     """
-    取得特定彩種最新開獎資訊
+    å–å¾—ç‰¹å®šå½©ç¨®æœ€æ–°é–‹çŽè³‡è¨Š
     
-    - lottery_type: power (威力彩), super (大樂透), daily539 (今彩539)
+    - lottery_type: power (å¨åŠ›å½©), super (å¤§æ¨‚é€), daily539 (ä»Šå½©539)
     """
     if lottery_type not in ["power", "super", "daily539"]:
-        raise HTTPException(status_code=400, detail="不支援的彩種")
+        raise HTTPException(status_code=400, detail="ä¸æ”¯æ´çš„å½©ç¨®")
     
-    # 先嘗試從資料庫讀取
+    # å…ˆå˜—è©¦å¾žè³‡æ–™åº«è®€å–
     db_record = get_latest_from_db(db, lottery_type)
     if db_record:
         return LotteryInfo(
@@ -184,11 +183,11 @@ async def get_latest_draw(
             )
         )
     
-    # 資料庫沒有，即時爬取（Fallback）
+    # è³‡æ–™åº«æ²’æœ‰ï¼Œå³æ™‚çˆ¬å–ï¼ˆFallbackï¼‰
     try:
         data = lottery_crawler.get_latest(lottery_type)
         if not data:
-            raise HTTPException(status_code=404, detail="無法取得開獎資訊")
+            raise HTTPException(status_code=404, detail="ç„¡æ³•å–å¾—é–‹çŽè³‡è¨Š")
         
         return LotteryInfo(
             lottery_type=data["lottery_type"],
@@ -203,7 +202,7 @@ async def get_latest_draw(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"取得開獎資訊失敗: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"å–å¾—é–‹çŽè³‡è¨Šå¤±æ•—: {str(e)}")
 
 
 @router.get("/latest", response_model=dict)
@@ -211,17 +210,17 @@ async def get_all_latest(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
-    """取得所有彩種最新開獎資訊"""
+    """å–å¾—æ‰€æœ‰å½©ç¨®æœ€æ–°é–‹çŽè³‡è¨Š"""
     result = {}
     
     for lottery_type in ["power", "super", "daily539"]:
-        # 先從資料庫讀
+        # å…ˆå¾žè³‡æ–™åº«è®€
         db_record = get_latest_from_db(db, lottery_type)
         if db_record:
-            # 格式化更新時間 (轉換為台灣時間 GMT+8)
+            # æ ¼å¼åŒ–æ›´æ–°æ™‚é–“ (è½‰æ›ç‚ºå°ç£æ™‚é–“ GMT+8)
             updated_at_str = None
             if db_record.updated_at:
-                # 假設 DB 存的是 UTC，轉換成台灣時間
+                # å‡è¨­ DB å­˜çš„æ˜¯ UTCï¼Œè½‰æ›æˆå°ç£æ™‚é–“
                 utc_time = db_record.updated_at.replace(tzinfo=timezone.utc)
                 tw_time = utc_time.astimezone(TW_TIMEZONE)
                 updated_at_str = tw_time.strftime("%m/%d %H:%M")
@@ -238,7 +237,7 @@ async def get_all_latest(
                 }
             }
         else:
-            # Fallback 到即時爬取
+            # Fallback åˆ°å³æ™‚çˆ¬å–
             try:
                 data = lottery_crawler.get_latest(lottery_type)
                 if data:
@@ -252,7 +251,7 @@ async def get_all_latest(
                         "latest_draw": data.get("latest_draw")
                     }
             except:
-                pass  # 忽略錯誤，繼續下一個
+                pass  # å¿½ç•¥éŒ¯èª¤ï¼Œç¹¼çºŒä¸‹ä¸€å€‹
     
     return {
         "updated_at": datetime.now().isoformat(),
@@ -266,21 +265,21 @@ async def sync_lottery_data(
     admin_id: int = Depends(require_admin)
 ):
     """
-    同步所有彩種開獎資訊（僅管理員）
+    åŒæ­¥æ‰€æœ‰å½©ç¨®é–‹çŽè³‡è¨Šï¼ˆåƒ…ç®¡ç†å“¡ï¼‰
     
-    從外部來源抓取最新開獎號碼並儲存到資料庫，
-    同步完成後自動對獎所有待對獎的團
+    å¾žå¤–éƒ¨ä¾†æºæŠ“å–æœ€æ–°é–‹çŽè™Ÿç¢¼ä¸¦å„²å­˜åˆ°è³‡æ–™åº«ï¼Œ
+    åŒæ­¥å®Œæˆå¾Œè‡ªå‹•å°çŽæ‰€æœ‰å¾…å°çŽçš„åœ˜
     """
     try:
         data = lottery_crawler.fetch_all()
         synced = []
         
-        # 爬蟲返回格式映射
-        # super_lotto -> power (威力彩)
-        # lotto649 -> super (大樂透)  
-        # daily_cash -> daily539 (今彩539)
+        # çˆ¬èŸ²è¿”å›žæ ¼å¼æ˜ å°„
+        # super_lotto -> power (å¨åŠ›å½©)
+        # lotto649 -> super (å¤§æ¨‚é€)  
+        # daily_cash -> daily539 (ä»Šå½©539)
         
-        # 處理威力彩
+        # è™•ç†å¨åŠ›å½©
         if data.get("super_lotto") and data["super_lotto"].get("draws"):
             item = data["super_lotto"]
             draw = item["draws"][0]
@@ -288,9 +287,9 @@ async def sync_lottery_data(
             draw_term = f"power_{draw_date}"
             numbers = draw.get("numbers", {})
             save_to_db(db, "power", draw_term, draw_date, numbers, item.get("jackpot"))
-            synced.append("威力彩")
+            synced.append("å¨åŠ›å½©")
         
-        # 處理大樂透
+        # è™•ç†å¤§æ¨‚é€
         if data.get("lotto649") and data["lotto649"].get("draws"):
             item = data["lotto649"]
             draw = item["draws"][0]
@@ -298,39 +297,39 @@ async def sync_lottery_data(
             draw_term = f"super_{draw_date}"
             numbers = draw.get("numbers", {})
             save_to_db(db, "super", draw_term, draw_date, numbers, item.get("jackpot"))
-            synced.append("大樂透")
+            synced.append("å¤§æ¨‚é€")
         
-        # 處理今彩539
+        # è™•ç†ä»Šå½©539
         if data.get("daily_cash") and data["daily_cash"].get("draws"):
             item = data["daily_cash"]
             draw = item["draws"][0]
             draw_date = parse_date(draw.get("draw_date", ""))
             draw_term = f"daily539_{draw_date}"
             nums = draw.get("numbers", [])
-            # 統一格式
+            # çµ±ä¸€æ ¼å¼
             if isinstance(nums, list):
                 numbers = {"numbers": nums}
             else:
                 numbers = nums
             save_to_db(db, "daily539", draw_term, draw_date, numbers, item.get("jackpot"))
-            synced.append("今彩539")
+            synced.append("ä»Šå½©539")
         
         db.commit()
         
-        # === 自動對獎 ===
+        # === è‡ªå‹•å°çŽ ===
         auto_check_result = None
         if HAS_AUTO_CHECK and synced:
             try:
                 auto_check_result = auto_check_service.auto_check_all_pending(db)
                 if auto_check_result.get("groups_success", 0) > 0:
-                    synced.append(f"對獎 {auto_check_result['groups_success']} 團")
+                    synced.append(f"å°çŽ {auto_check_result['groups_success']} åœ˜")
             except Exception as e:
-                print(f"⚠️ 自動對獎失敗: {e}")
-        # === 自動對獎結束 ===
+                print(f"âš ï¸ è‡ªå‹•å°çŽå¤±æ•—: {e}")
+        # === è‡ªå‹•å°çŽçµæŸ ===
         
         return SyncResult(
             success=True,
-            message=f"成功同步: {', '.join(synced)}" if synced else "無新資料",
+            message=f"æˆåŠŸåŒæ­¥: {', '.join(synced)}" if synced else "ç„¡æ–°è³‡æ–™",
             updated_at=datetime.now().isoformat(),
             data={
                 "synced_types": synced,
@@ -341,7 +340,7 @@ async def sync_lottery_data(
         db.rollback()
         return SyncResult(
             success=False,
-            message=f"同步失敗: {str(e)}",
+            message=f"åŒæ­¥å¤±æ•—: {str(e)}",
             updated_at=datetime.now().isoformat()
         )
 
@@ -354,11 +353,11 @@ async def get_draw_history(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
-    """取得開獎歷史記錄"""
+    """å–å¾—é–‹çŽæ­·å²è¨˜éŒ„"""
     if lottery_type not in ["power", "super", "daily539"]:
-        raise HTTPException(status_code=400, detail="不支援的彩種")
+        raise HTTPException(status_code=400, detail="ä¸æ”¯æ´çš„å½©ç¨®")
     
-    # 查詢資料庫
+    # æŸ¥è©¢è³‡æ–™åº«
     draws = db.query(LotteryDraw).filter(
         LotteryDraw.lottery_type == lottery_type
     ).order_by(desc(LotteryDraw.draw_date), desc(LotteryDraw.draw_term)).offset(offset).limit(limit).all()
@@ -387,20 +386,20 @@ async def get_draw_history(
 
 @router.post("/import-history", response_model=SyncResult)
 async def import_history_data(
-    lottery_type: str = Query(None, description="指定彩種 (power/super/daily539)，不指定則全部匯入"),
-    limit: int = Query(30, ge=10, le=100, description="每種彩券匯入筆數"),
+    lottery_type: str = Query(None, description="æŒ‡å®šå½©ç¨® (power/super/daily539)ï¼Œä¸æŒ‡å®šå‰‡å…¨éƒ¨åŒ¯å…¥"),
+    limit: int = Query(30, ge=10, le=100, description="æ¯ç¨®å½©åˆ¸åŒ¯å…¥ç­†æ•¸"),
     db: Session = Depends(get_db),
     admin_id: int = Depends(require_admin)
 ):
     """
-    匯入歷史開獎資料（僅管理員）
+    åŒ¯å…¥æ­·å²é–‹çŽè³‡æ–™ï¼ˆåƒ…ç®¡ç†å“¡ï¼‰
     
-    從外部來源爬取歷史開獎記錄並儲存到資料庫
+    å¾žå¤–éƒ¨ä¾†æºçˆ¬å–æ­·å²é–‹çŽè¨˜éŒ„ä¸¦å„²å­˜åˆ°è³‡æ–™åº«
     """
     if not HAS_HISTORY_CRAWLER:
         return SyncResult(
             success=False,
-            message="歷史爬蟲服務未安裝",
+            message="æ­·å²çˆ¬èŸ²æœå‹™æœªå®‰è£",
             updated_at=datetime.now().isoformat()
         )
     
@@ -412,7 +411,7 @@ async def import_history_data(
             if ltype not in ["power", "super", "daily539"]:
                 continue
             
-            # 根據彩種呼叫對應的爬蟲
+            # æ ¹æ“šå½©ç¨®å‘¼å«å°æ‡‰çš„çˆ¬èŸ²
             if ltype == "power":
                 history_data = history_crawler.fetch_power_history(limit)
             elif ltype == "super":
@@ -420,7 +419,7 @@ async def import_history_data(
             else:
                 history_data = history_crawler.fetch_daily539_history(limit)
             
-            # 儲存到資料庫
+            # å„²å­˜åˆ°è³‡æ–™åº«
             for item in history_data:
                 try:
                     existing = db.query(LotteryDraw).filter(
@@ -439,21 +438,21 @@ async def import_history_data(
                         db.add(new_draw)
                         imported_counts[ltype] += 1
                 except Exception as e:
-                    logger.warning(f"儲存歷史記錄失敗: {e}")
+                    logger.warning(f"å„²å­˜æ­·å²è¨˜éŒ„å¤±æ•—: {e}")
                     continue
         
         db.commit()
         
-        # 統計結果
+        # çµ±è¨ˆçµæžœ
         total_imported = sum(imported_counts.values())
         details = []
         for ltype, count in imported_counts.items():
             if count > 0:
-                details.append(f"{LOTTERY_NAMES[ltype]} {count}筆")
+                details.append(f"{LOTTERY_NAMES[ltype]} {count}ç­†")
         
         return SyncResult(
             success=True,
-            message=f"成功匯入 {total_imported} 筆: {', '.join(details)}" if total_imported > 0 else "無新資料匯入（可能資料已存在）",
+            message=f"æˆåŠŸåŒ¯å…¥ {total_imported} ç­†: {', '.join(details)}" if total_imported > 0 else "ç„¡æ–°è³‡æ–™åŒ¯å…¥ï¼ˆå¯èƒ½è³‡æ–™å·²å­˜åœ¨ï¼‰",
             updated_at=datetime.now().isoformat(),
             data={"imported": imported_counts, "total": total_imported}
         )
@@ -462,18 +461,18 @@ async def import_history_data(
         db.rollback()
         return SyncResult(
             success=False,
-            message=f"匯入失敗: {str(e)}",
+            message=f"åŒ¯å…¥å¤±æ•—: {str(e)}",
             updated_at=datetime.now().isoformat()
         )
 
 
-# 加入 logger
+# åŠ å…¥ logger
 import logging
 logger = logging.getLogger(__name__)
 
 
 class BatchImportItem(BaseModel):
-    """批量匯入項目"""
+    """æ‰¹é‡åŒ¯å…¥é …ç›®"""
     lottery_type: str
     draw_term: str
     draw_date: str  # YYYY-MM-DD
@@ -482,7 +481,7 @@ class BatchImportItem(BaseModel):
 
 
 class BatchImportRequest(BaseModel):
-    """批量匯入請求"""
+    """æ‰¹é‡åŒ¯å…¥è«‹æ±‚"""
     items: List[BatchImportItem]
 
 
@@ -493,9 +492,9 @@ async def batch_import_draws(
     admin_id: int = Depends(require_admin)
 ):
     """
-    批量匯入開獎資料（僅管理員）
+    æ‰¹é‡åŒ¯å…¥é–‹çŽè³‡æ–™ï¼ˆåƒ…ç®¡ç†å“¡ï¼‰
     
-    用於從本地腳本上傳歷史資料
+    ç”¨æ–¼å¾žæœ¬åœ°è…³æœ¬ä¸Šå‚³æ­·å²è³‡æ–™
     """
     imported = 0
     skipped = 0
@@ -503,7 +502,7 @@ async def batch_import_draws(
     
     for item in request.items:
         try:
-            # 檢查是否已存在
+            # æª¢æŸ¥æ˜¯å¦å·²å­˜åœ¨
             existing = db.query(LotteryDraw).filter(
                 LotteryDraw.lottery_type == item.lottery_type,
                 LotteryDraw.draw_term == item.draw_term
@@ -513,10 +512,10 @@ async def batch_import_draws(
                 skipped += 1
                 continue
             
-            # 解析日期
+            # è§£æžæ—¥æœŸ
             draw_date = parse_date(item.draw_date)
             
-            # 新增記錄
+            # æ–°å¢žè¨˜éŒ„
             new_draw = LotteryDraw(
                 lottery_type=item.lottery_type,
                 draw_term=item.draw_term,
@@ -537,5 +536,5 @@ async def batch_import_draws(
         "imported": imported,
         "skipped": skipped,
         "errors": errors[:10] if errors else [],
-        "message": f"匯入完成：新增 {imported} 筆，略過 {skipped} 筆（已存在）"
+        "message": f"åŒ¯å…¥å®Œæˆï¼šæ–°å¢ž {imported} ç­†ï¼Œç•¥éŽ {skipped} ç­†ï¼ˆå·²å­˜åœ¨ï¼‰"
     }
