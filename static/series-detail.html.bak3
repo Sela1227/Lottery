@@ -432,12 +432,8 @@
             try { currentInvitation = await apiPost(`/series/${seriesId}/invitations`, { max_uses: maxUses, expires_in_days: expiresDays }); closeModal('invite-modal'); showToast('邀請碼已產生!', 'success'); loadInvitations(); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.querySelector('[data-tab="invites"]').classList.add('active'); $('tab-invites').classList.add('active'); } catch (e) { showToast(e.message, 'error'); }
         }
         async function topup() {
-            // 取得彩種單價
-            const lotteryType = (currentSeries?.allowed_lottery_types || ['power'])[0];
-            const PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
-            const unitPrice = PRICES[lotteryType] || 100;
             const amount = parseFloat($('topup-amount').value);
-            if (amount < unitPrice || amount % unitPrice !== 0) { showToast(`加碼金額需為 $${unitPrice} 的倍數`, 'error'); return; }
+            if (amount < 50) { showToast('加碼金額至少 50 元', 'error'); return; }
             try { await apiPost(`/series/${seriesId}/members/me/topup`, { amount }); closeModal('topup-modal'); showToast(`成功加碼 $${amount}!`, 'success'); seriesData = await apiGet(`/series/${seriesId}`); currentSeries = seriesData; renderContent(); initPhase1(); } catch (e) { showToast(e.message, 'error'); }
         }
         function copyCode(code) { navigator.clipboard.writeText(code).then(() => { showToast('邀請碼已複製!', 'success'); }); }
