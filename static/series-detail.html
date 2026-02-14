@@ -194,18 +194,6 @@
         </div>
     </div>
     
-    <!-- Invite Modal -->
-    <div class="modal-overlay" id="invite-modal">
-        <div class="modal">
-            <div class="modal-header"><h2 class="modal-title">產生邀請碼</h2><button class="modal-close" onclick="closeModal('invite-modal')">✕</button></div>
-            <div class="modal-body">
-                <div class="form-group"><label class="form-label">最大使用次數</label><input type="number" class="form-input" id="max-uses" value="5" min="1" max="100"><p class="form-hint">設為 1 表示一次性邀請碼</p></div>
-                <div class="form-group"><label class="form-label">有效天數</label><input type="number" class="form-input" id="expires-days" value="7" min="1" max="30"></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('invite-modal')">取消</button><button class="btn btn-primary" onclick="createInvitation()">產生</button></div>
-        </div>
-    </div>
-    
     <!-- Topup Modal -->
     <div class="modal-overlay" id="topup-modal">
         <div class="modal">
@@ -276,7 +264,7 @@
         if (typeof getStatusText === 'undefined') window.getStatusText = (s) => ({ active:'進行中', paused:'已暫停', closed:'已結束', collecting:'集資中', locked:'已鎖定', purchased:'已購買', drawn:'已開獎', settled:'已結算' }[s] || s);
 
         const seriesId = window.location.pathname.split('/').pop();
-        let seriesData = null, currentSeries = null, lotteryTypes = [], isAdmin = false, currentInvitation = null;
+        let seriesData = null, currentSeries = null, lotteryTypes = [], isAdmin = false;
         let pendingRequestsCount = 0, myPendingRequest = null, currentRejectRequestId = null;
         
         async function loadData() {
@@ -311,9 +299,9 @@
                     ${s.description ? `<p class="info-desc">${s.description}</p>` : ''}
                 </div>
                 <div id="my-request-status"></div>
-                ${isAdmin ? `<div class="admin-actions"><button class="btn btn-primary" onclick="showNewPeriodModal()">🎰 開新期</button><button class="btn btn-secondary" onclick="showInviteModal()">🎫 產生邀請碼</button><button class="btn btn-secondary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 減碼</button>` : ''}${s.member_count === 1 ? `<button class="btn btn-danger" onclick="confirmDeleteSeries()">🗑️ 刪除集資</button>` : ''}</div>` : `<div class="member-actions" id="member-action-btns"><button class="btn btn-primary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 申請減碼</button><button class="btn btn-warning" onclick="showWithdrawModal()">🚪 申請退出</button>` : ''}</div>`}
-                <div class="tabs"><div class="tab active" data-tab="periods">單期團記錄</div><div class="tab" data-tab="members">成員 (${s.member_count})</div>${isAdmin ? '<div class="tab" data-tab="invites">邀請碼</div><div class="tab" data-tab="requests">異動申請</div>' : ''}</div>
-                <div id="tab-periods" class="tab-content active"></div><div id="tab-members" class="tab-content"></div>${isAdmin ? '<div id="tab-invites" class="tab-content"></div><div id="tab-requests" class="tab-content"></div>' : ''}
+                ${isAdmin ? `<div class="admin-actions"><button class="btn btn-primary" onclick="showNewPeriodModal()">🎰 開新期</button><button class="btn btn-secondary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 減碼</button>` : ''}${s.member_count === 1 ? `<button class="btn btn-danger" onclick="confirmDeleteSeries()">🗑️ 刪除集資</button>` : ''}</div>` : `<div class="member-actions" id="member-action-btns"><button class="btn btn-primary" onclick="showTopupModal()">💰 加碼</button>${isFlexibleMode ? `<button class="btn btn-secondary" onclick="showReduceModal()">📉 申請減碼</button><button class="btn btn-warning" onclick="showWithdrawModal()">🚪 申請退出</button>` : ''}</div>`}
+                <div class="tabs"><div class="tab active" data-tab="periods">單期團記錄</div><div class="tab" data-tab="members">成員 (${s.member_count})</div>${isAdmin ? '<div class="tab" data-tab="requests">異動申請</div>' : ''}</div>
+                <div id="tab-periods" class="tab-content active"></div><div id="tab-members" class="tab-content"></div>${isAdmin ? '<div id="tab-requests" class="tab-content"></div>' : ''}
             `);
             
             document.querySelectorAll('.tab').forEach(tab => {
@@ -327,7 +315,7 @@
             });
             
             $('lottery-type-select').innerHTML = (s.allowed_lottery_types || []).map(code => { const lt = lotteryTypes.find(t => t.code === code); return `<option value="${code}">${lt ? lt.name : code}</option>`; }).join('');
-            loadPeriods(); loadMembers(); if (isAdmin) loadInvitations();
+            loadPeriods(); loadMembers();
         }
         
         function getStatusText(status) { return { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' }[status] || status; }
@@ -349,12 +337,6 @@
                 const members = await apiGet(`/series/${seriesId}/members`);
                 container.innerHTML = `<div class="section"><div class="member-list">${members.map(m => `<div class="member-item"><div class="member-info"><div class="member-avatar">${m.picture_url ? `<img src="${m.picture_url}">` : m.display_name[0]}</div><div><span class="member-name">${m.display_name}</span>${m.role === 'admin' ? '<span class="member-role">管理員</span>' : ''}</div></div><div class="member-share">${formatMoney(m.pool_share)}</div></div>`).join('')}</div></div>`;
             } catch (e) { container.innerHTML = `<div class="empty-state"><p class="empty-text">載入失敗</p></div>`; }
-        }
-        
-        async function loadInvitations() {
-            const container = $('tab-invites');
-            if (!container) return;
-            container.innerHTML = `<div class="section"><div class="invite-section">${currentInvitation ? `<div class="invite-code-display"><span class="invite-code">${currentInvitation.code}</span><button class="copy-btn" onclick="copyCode('${currentInvitation.code}')">複製</button></div><p class="invite-info">已使用 ${currentInvitation.used_count}/${currentInvitation.max_uses || '∞'} 次${currentInvitation.expires_at ? ` · 有效期至 ${new Date(currentInvitation.expires_at).toLocaleDateString()}` : ''}</p>` : `<div class="empty-state"><div class="empty-icon">🎫</div><p class="empty-text">點擊上方「產生邀請碼」來建立邀請連結</p></div>`}</div></div>`;
         }
         
         // Phase 1: 異動申請功能
@@ -419,7 +401,6 @@
         
         // 原有功能
         function showNewPeriodModal() { $('new-period-modal').classList.add('active'); }
-        function showInviteModal() { $('invite-modal').classList.add('active'); }
         function showTopupModal() {
             // 動態設定彩種單價
             const lt = (currentSeries?.allowed_lottery_types || ['power'])[0];
@@ -436,10 +417,6 @@
         async function createNewPeriod() {
             const lotteryType = $('lottery-type-select').value, drawTerm = $('draw-term').value.trim(), drawDate = $('draw-date').value;
             try { await apiPost(`/series/${seriesId}/groups`, { lottery_type_code: lotteryType, draw_term: drawTerm || null, draw_date: drawDate || null }); closeModal('new-period-modal'); showToast('新期建立成功!', 'success'); loadPeriods(); $('draw-term').value = ''; $('draw-date').value = ''; } catch (e) { showToast(e.message, 'error'); }
-        }
-        async function createInvitation() {
-            const maxUses = parseInt($('max-uses').value), expiresDays = parseInt($('expires-days').value);
-            try { currentInvitation = await apiPost(`/series/${seriesId}/invitations`, { max_uses: maxUses, expires_in_days: expiresDays }); closeModal('invite-modal'); showToast('邀請碼已產生!', 'success'); loadInvitations(); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.querySelector('[data-tab="invites"]').classList.add('active'); $('tab-invites').classList.add('active'); } catch (e) { showToast(e.message, 'error'); }
         }
         async function topup() {
             // 取得彩種單價
