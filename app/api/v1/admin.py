@@ -92,8 +92,6 @@ class EventLogResponse(BaseModel):
         from_attributes = True
 
 
-
-
 class DrawInput(BaseModel):
     """管理員手動輸入開獎資料"""
     lottery_type: str
@@ -312,8 +310,6 @@ async def list_all_series(
     return result
 
 
-
-
 # ==================== 集資管理操作 ====================
 
 @router.post("/series/{series_id}/end")
@@ -322,19 +318,16 @@ async def admin_end_series(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """管理員強制結束集資"""
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     if not series:
         raise HTTPException(status_code=404, detail="集資不存在")
     if series.status == SeriesStatus.ENDED:
         raise HTTPException(status_code=400, detail="集資已結束")
-    
     series.status = SeriesStatus.ENDED
     db.query(GroupMember).filter(
         GroupMember.series_id == series_id,
         GroupMember.status == MemberStatus.ACTIVE
     ).update({"status": MemberStatus.EXITED}, synchronize_session=False)
-    
     db.commit()
     return {"message": "已結束"}
 
@@ -345,49 +338,28 @@ async def admin_delete_series(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """管理員刪除集資 - 硬刪除"""
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     if not series:
         raise HTTPException(status_code=404, detail="集資不存在")
-    
-    # 有已開期且有獎金的不能刪
     if series.total_periods > 0 and series.total_prize > 0:
         raise HTTPException(status_code=400, detail="有開獎記錄的集資不可刪除")
-    
-    # 硬刪除：清除所有關聯資料
-    # 1. 清帳本
     try:
         db.query(UserLedger).filter(UserLedger.series_id == series_id).delete(synchronize_session=False)
     except Exception:
         pass
-    
-    # 2. 清邀請碼
-    try:
-        from app.models.invitation import Invitation
-        db.query(Invitation).filter(Invitation.series_id == series_id).delete(synchronize_session=False)
-    except Exception:
-        pass
-    
-    # 3. 清單期團的票
-    try:
-        from app.models.ticket import Ticket
-        groups = db.query(Group).filter(Group.series_id == series_id).all()
-        for g in groups:
+    groups = db.query(Group).filter(Group.series_id == series_id).all()
+    for g in groups:
+        try:
+            from app.models.ticket import Ticket
             db.query(Ticket).filter(Ticket.group_id == g.id).delete(synchronize_session=False)
-    except Exception:
-        pass
-    
-    # 4. 清單期團
+        except Exception:
+            pass
     db.query(Group).filter(Group.series_id == series_id).delete(synchronize_session=False)
-    
-    # 5. 清成員
     db.query(GroupMember).filter(GroupMember.series_id == series_id).delete(synchronize_session=False)
-    
-    # 6. 刪集資本身
     db.delete(series)
-    
     db.commit()
     return {"message": "已刪除"}
+
 
 # ==================== 事件日誌 ====================
 
