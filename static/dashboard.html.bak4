@@ -73,8 +73,8 @@
         .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 28px; }
         .action-btn { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px 14px; text-align: center; cursor: pointer; transition: all 0.3s; text-decoration: none; color: var(--text-primary); box-shadow: var(--shadow-sm); }
         .action-btn:hover { border-color: var(--sela-orange); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .action-btn.primary { background: linear-gradient(135deg, #0891B2, #06B6D4); border: none; color: #fff; box-shadow: 0 8px 24px rgba(8, 145, 178, 0.3); }
-        .action-btn.primary:hover { box-shadow: 0 12px 32px rgba(8, 145, 178, 0.4); }
+        .action-btn.primary { background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark)); border: none; color: #fff; box-shadow: 0 8px 24px rgba(242, 101, 34, 0.3); }
+        .action-btn.primary:hover { box-shadow: 0 12px 32px rgba(242, 101, 34, 0.4); }
         .action-btn.primary .action-desc { color: rgba(255,255,255,0.85); }
         .action-btn.wallet { background: linear-gradient(135deg, #16A34A, #15803D); border: none; color: #fff; box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3); }
         .action-btn.wallet:hover { box-shadow: 0 12px 32px rgba(22, 163, 74, 0.4); }
@@ -88,7 +88,7 @@
         .action-btn.admin { background: linear-gradient(135deg, #6366F1, #4F46E5); border: none; color: #fff; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }
         .action-btn.admin:hover { box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4); }
         .action-btn.admin .action-desc { color: rgba(255,255,255,0.85); }
-        .action-btn.lottery { background: linear-gradient(135deg, #E11D48, #FB7185); border: none; color: #fff; box-shadow: 0 8px 24px rgba(225, 29, 72, 0.3); }
+        .action-btn.lottery { background: linear-gradient(135deg, #DC2626, #EF4444); border: none; color: #fff; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3); }
         .action-btn.lottery:hover { box-shadow: 0 12px 32px rgba(220, 38, 38, 0.4); }
         .action-btn.lottery .action-desc { color: rgba(255,255,255,0.85); }
         .action-btn.number-stats { background: linear-gradient(135deg, #7C3AED, #8B5CF6); border: none; color: #fff; box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3); }
@@ -167,21 +167,6 @@
         @media (min-width: 900px) {
             .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
         }
-    
-        .sync-btn { padding: 6px 14px; background: var(--sela-orange); color: white; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
-        .sync-btn:hover { opacity: 0.9; }
-    
-        .action-btn.primary::before, .action-btn.wallet::before, .action-btn.stats-btn::before,
-        .action-btn.lottery::before, .action-btn.number-stats::before, .action-btn.settings::before,
-        .action-btn.admin::before {
-            content: ''; position: absolute; top: -50%; right: -50%;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .action-btn.primary, .action-btn.wallet, .action-btn.stats-btn,
-        .action-btn.lottery, .action-btn.number-stats, .action-btn.settings,
-        .action-btn.admin { position: relative; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -198,7 +183,6 @@
             <span class="brand">樂透一路發</span>
         </div>
         <div class="header-right">
-                <a href="/admin/lottery" class="sync-btn" id="admin-sync-btn" style="display:none;">🎰 同步</a>
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar"></div>
                 <span class="user-name" id="user-name"></span>
@@ -247,6 +231,7 @@
             <a href="/lottery" class="action-btn lottery"><div class="action-icon">🎰</div><div class="action-title">對獎專區</div><div class="action-desc">開獎資訊與歷史</div></a>
             <a href="/stats" class="action-btn number-stats"><div class="action-icon">📊</div><div class="action-title">號碼統計</div><div class="action-desc">熱門冷門分析</div></a>
             <a href="/settings" class="action-btn settings"><div class="action-icon">⚙️</div><div class="action-title">設定</div><div class="action-desc">個人資料與通知</div></a>
+            <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();"><div class="action-icon">🎫</div><div class="action-title">加入集資</div><div class="action-desc">使用邀請碼</div></a>
             <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;"><div class="action-icon">🔧</div><div class="action-title">管理後台</div><div class="action-desc">系統管理</div></a>
         </div>
         
@@ -477,7 +462,6 @@
             }
             const adminBtn = $('admin-btn');
             if (adminBtn && user.role === 'admin') adminBtn.style.display = 'block';
-            const syncBtn = $('admin-sync-btn'); if (syncBtn && user.role === 'admin') syncBtn.style.display = '';
             const loadingOverlay = $('loading-overlay');
             if (loadingOverlay) loadingOverlay.classList.add('hidden');
         }
@@ -505,17 +489,7 @@
                 } catch (e) { console.error('Failed to load groups:', e); }
             }
             if (recentGroups.length === 0) {
-                // 沒有單期團時，顯示集資本身
-                const LNAMES = { 'power': '威力彩', 'super': '大樂透', 'daily539': '今彩539' };
-                container.innerHTML = seriesList.slice(0, 5).map(s => `
-                    <a href="/series/${s.id}" class="activity-item">
-                        <div class="activity-info">
-                            <div class="activity-name">${s.name}</div>
-                            <div class="activity-detail">${LNAMES[s.lottery_types?.[0]] || s.lottery_types?.[0] || ''} · 資金池 $${Number(s.current_pool).toLocaleString()} · ${s.member_count} 人</div>
-                        </div>
-                        <span class="activity-status collecting">進行中</span>
-                    </a>
-                `).join('');
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無單期團</h3><p class="empty-desc">管理員開新期後會顯示在這裡</p></div>`;
                 return;
             }
             const statusText = { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' };

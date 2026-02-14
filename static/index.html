@@ -93,14 +93,9 @@
             box-shadow: 0 12px 32px rgba(6, 199, 85, 0.4);
         }
         
-        .login-btn:active {
-            transform: translateY(0);
-        }
+        .login-btn:active { transform: translateY(0); }
         
-        .login-btn svg {
-            width: 24px;
-            height: 24px;
-        }
+        .login-btn svg { width: 24px; height: 24px; }
         
         .error-msg {
             display: none;
@@ -130,14 +125,9 @@
             animation: spin 1s linear infinite;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        .loading-text {
-            color: #8B7355;
-            font-size: 14px;
-        }
+        .loading-text { color: #8B7355; font-size: 14px; }
         
         .footer {
             padding: 24px;
@@ -164,21 +154,18 @@
             justify-content: center;
         }
         
-        .feature {
-            text-align: center;
-            flex: 1;
-            min-width: 80px;
-        }
+        .feature { text-align: center; flex: 1; min-width: 80px; }
+        .feature-icon { font-size: 28px; margin-bottom: 8px; }
+        .feature-text { font-size: 12px; color: #8B7355; }
         
-        .feature-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
+        /* 驗證中狀態 */
+        .verifying {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
         }
-        
-        .feature-text {
-            font-size: 12px;
-            color: #8B7355;
-        }
+        .verifying .spinner { border-top-color: var(--sela-orange); }
     </style>
 </head>
 <body>
@@ -203,6 +190,11 @@
             <div class="loading-text">正在跳轉到 LINE 登入...</div>
         </div>
         
+        <div class="verifying" id="verifying">
+            <div class="spinner"></div>
+            <div class="loading-text">驗證登入狀態中...</div>
+        </div>
+        
         <div class="features">
             <div class="feature">
                 <div class="feature-icon">🎰</div>
@@ -224,37 +216,167 @@
     </div>
     
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const accessToken = urlParams.get('token');
-        const isNew = urlParams.get('new');
-        const error = urlParams.get('error');
+        const API_BASE = '/api/v1';
         
-        // 顯示錯誤訊息
-        if (error) {
-            const errorMsg = document.getElementById('error-msg');
-            errorMsg.textContent = '登入失敗:' + decodeURIComponent(error);
-            errorMsg.style.display = 'block';
-            window.history.replaceState({}, '', '/');
+        // 安全的 localStorage 存取
+        function safeGetItem(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                console.error('localStorage 讀取失敗:', e);
+                return null;
+            }
         }
         
-        // 處理登入成功
-        if (accessToken) {
-            localStorage.setItem('access_token', accessToken);
+        function safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.error('localStorage 寫入失敗:', e);
+                return false;
+            }
+        }
+        
+        function safeRemoveItem(key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.error('localStorage 刪除失敗:', e);
+            }
+        }
+        
+        // 防循環機制
+        const REDIRECT_KEY = 'sela_redirect_count';
+        const REDIRECT_TIME_KEY = 'sela_redirect_time';
+        const MAX_REDIRECTS = 3;
+        const REDIRECT_RESET_MS = 5000;
+        
+        function checkRedirectLoop() {
+            try {
+                const now = Date.now();
+                const lastTime = parseInt(sessionStorage.getItem(REDIRECT_TIME_KEY) || '0');
+                let count = parseInt(sessionStorage.getItem(REDIRECT_KEY) || '0');
+                
+                // 如果距離上次重定向超過 5 秒，重置計數
+                if (now - lastTime > REDIRECT_RESET_MS) {
+                    count = 0;
+                }
+                
+                return count >= MAX_REDIRECTS;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        function incrementRedirectCount() {
+            try {
+                const now = Date.now();
+                const lastTime = parseInt(sessionStorage.getItem(REDIRECT_TIME_KEY) || '0');
+                let count = parseInt(sessionStorage.getItem(REDIRECT_KEY) || '0');
+                
+                if (now - lastTime > REDIRECT_RESET_MS) {
+                    count = 0;
+                }
+                
+                count++;
+                sessionStorage.setItem(REDIRECT_KEY, count.toString());
+                sessionStorage.setItem(REDIRECT_TIME_KEY, now.toString());
+            } catch (e) {
+                console.error('sessionStorage 錯誤:', e);
+            }
+        }
+        
+        function clearRedirectCount() {
+            try {
+                sessionStorage.removeItem(REDIRECT_KEY);
+                sessionStorage.removeItem(REDIRECT_TIME_KEY);
+            } catch (e) {
+                // ignore
+            }
+        }
+        
+        // 驗證 token 是否有效
+        async function verifyToken(token) {
+            try {
+                const res = await fetch(`${API_BASE}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                return res.ok;
+            } catch (e) {
+                console.error('Token 驗證失敗:', e);
+                return false;
+            }
+        }
+        
+        // 主要初始化邏輯
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessToken = urlParams.get('token');
+            const isNew = urlParams.get('new');
+            const error = urlParams.get('error');
             
-            // 如果是新用戶，標記到 localStorage
-            if (isNew === '1') {
-                localStorage.setItem('is_new_user', '1');
+            // 顯示錯誤訊息
+            if (error) {
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = '登入失敗: ' + decodeURIComponent(error);
+                errorMsg.style.display = 'block';
+                window.history.replaceState({}, '', '/');
+                safeRemoveItem('access_token');
+                clearRedirectCount();
+                return;
             }
             
-            // 清除 URL 參數並跳轉
-            window.history.replaceState({}, '', '/');
-            window.location.href = '/dashboard';
-        }
-        
-        // 如果已有 token，直接跳轉
-        const token = localStorage.getItem('access_token');
-        if (token && !error) {
-            window.location.href = '/dashboard';
+            // 檢查是否有重定向循環
+            if (checkRedirectLoop()) {
+                console.warn('偵測到重定向循環，停止自動跳轉');
+                safeRemoveItem('access_token');
+                clearRedirectCount();
+                // 顯示登入按鈕，讓用戶手動登入
+                return;
+            }
+            
+            // 處理登入成功（從 LINE 回來帶 token）
+            if (accessToken) {
+                // 嘗試儲存到 localStorage
+                const stored = safeSetItem('access_token', accessToken);
+                
+                if (isNew === '1') {
+                    safeSetItem('is_new_user', '1');
+                }
+                
+                window.history.replaceState({}, '', '/');
+                clearRedirectCount();
+                
+                // 無論 localStorage 是否成功，都用 URL 參數帶 token 到 dashboard
+                // 這樣即使 localStorage 在 LINE 瀏覽器中失效，dashboard 也能取得 token
+                window.location.href = '/dashboard?_t=' + encodeURIComponent(accessToken);
+                return;
+            }
+            
+            // 如果已有 token，驗證後跳轉
+            const token = safeGetItem('access_token');
+            if (token) {
+                // 顯示驗證中狀態
+                document.getElementById('login-content').style.display = 'none';
+                document.getElementById('verifying').style.display = 'flex';
+                
+                const isValid = await verifyToken(token);
+                
+                if (isValid) {
+                    clearRedirectCount();
+                    window.location.href = '/dashboard';
+                } else {
+                    // Token 無效，清除並顯示登入按鈕
+                    safeRemoveItem('access_token');
+                    document.getElementById('verifying').style.display = 'none';
+                    document.getElementById('login-content').style.display = 'block';
+                }
+                return;
+            }
+            
+            // 沒有 token，顯示登入按鈕
+            clearRedirectCount();
         }
         
         // 點擊登入按鈕時顯示 loading
@@ -262,72 +384,9 @@
             document.getElementById('login-content').style.display = 'none';
             document.getElementById('loading').style.display = 'flex';
         });
+        
+        // 執行初始化
+        init();
     </script>
 </body>
 </html>
-```
-```html
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#F26522">
-    <title>個人彩券 - SELA 樂透一路發</title>
-    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --sela-orange: #F26522;
-            --sela-dark: #1a1a2e;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #FF9800;
-            --info: #2196F3;
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #ffffff;
-            --text-primary: #1a1a2e;
-            --text-secondary: #666;
-            --border-color: #e0e0e0;
-        }
-        
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding-bottom: 100px;
-        }
-        
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--sela-orange), #ff8a50);
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .back-btn {
-            color: white;
-            text-decoration: none;
-            font-size: 24px;
-            padding: 4px;
-        }
-        
-        .page-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        /* Main */
-        .main {
-            padding: 16px;

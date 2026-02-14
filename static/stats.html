@@ -2,289 +2,235 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F26522">
     <title>號碼統計 - SELA 樂透一路發</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <style>
         :root {
-            --sela-red: #DC2626;
-            --sela-orange: #F97316;
-            --sela-gold: #F59E0B;
+            --sela-orange: #F26522;
+            --sela-orange-dark: #D85A1E;
+            --bg-primary: #FFF8F4;
+            --bg-secondary: #FFF0E8;
+            --bg-card: #FFFFFF;
+            --text-primary: #2D2420;
+            --text-secondary: #8B7355;
+            --border-color: rgba(242, 101, 34, 0.12);
+            --success: #16A34A;
+            --info: #2196F3;
+            --warning: #F59E0B;
+            --shadow-md: 0 4px 16px rgba(242, 101, 34, 0.1);
         }
-        
-        body {
-            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary); 
+            color: var(--text-primary);
             min-height: 100vh;
+            padding-bottom: 40px;
         }
         
+        /* ===== Header 統一樣式 ===== */
         .header {
-            background: linear-gradient(135deg, var(--sela-red) 0%, var(--sela-orange) 100%);
-            color: white;
-            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
         }
-        
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-        
-        .logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+        .header .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
         }
-        
-        .brand {
-            font-size: 1.25rem;
-            font-weight: bold;
+        .header .brand {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
         }
-        
         .back-btn {
             background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 8px;
             color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
         }
         
+        /* ===== Main ===== */
         .main {
-            padding: 20px;
-            padding-bottom: 100px;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        /* 彩種選擇 Tab */
+        /* ===== 彩種 Tabs（統一橘色風格）===== */
         .lottery-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        
-        .lottery-tab {
-            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        .lottery-tab {
+            flex: 1;
+            padding: 10px 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s;
             border: none;
+            font-size: 13px;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        .lottery-tab.active {
+            background: var(--sela-orange);
+            color: white;
+        }
+        .lottery-tab:not(.active):hover {
+            background: var(--bg-secondary);
+        }
+        
+        /* ===== Section 卡片 ===== */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .section-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
             font-size: 15px;
-        }
-        
-        .lottery-tab.power {
-            background: #FEE2E2;
-            color: #DC2626;
-        }
-        .lottery-tab.power.active {
-            background: linear-gradient(135deg, #DC2626, #EF4444);
-            color: white;
-        }
-        
-        .lottery-tab.super {
-            background: #DBEAFE;
-            color: #2563EB;
-        }
-        .lottery-tab.super.active {
-            background: linear-gradient(135deg, #2563EB, #3B82F6);
-            color: white;
-        }
-        
-        .lottery-tab.daily539 {
-            background: #D1FAE5;
-            color: #059669;
-        }
-        .lottery-tab.daily539.active {
-            background: linear-gradient(135deg, #059669, #10B981);
-            color: white;
-        }
-        
-        /* 統計卡片 */
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .stat-title {
-            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
-        .stat-title .icon {
-            font-size: 20px;
+        .section-body {
+            padding: 16px;
         }
         
-        /* 號碼球 */
+        /* ===== 號碼球 ===== */
         .number-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
-        
         .number-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
         }
-        
         .number-ball {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 16px;
             color: white;
         }
-        
         .ball-hot {
-            background: linear-gradient(135deg, #EF4444, #DC2626);
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(135deg, var(--sela-orange), var(--sela-orange-dark));
+            box-shadow: 0 2px 8px rgba(242, 101, 34, 0.3);
         }
-        
         .ball-cold {
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #64748B, #475569);
+            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
         }
-        
         .ball-overdue {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, var(--warning), #D97706);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
         }
-        
         .number-label {
             font-size: 11px;
-            color: #666;
+            color: var(--text-secondary);
         }
         
-        /* 完整統計表格 */
+        /* ===== 統計資訊 ===== */
+        .stat-info {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .stat-info strong {
+            color: var(--sela-orange);
+        }
+        
+        /* ===== 完整統計 Grid ===== */
         .full-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 8px;
-            margin-top: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+            gap: 6px;
         }
-        
         .full-stat-item {
-            background: #F9FAFB;
+            background: var(--bg-secondary);
             border-radius: 8px;
-            padding: 8px;
+            padding: 8px 4px;
             text-align: center;
         }
-        
-        .full-stat-number {
-            font-weight: bold;
-            font-size: 18px;
-            color: #374151;
-        }
-        
-        .full-stat-count {
-            font-size: 11px;
-            color: #6B7280;
-        }
-        
         .full-stat-item.hot {
-            background: #FEE2E2;
+            background: rgba(242, 101, 34, 0.15);
         }
-        
         .full-stat-item.cold {
-            background: #DBEAFE;
+            background: rgba(100, 116, 139, 0.15);
+        }
+        .full-stat-num {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        .full-stat-count {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 2px;
         }
         
-        /* 分析期數顯示 */
-        .analysis-info {
-            text-align: center;
-            padding: 12px;
-            background: #F3F4F6;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            color: #6B7280;
-        }
-        
-        /* 展開/收合 */
-        .toggle-btn {
-            background: #E5E7EB;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-        
-        .hidden { display: none; }
-        
-        /* 底部導航 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 20px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #9CA3AF;
-            font-size: 12px;
-            padding: 4px 12px;
-        }
-        
-        .nav-item.active {
-            color: var(--sela-red);
-        }
-        
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: 2px;
-        }
-        
-        /* Loading */
+        /* ===== Loading & Empty ===== */
         .loading {
-            text-align: center;
+            display: flex;
+            justify-content: center;
             padding: 40px;
-            color: #9CA3AF;
         }
-        
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #E5E7EB;
-            border-top-color: var(--sela-red);
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--bg-secondary);
+            border-top-color: var(--sela-orange);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -294,268 +240,144 @@
             <img src="/static/logo.jpg" alt="SELA" class="logo">
             <span class="brand">號碼統計</span>
         </div>
-        <a href="/lottery" class="back-btn">← 返回</a>
+        <a href="/dashboard" class="back-btn">← 返回</a>
     </header>
     
     <main class="main">
-        <!-- 彩種選擇 -->
+        <!-- 彩種切換 -->
         <div class="lottery-tabs">
-            <button class="lottery-tab power active" onclick="switchLottery('power')">🔴 威力彩</button>
-            <button class="lottery-tab super" onclick="switchLottery('super')">🔵 大樂透</button>
-            <button class="lottery-tab daily539" onclick="switchLottery('daily539')">🟢 今彩539</button>
+            <button class="lottery-tab active" data-type="power">威力彩</button>
+            <button class="lottery-tab" data-type="super">大樂透</button>
+            <button class="lottery-tab" data-type="daily539">今彩539</button>
         </div>
         
-        <!-- 統計內容 -->
         <div id="statsContent">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>載入統計資料中...</p>
-            </div>
+            <div class="loading"><div class="spinner"></div></div>
         </div>
     </main>
     
-    <!-- 底部導航 -->
-    <nav class="bottom-nav">
-        <a href="/dashboard" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>首頁</span>
-        </a>
-        <a href="/lottery" class="nav-item">
-            <span class="nav-icon">🎰</span>
-            <span>開獎</span>
-        </a>
-        <a href="/stats" class="nav-item active">
-            <span class="nav-icon">📊</span>
-            <span>統計</span>
-        </a>
-        <a href="/groups" class="nav-item">
-            <span class="nav-icon">👥</span>
-            <span>集資</span>
-        </a>
-        <a href="/profile" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>我的</span>
-        </a>
-    </nav>
-    
+    <script src="/static/js/common.js"></script>
     <script>
-        const API_BASE = '/api/v1';
+        // 備援函數
+        if (typeof getToken === 'undefined') window.getToken = () => { try { return localStorage.getItem('access_token'); } catch(e) { return null; } };
+        if (typeof apiGet === 'undefined') window.apiGet = async (url) => { const r = await fetch('/api/v1' + url, { headers: { 'Authorization': 'Bearer ' + getToken() } }); if (!r.ok) throw new Error('API Error'); return r.json(); };
+        
         let currentLottery = 'power';
         
-        // 檢查登入
-        function checkAuth() {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                window.location.href = '/';
-                return null;
-            }
-            return token;
-        }
-        
-        // API 請求
-        async function apiRequest(endpoint) {
-            const token = checkAuth();
-            if (!token) return null;
-            
-            const response = await fetch(`${API_BASE}${endpoint}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+        // Tab 切換
+        document.querySelectorAll('.lottery-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.lottery-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentLottery = tab.dataset.type;
+                loadStats();
             });
-            
-            if (response.status === 401) {
-                localStorage.removeItem('access_token');
-                window.location.href = '/';
-                return null;
-            }
-            
-            return response.json();
-        }
+        });
         
-        // 切換彩種
-        function switchLottery(type) {
-            currentLottery = type;
-            
-            // 更新 Tab 樣式
-            document.querySelectorAll('.lottery-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`.lottery-tab.${type}`).classList.add('active');
-            
-            // 載入統計
-            loadStats();
-        }
-        
-        // 載入統計資料
         async function loadStats() {
             const container = document.getElementById('statsContent');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>載入統計資料中...</p>
-                </div>
-            `;
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             
             try {
-                const data = await apiRequest(`/stats/numbers/${currentLottery}?limit=100`);
+                const data = await apiGet(`/stats/numbers/${currentLottery}?limit=100`);
                 
-                if (!data || data.error) {
-                    container.innerHTML = `<div class="stat-card"><p>載入失敗</p></div>`;
+                if (!data || data.total_draws === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><p>尚無歷史資料</p></div>';
                     return;
                 }
                 
-                if (data.total_draws === 0) {
-                    container.innerHTML = `
-                        <div class="stat-card">
-                            <p style="text-align:center; color:#9CA3AF;">尚無歷史資料</p>
+                const hot = data.hot_numbers || [];
+                const cold = data.cold_numbers || [];
+                const overdue = data.overdue_numbers || [];
+                const all = data.all_numbers || [];
+                
+                let html = `
+                    <div class="stat-info">
+                        📊 統計期數：<strong>${data.total_draws || 0}</strong> 期
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-header">🔥 熱門號碼</div>
+                        <div class="section-body">
+                            <div class="number-list">
+                                ${hot.slice(0, 8).map(n => `
+                                    <div class="number-item">
+                                        <div class="number-ball ball-hot">${n.number}</div>
+                                        <span class="number-label">${n.count}次</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-header">❄️ 冷門號碼</div>
+                        <div class="section-body">
+                            <div class="number-list">
+                                ${cold.slice(0, 8).map(n => `
+                                    <div class="number-item">
+                                        <div class="number-ball ball-cold">${n.number}</div>
+                                        <span class="number-label">${n.count}次</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-header">⏰ 最久未開</div>
+                        <div class="section-body">
+                            <div class="number-list">
+                                ${overdue.slice(0, 8).map(n => `
+                                    <div class="number-item">
+                                        <div class="number-ball ball-overdue">${n.number}</div>
+                                        <span class="number-label">${n.missing}期</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 完整統計
+                if (all.length > 0) {
+                    const maxC = Math.max(...all.map(n => n.count));
+                    const minC = Math.min(...all.map(n => n.count));
+                    const threshold = (maxC - minC) / 3;
+                    
+                    html += `
+                        <div class="section">
+                            <div class="section-header">📋 完整統計</div>
+                            <div class="section-body">
+                                <div class="full-stats-grid">
+                                    ${all.map(n => {
+                                        let cls = '';
+                                        if (n.count >= maxC - threshold) cls = 'hot';
+                                        else if (n.count <= minC + threshold) cls = 'cold';
+                                        return `
+                                            <div class="full-stat-item ${cls}">
+                                                <div class="full-stat-num">${n.number}</div>
+                                                <div class="full-stat-count">${n.count}次</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
                         </div>
                     `;
-                    return;
                 }
                 
-                renderStats(data);
+                container.innerHTML = html;
                 
-                // 如果是威力彩或大樂透，載入特別號統計
-                if (currentLottery === 'power' || currentLottery === 'super') {
-                    const specialData = await apiRequest(`/stats/special/${currentLottery}?limit=100`);
-                    if (specialData && !specialData.error) {
-                        renderSpecialStats(specialData);
-                    }
-                }
-            } catch (error) {
-                console.error('載入失敗:', error);
-                container.innerHTML = `<div class="stat-card"><p>載入失敗</p></div>`;
+            } catch (e) {
+                console.error('loadStats:', e);
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><p>載入失敗，請重試</p></div>';
             }
         }
         
-        // 渲染統計
-        function renderStats(data) {
-            const container = document.getElementById('statsContent');
-            
-            let html = `
-                <div class="analysis-info">
-                    📊 分析 <strong>${data.total_draws}</strong> 期開獎資料
-                </div>
-                
-                <!-- 熱門號碼 -->
-                <div class="stat-card">
-                    <div class="stat-title">
-                        <span class="icon">🔥</span>
-                        熱門號碼 TOP 10
-                    </div>
-                    <div class="number-list">
-                        ${data.hot_numbers.map(item => `
-                            <div class="number-item">
-                                <div class="number-ball ball-hot">${String(item.number).padStart(2, '0')}</div>
-                                <div class="number-label">${item.count}次</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <!-- 冷門號碼 -->
-                <div class="stat-card">
-                    <div class="stat-title">
-                        <span class="icon">❄️</span>
-                        冷門號碼 TOP 10
-                    </div>
-                    <div class="number-list">
-                        ${data.cold_numbers.map(item => `
-                            <div class="number-item">
-                                <div class="number-ball ball-cold">${String(item.number).padStart(2, '0')}</div>
-                                <div class="number-label">${item.count}次</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <!-- 遺漏最久 -->
-                <div class="stat-card">
-                    <div class="stat-title">
-                        <span class="icon">⏰</span>
-                        遺漏最久 TOP 10
-                    </div>
-                    <div class="number-list">
-                        ${data.overdue_numbers.map(item => `
-                            <div class="number-item">
-                                <div class="number-ball ball-overdue">${String(item.number).padStart(2, '0')}</div>
-                                <div class="number-label">${item.missing}期</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <!-- 完整統計 -->
-                <div class="stat-card">
-                    <div class="stat-title">
-                        <span class="icon">📋</span>
-                        完整統計
-                    </div>
-                    <button class="toggle-btn" onclick="toggleFullStats()">展開完整統計</button>
-                    <div id="fullStats" class="hidden">
-                        <div class="full-stats-grid">
-                            ${data.full_stats.map(item => {
-                                const isHot = data.hot_numbers.slice(0, 5).some(h => h.number === item.number);
-                                const isCold = data.cold_numbers.slice(0, 5).some(c => c.number === item.number);
-                                const cls = isHot ? 'hot' : (isCold ? 'cold' : '');
-                                return `
-                                    <div class="full-stat-item ${cls}">
-                                        <div class="full-stat-number">${String(item.number).padStart(2, '0')}</div>
-                                        <div class="full-stat-count">${item.count}次 / ${item.missing}期</div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 特別號統計區域（威力彩/大樂透用） -->
-                <div id="specialStats"></div>
-            `;
-            
-            container.innerHTML = html;
-        }
-        
-        // 渲染特別號統計
-        function renderSpecialStats(data) {
-            const container = document.getElementById('specialStats');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-title">
-                        <span class="icon">⭐</span>
-                        ${data.label}統計
-                    </div>
-                    <div class="number-list">
-                        ${data.full_stats.map(item => `
-                            <div class="number-item">
-                                <div class="number-ball" style="background: linear-gradient(135deg, #F59E0B, #D97706); width: 40px; height: 40px; font-size: 14px;">
-                                    ${String(item.number).padStart(2, '0')}
-                                </div>
-                                <div class="number-label">${item.count}次</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 展開/收合完整統計
-        function toggleFullStats() {
-            const el = document.getElementById('fullStats');
-            const btn = document.querySelector('.toggle-btn');
-            
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                btn.textContent = '收合完整統計';
-            } else {
-                el.classList.add('hidden');
-                btn.textContent = '展開完整統計';
-            }
-        }
-        
-        // 頁面載入
+        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
+            if (!getToken()) { window.location.href = '/'; return; }
             loadStats();
         });
     </script>

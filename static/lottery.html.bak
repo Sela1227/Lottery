@@ -83,10 +83,6 @@
         
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
         .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-    
-        @media (min-width: 900px) {
-            .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
-        }
     </style>
 </head>
 <body>
@@ -231,13 +227,13 @@
                 const data = await apiGet(`/lottery/history/${currentType}?limit=${historyLimit}&offset=${historyOffset}`);
                 const container = $('history-list');
                 if (!append) container.innerHTML = '';
-                if (!data.items || data.items.length === 0) {
+                if (!data.draws || data.draws.length === 0) {
                     if (!append) container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>暫無歷史記錄</p></div>';
                     $('load-more').style.display = 'none';
                     return;
                 }
-                data.items.forEach(draw => { container.insertAdjacentHTML('beforeend', renderHistoryItem(draw)); });
-                $('load-more').style.display = data.items.length >= historyLimit ? 'block' : 'none';
+                data.draws.forEach(draw => { container.insertAdjacentHTML('beforeend', renderHistoryItem(draw)); });
+                $('load-more').style.display = data.draws.length >= historyLimit ? 'block' : 'none';
             } catch (e) { console.error('載入歷史失敗:', e); $('history-list').innerHTML = '<div class="empty-state"><p>載入失敗</p></div>'; }
         }
         

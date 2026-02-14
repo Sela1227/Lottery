@@ -235,10 +235,6 @@
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
         .toast.error { background: #DC2626; }
-    
-        @media (min-width: 900px) {
-            .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
-        }
     </style>
 </head>
 <body>
@@ -333,11 +329,11 @@
             try {
                 const data = await apiGet('/wallet/overview');
                 if (!data) return;
-                setText('total-assets', formatMoney(data.total_assets));
-                setText('wallet-balance', formatMoney(data.wallet_balance));
-                setText('pool-share', formatMoney(data.total_pool_share));
-                setText('total-invested', formatMoney(data.total_invested));
-                setText('total-prize', formatMoney(data.total_prize));
+                setText('total-assets', '$' + formatMoney(data.total_assets));
+                setText('wallet-balance', '$' + formatMoney(data.wallet_balance));
+                setText('pool-share', '$' + formatMoney(data.total_pool_share));
+                setText('total-invested', '$' + formatMoney(data.total_invested));
+                setText('total-prize', '$' + formatMoney(data.total_prize));
                 const roi = data.total_invested > 0 ? ((data.total_prize - data.total_invested) / data.total_invested * 100).toFixed(1) : 0;
                 setText('roi', roi + '%');
                 setText('series-count', data.series_count || 0);
@@ -356,9 +352,9 @@
                     <a href="/series/${p.series_id}" class="pool-item">
                         <div class="pool-info">
                             <div class="pool-name">${p.series_name || '集資'}</div>
-                            <div class="pool-ratio">佔比 ${p.ratio.toFixed(1)}%</div>
+                            <div class="pool-ratio">佔比 ${(p.ratio * 100).toFixed(1)}%</div>
                         </div>
-                        <div class="pool-amount">${formatMoney(p.amount)}</div>
+                        <div class="pool-amount">$${formatMoney(p.amount)}</div>
                     </a>
                 `).join('');
             } catch (e) { $('pool-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
@@ -366,42 +362,28 @@
         
         async function loadTransactions() {
             try {
-                const url = currentFilter === 'all'
-                    ? '/wallet/transactions'
-                    : '/wallet/transactions?transaction_type=' + currentFilter;
-                console.log('[wallet] loadTransactions url:', url);
+                const url = currentFilter === 'all' ? '/wallet/transactions' : `/wallet/transactions?transaction_type=${currentFilter}`;
                 const data = await apiGet(url);
-                console.log('[wallet] transactions response:', JSON.stringify(data).substring(0, 200));
                 const list = $('tx-list');
-                if (!list) { console.error('[wallet] tx-list element not found'); return; }
-                const txList = (data && data.transactions) ? data.transactions : [];
+                const txList = data.transactions || [];
                 if (txList.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">\u{1F4DC}</div><p>尚無交易記錄</p></div>';
+                    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><p>尚無交易記錄</p></div>';
                     return;
                 }
-                let html = '';
-                for (const tx of txList) {
+                list.innerHTML = txList.map(tx => {
                     const amt = parseFloat(tx.amount) || 0;
                     const isPositive = amt > 0;
-                    const sign = isPositive ? '+' : '';
-                    const cls = isPositive ? 'positive' : 'negative';
-                    const typeName = tx.transaction_type_display || tx.transaction_type || '';
-                    const dateStr = formatDate(tx.created_at);
-                    html += '<div class="tx-item">'
-                        + '<div class="tx-info">'
-                        + '<div class="tx-type">' + typeName + '</div>'
-                        + '<div class="tx-date">' + dateStr + '</div>'
-                        + '</div>'
-                        + '<div class="tx-amount ' + cls + '">' + sign + formatMoney(Math.abs(amt)) + '</div>'
-                        + '</div>';
-                }
-                list.innerHTML = html;
-                console.log('[wallet] rendered', txList.length, 'transactions');
-            } catch (e) {
-                console.error('[wallet] loadTransactions error:', e);
-                const list = $('tx-list');
-                if (list) list.innerHTML = '<div class="empty-state">載入失敗: ' + (e.message || e) + '</div>';
-            }
+                    return `
+                        <div class="tx-item">
+                            <div class="tx-info">
+                                <div class="tx-type">${tx.transaction_type_display || tx.transaction_type}</div>
+                                <div class="tx-date">${formatDate(tx.created_at)}</div>
+                            </div>
+                            <div class="tx-amount ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : ''}$${formatMoney(Math.abs(amt))}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) { console.error('loadTransactions error:', e); $('tx-list').innerHTML = '<div class="empty-state">載入失敗</div>'; }
         }
         
         function filterTx(type) {

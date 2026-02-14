@@ -40,9 +40,6 @@
             z-index: 100;
             box-shadow: var(--shadow-md);
         }
-        @media (min-width: 700px) {
-            .header { padding: 12px calc((100% - 600px) / 2 + 16px); }
-        }
         .header-left {
             display: flex;
             align-items: center;
@@ -203,11 +200,14 @@
                     <label class="form-label">選擇彩種</label>
                     <div class="radio-group" id="lottery-types"></div>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">您的初始投入金額</label>
+                    <label class="form-label">每份金額</label>
+                    <input type="number" class="form-input" id="create-share" placeholder="100">
+                    <div class="form-hint">需為彩種價格的倍數</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">您的初始份額</label>
                     <input type="number" class="form-input" id="create-amount" placeholder="500">
-                    <div class="form-hint" id="create-amount-hint">需為彩種單價的倍數</div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -257,7 +257,6 @@
         
         let lotteryTypes = [];
         const LOTTERY_PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
-        const LOTTERY_NAMES = { 'power': '威力彩', 'super': '大樂透', 'daily539': '今彩539' };
         
         function openModal(id) { $(id).classList.add('active'); }
         function closeModal(id) { $(id).classList.remove('active'); }
@@ -269,20 +268,9 @@
                 container.innerHTML = lotteryTypes.map(lt => `
                     <label class="radio-item">
                         <input type="radio" name="lottery-type" value="${lt.code}" ${lt.code === 'power' ? 'checked' : ''}>
-                        <span>${lt.name} ($${lt.price_per_bet}/注)</span>
+                        <span>${lt.name} ($${lt.price}/注)</span>
                     </label>
                 `).join('');
-            // 選擇彩種時更新 hint
-                container.querySelectorAll('input[name="lottery-type"]').forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        const p = LOTTERY_PRICES[radio.value] || 100;
-                        const hint = $('create-amount-hint');
-                        if (hint) hint.textContent = `需為 $${p} 的倍數（${radio.value === 'power' ? '威力彩' : radio.value === 'super' ? '大樂透' : '今彩539'} 單價 $${p}/注）`;
-                    });
-                });
-                // 觸發預設
-                const checked = container.querySelector('input[name="lottery-type"]:checked');
-                if (checked) checked.dispatchEvent(new Event('change'));
             } catch (e) { console.error('loadLotteryTypes:', e); }
         }
         
@@ -298,13 +286,13 @@
                 
                 let totalInvested = 0, totalPrize = 0;
                 data.forEach(s => {
-                    totalInvested += Number(s.my_pool_share) || 0;
-                    totalPrize += Number(s.total_prize) || 0;
+                    totalInvested += s.my_share || 0;
+                    totalPrize += s.my_prize || 0;
                 });
                 
                 setText('stat-total', data.length);
-                setText('stat-invested', formatMoney(totalInvested));
-                setText('stat-prize', formatMoney(totalPrize));
+                setText('stat-invested', '$' + formatMoney(totalInvested));
+                setText('stat-prize', '$' + formatMoney(totalPrize));
                 
                 list.innerHTML = data.map(s => `
                     <a href="/series/${s.id}" class="series-card">
@@ -313,20 +301,20 @@
                             <span class="series-badge ${s.status === 'active' ? 'badge-active' : 'badge-closed'}">${getStatusText(s.status)}</span>
                         </div>
                         <div class="series-info">
-                            <span>🎰 ${LOTTERY_NAMES[s.lottery_types?.[0]] || s.lottery_types?.[0] || '?'}</span>
+                            <span>🎰 ${s.lottery_type_name || s.lottery_type}</span>
                             <span>👥 ${s.member_count || 0} 人</span>
                         </div>
                         <div class="series-stats">
                             <div class="series-stat">
-                                <div class="series-stat-value">${formatMoney(s.my_pool_share)}</div>
+                                <div class="series-stat-value">$${formatMoney(s.my_share)}</div>
                                 <div class="series-stat-label">我的份額</div>
                             </div>
                             <div class="series-stat">
-                                <div class="series-stat-value">${s.current_pool > 0 ? ((s.my_pool_share / s.current_pool) * 100).toFixed(1) : '0.0'}%</div>
+                                <div class="series-stat-value">${(s.my_ratio * 100).toFixed(1)}%</div>
                                 <div class="series-stat-label">佔比</div>
                             </div>
                             <div class="series-stat">
-                                <div class="series-stat-value">${formatMoney(s.current_pool)}</div>
+                                <div class="series-stat-value">$${formatMoney(s.total_pool)}</div>
                                 <div class="series-stat-label">資金池</div>
                             </div>
                         </div>
@@ -340,29 +328,20 @@
         async function createSeries() {
             const name = $('create-name').value.trim();
             const lotteryType = document.querySelector('input[name="lottery-type"]:checked')?.value;
-                        const initialAmount = parseInt($('create-amount').value);
+            const shareAmount = parseInt($('create-share').value);
+            const initialAmount = parseInt($('create-amount').value);
             
-            if (!name || !lotteryType || !initialAmount) {
+            if (!name || !lotteryType || !shareAmount || !initialAmount) {
                 showToast('請填寫完整資料', 'error');
-                return;
-            }
-            
-            // 驗證金額是彩種單價的倍數
-            const price = LOTTERY_PRICES[lotteryType] || 100;
-            if (initialAmount < price) {
-                showToast(`投入金額至少為 $${price}`, 'error');
-                return;
-            }
-            if (initialAmount % price !== 0) {
-                showToast(`投入金額需為 $${price} 的倍數`, 'error');
                 return;
             }
             
             try {
                 await apiPost('/series', {
                     name,
-                    allowed_lottery_types: [lotteryType],
-                    initial_pool_share: initialAmount
+                    lottery_type: lotteryType,
+                    share_amount: shareAmount,
+                    initial_amount: initialAmount
                 });
                 showToast('建立成功！', 'success');
                 closeModal('create-modal');
@@ -382,7 +361,7 @@
             }
             
             try {
-                await apiPost('/series/join', { code: code, initial_pool_share: amount });
+                await apiPost('/series/join', { invitation_code: code, initial_amount: amount });
                 showToast('加入成功！', 'success');
                 closeModal('join-modal');
                 loadSeries();

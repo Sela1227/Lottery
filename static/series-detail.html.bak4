@@ -13,11 +13,12 @@
         .header { padding: 12px 20px; justify-content: space-between; position: sticky; display: flex; align-items: center; background: linear-gradient(135deg, var(--sela-orange, #F26522), var(--sela-orange-dark, #D85A1E)); top: 0; z-index: 100; }
         .logo { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
         .page-title, .header a, .header span { color: white; }
+        .back-btn { color: var(--text-primary); }
         @media (min-width: 900px) {
             .header { padding: 12px calc((100% - 800px) / 2 + 20px); }
         }
         .header-left { display: flex; align-items: center; gap: 10px; }
-        .back-btn { padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: 500; text-decoration: none; color: white; white-space: nowrap; gap: 4px; }
+        .back-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; text-decoration: none; color: var(--text-primary); }
         .page-title { font-size: 18px; font-weight: 700; }
         .main { padding: 20px; max-width: 800px; margin: 0 auto; }
         
@@ -420,18 +421,7 @@
         // 原有功能
         function showNewPeriodModal() { $('new-period-modal').classList.add('active'); }
         function showInviteModal() { $('invite-modal').classList.add('active'); }
-        function showTopupModal() {
-            // 動態設定彩種單價
-            const lt = (currentSeries?.allowed_lottery_types || ['power'])[0];
-            const PRICES = { 'power': 100, 'super': 50, 'daily539': 50 };
-            const LNAMES = { 'power': '威力彩', 'super': '大樂透', 'daily539': '今彩539' };
-            const p = PRICES[lt] || 100;
-            const inp = $('topup-amount');
-            if (inp) { inp.min = p; inp.step = p; inp.value = p; }
-            const hint = document.querySelector('#topup-modal .form-hint');
-            if (hint) hint.textContent = `需為 $${p} 的倍數（${LNAMES[lt] || lt} 單價 $${p}/注）`;
-            $('topup-modal').classList.add('active');
-        }
+        function showTopupModal() { $('topup-modal').classList.add('active'); }
         function closeModal(id) { $(id).classList.remove('active'); }
         async function createNewPeriod() {
             const lotteryType = $('lottery-type-select').value, drawTerm = $('draw-term').value.trim(), drawDate = $('draw-date').value;

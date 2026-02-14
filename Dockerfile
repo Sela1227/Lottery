@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 啟動指令:遷移 → Phase1遷移 → 初始化彩種 → 設定管理員 → 啟動服務
-CMD ["sh", "-c", "python scripts/migrate.py && python scripts/migrate_phase1.py && python scripts/seed_data.py && python scripts/set_admin.py && python main.py"]
+CMD ["sh", "-c", "python scripts/migrate.py && python scripts/migrate_phase1.py && python scripts/seed_data.py && python scripts/set_admin.py && python scripts/clean_duplicate_draws.py && python main.py"]

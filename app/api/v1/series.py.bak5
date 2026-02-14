@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import get_current_user_id
-from app.models.ledger import UserLedger
 from app.models import GroupMember, MemberStatus, SeriesStatus
 from app.models.series import GroupSeries, SeriesInvitation
 from app.schemas.series import (
@@ -305,12 +304,6 @@ async def delete_series(
     
     if active_members > 1:
         raise HTTPException(status_code=400, detail="集資還有其他成員，無法刪除")
-    
-    # 未開過期的集資，清除帳本記錄（測試資料）
-    if series.total_periods == 0:
-        db.query(UserLedger).filter(
-            UserLedger.series_id == series_id
-        ).delete(synchronize_session=False)
     
     # 軟刪除：標記集資為已結束，成員為已退出
     series.status = SeriesStatus.ENDED

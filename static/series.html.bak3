@@ -203,11 +203,14 @@
                     <label class="form-label">選擇彩種</label>
                     <div class="radio-group" id="lottery-types"></div>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">您的初始投入金額</label>
+                    <label class="form-label">每份金額</label>
+                    <input type="number" class="form-input" id="create-share" placeholder="100">
+                    <div class="form-hint">需為彩種價格的倍數</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">您的初始份額</label>
                     <input type="number" class="form-input" id="create-amount" placeholder="500">
-                    <div class="form-hint" id="create-amount-hint">需為彩種單價的倍數</div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -272,17 +275,6 @@
                         <span>${lt.name} ($${lt.price_per_bet}/注)</span>
                     </label>
                 `).join('');
-            // 選擇彩種時更新 hint
-                container.querySelectorAll('input[name="lottery-type"]').forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        const p = LOTTERY_PRICES[radio.value] || 100;
-                        const hint = $('create-amount-hint');
-                        if (hint) hint.textContent = `需為 $${p} 的倍數（${radio.value === 'power' ? '威力彩' : radio.value === 'super' ? '大樂透' : '今彩539'} 單價 $${p}/注）`;
-                    });
-                });
-                // 觸發預設
-                const checked = container.querySelector('input[name="lottery-type"]:checked');
-                if (checked) checked.dispatchEvent(new Event('change'));
             } catch (e) { console.error('loadLotteryTypes:', e); }
         }
         
@@ -340,21 +332,11 @@
         async function createSeries() {
             const name = $('create-name').value.trim();
             const lotteryType = document.querySelector('input[name="lottery-type"]:checked')?.value;
-                        const initialAmount = parseInt($('create-amount').value);
+            const shareAmount = parseInt($('create-share').value);
+            const initialAmount = parseInt($('create-amount').value);
             
-            if (!name || !lotteryType || !initialAmount) {
+            if (!name || !lotteryType || !shareAmount || !initialAmount) {
                 showToast('請填寫完整資料', 'error');
-                return;
-            }
-            
-            // 驗證金額是彩種單價的倍數
-            const price = LOTTERY_PRICES[lotteryType] || 100;
-            if (initialAmount < price) {
-                showToast(`投入金額至少為 $${price}`, 'error');
-                return;
-            }
-            if (initialAmount % price !== 0) {
-                showToast(`投入金額需為 $${price} 的倍數`, 'error');
                 return;
             }
             

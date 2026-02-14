@@ -11,23 +11,10 @@ from collections import Counter
 from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.models.lottery_draw import LotteryDraw
+from app.constants import NUMBER_RANGES, LOTTERY_NAMES
 
 
 router = APIRouter(prefix="/stats", tags=["Statistics"])
-
-
-# 各彩種號碼範圍
-NUMBER_RANGES = {
-    "power": {"first_zone": (1, 38), "second_zone": (1, 8)},
-    "super": {"main": (1, 49), "special": (1, 49)},
-    "daily539": {"numbers": (1, 39)},
-}
-
-LOTTERY_NAMES = {
-    "power": "威力彩",
-    "super": "大樂透",
-    "daily539": "今彩539"
-}
 
 
 def get_all_numbers(lottery_type: str, draws: List[LotteryDraw]) -> List[int]:
