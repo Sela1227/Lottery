@@ -465,6 +465,7 @@
             }
             const adminBtn = $('admin-btn');
             if (adminBtn && user.role === 'admin') adminBtn.style.display = 'block';
+            const syncBtn = $('admin-sync-btn'); if (syncBtn && user.role === 'admin') syncBtn.style.display = '';
             const loadingOverlay = $('loading-overlay');
             if (loadingOverlay) loadingOverlay.classList.add('hidden');
         }
