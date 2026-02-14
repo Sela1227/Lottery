@@ -13,6 +13,7 @@ from app.core.database import get_db
 from app.core.security import require_admin
 from app.models.user import User, UserRole
 from app.models.series import GroupSeries, SeriesStatus
+from app.models.invitation import Invitation
 from app.models.member import GroupMember, MemberStatus
 from app.models.group import Group, GroupStatus
 from app.models.ledger import EventLog, EventCategory, UserLedger
@@ -115,7 +116,7 @@ async def get_system_stats(
     total_admins = db.query(User).filter(User.role == UserRole.ADMIN).count()
     
     # 系列團統計
-    total_series = db.query(GroupSeries).count()
+    total_series = db.query(GroupSeries).filter(GroupSeries.status == SeriesStatus.ACTIVE).count()
     active_series = db.query(GroupSeries).filter(
         GroupSeries.status == SeriesStatus.ACTIVE
     ).count()
@@ -124,7 +125,7 @@ async def get_system_stats(
     total_groups = db.query(Group).count()
     
     # 金額統計
-    total_pool = db.query(func.coalesce(func.sum(GroupSeries.current_pool), 0)).scalar()
+    total_pool = db.query(func.coalesce(func.sum(GroupSeries.current_pool), 0)).filter(GroupSeries.status == SeriesStatus.ACTIVE).scalar()
     total_prize = db.query(func.coalesce(func.sum(Group.total_prize), 0)).scalar()
     
     return SystemStats(
@@ -311,9 +312,9 @@ async def list_all_series(
     return result
 
 
-# ==================== 事件日誌 ====================
 
 
+# ==================== 集資管理操作 ====================
 
 @router.post("/series/{series_id}/end")
 async def admin_end_series(
@@ -329,16 +330,13 @@ async def admin_end_series(
         raise HTTPException(status_code=400, detail="集資已結束")
     
     series.status = SeriesStatus.ENDED
-    series.end_reason = "管理員強制結束"
-    
-    # 標記所有成員為 EXITED
     db.query(GroupMember).filter(
         GroupMember.series_id == series_id,
         GroupMember.status == MemberStatus.ACTIVE
     ).update({"status": MemberStatus.EXITED}, synchronize_session=False)
     
     db.commit()
-    return {"success": True, "message": f"集資「{series.name}」已強制結束"}
+    return {"message": "已結束"}
 
 
 @router.delete("/series/{series_id}")
@@ -347,130 +345,54 @@ async def admin_delete_series(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """管理員刪除集資（軟刪除 + 清帳本）"""
+    """管理員刪除集資 - 硬刪除"""
     series = db.query(GroupSeries).filter(GroupSeries.id == series_id).first()
     if not series:
         raise HTTPException(status_code=404, detail="集資不存在")
     
-    # 未開過期的清帳本
-    if series.total_periods == 0:
+    # 有已開期且有獎金的不能刪
+    if series.total_periods > 0 and series.total_prize > 0:
+        raise HTTPException(status_code=400, detail="有開獎記錄的集資不可刪除")
+    
+    # 硬刪除：清除所有關聯資料
+    # 1. 清帳本
+    try:
         db.query(UserLedger).filter(UserLedger.series_id == series_id).delete(synchronize_session=False)
+    except Exception:
+        pass
     
-    # 軟刪除
-    series.status = SeriesStatus.ENDED
-    series.end_reason = "管理員刪除"
+    # 2. 清邀請碼
+    try:
+        from app.models.invitation import Invitation
+        db.query(Invitation).filter(Invitation.series_id == series_id).delete(synchronize_session=False)
+    except Exception:
+        pass
     
-    db.query(GroupMember).filter(
-        GroupMember.series_id == series_id,
-        GroupMember.status == MemberStatus.ACTIVE
-    ).update({"status": MemberStatus.EXITED}, synchronize_session=False)
+    # 3. 清單期團的票
+    try:
+        from app.models.ticket import Ticket
+        groups = db.query(Group).filter(Group.series_id == series_id).all()
+        for g in groups:
+            db.query(Ticket).filter(Ticket.group_id == g.id).delete(synchronize_session=False)
+    except Exception:
+        pass
+    
+    # 4. 清單期團
+    db.query(Group).filter(Group.series_id == series_id).delete(synchronize_session=False)
+    
+    # 5. 清成員
+    db.query(GroupMember).filter(GroupMember.series_id == series_id).delete(synchronize_session=False)
+    
+    # 6. 刪集資本身
+    db.delete(series)
     
     db.commit()
-    return {"success": True, "message": f"集資「{series.name}」已刪除"}
+    return {"message": "已刪除"}
+
+# ==================== 事件日誌 ====================
 
 
-@router.get("/logs", response_model=List[EventLogResponse])
-async def list_event_logs(
-    admin_id: int = Depends(require_admin),
-    db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
-    category: Optional[str] = None
-):
-    """取得事件日誌"""
-    query = db.query(EventLog)
-    
-    if category:
-        try:
-            cat = EventCategory(category)
-            query = query.filter(EventLog.category == cat)
-        except ValueError:
-            pass
-    
-    logs = query.order_by(EventLog.created_at.desc()).offset(skip).limit(limit).all()
-    
-    result = []
-    for log in logs:
-        result.append(EventLogResponse(
-            id=log.id,
-            event_type=log.event_type,
-            category=log.category.value if log.category else "unknown",
-            actor_type=log.actor_type.value if log.actor_type else "unknown",
-            actor_id=log.actor_id,
-            actor_name=log.actor_name,
-            target_type=log.target_type,
-            target_id=log.target_id,
-            description=log.description,
-            created_at=log.created_at
-        ))
-    
-    return result
-
-
-# ==================== 系統操作 ====================
-
-@router.post("/broadcast")
-async def send_broadcast(
-    message: str,
-    admin_id: int = Depends(require_admin),
-    db: Session = Depends(get_db)
-):
-    """發送系統公告（預留功能）"""
-    # TODO: 整合 LINE Notify
-    return {
-        "message": "公告功能尚未實作",
-        "preview": message
-    }
-
-
-# ==================== 開獎管理 ====================
-
-@router.post("/lottery/draw")
-async def create_or_update_draw(
-    data: DrawInput,
-    admin_id: int = Depends(require_admin),
-    db: Session = Depends(get_db)
-):
-    """管理員手動輸入/更新開獎結果"""
-    # 驗證彩種
-    if data.lottery_type not in ["power", "super", "daily539"]:
-        raise HTTPException(status_code=400, detail="不支援的彩種")
-
-    # 驗證號碼
-    numbers = data.numbers
-    if data.lottery_type == "power":
-        if not numbers.get("first_zone") or len(numbers["first_zone"]) != 6:
-            raise HTTPException(status_code=400, detail="威力彩需要6個第一區號碼")
-        if numbers.get("second_zone") is None:
-            raise HTTPException(status_code=400, detail="威力彩需要第二區號碼")
-    elif data.lottery_type == "super":
-        if not numbers.get("main") or len(numbers["main"]) != 6:
-            raise HTTPException(status_code=400, detail="大樂透需要6個主號碼")
-        if numbers.get("special") is None:
-            raise HTTPException(status_code=400, detail="大樂透需要特別號")
-    else:
-        if not numbers.get("numbers") or len(numbers["numbers"]) != 5:
-            raise HTTPException(status_code=400, detail="今彩539需要5個號碼")
-
-    # 解析日期
-    try:
-        draw_date_parsed = date.fromisoformat(data.draw_date)
-    except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="日期格式錯誤，請使用 YYYY-MM-DD")
-
-    # 檢查是否已存在（依 lottery_type + draw_term）
-    existing = db.query(LotteryDraw).filter(
-        LotteryDraw.lottery_type == data.lottery_type,
-        LotteryDraw.draw_term == data.draw_term
-    ).first()
-
-    if existing:
-        # 更新
-        existing.draw_date = draw_date_parsed
-        existing.numbers = numbers
-        existing.jackpot = data.jackpot
-        db.commit()
-        return {"message": f"已更新第 {data.draw_term} 期開獎結果", "action": "updated", "id": existing.id}
+ 期開獎結果", "action": "updated", "id": existing.id}
     else:
         # 新增
         draw = LotteryDraw(
