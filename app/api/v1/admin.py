@@ -2,7 +2,7 @@
 SELA 樂透一路發 - 管理員 API
 """
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -13,11 +13,9 @@ from app.core.database import get_db
 from app.core.security import require_admin
 from app.models.user import User, UserRole
 from app.models.series import GroupSeries, SeriesStatus
-from app.models.invitation import Invitation
 from app.models.member import GroupMember, MemberStatus
 from app.models.group import Group, GroupStatus
 from app.models.ledger import EventLog, EventCategory, UserLedger
-from app.models.lottery_draw import LotteryDraw
 
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -26,7 +24,6 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 # ==================== Schema ====================
 
 class UserAdminResponse(BaseModel):
-    """用戶管理回應"""
     id: int
     line_user_id: str
     display_name: str
@@ -37,18 +34,16 @@ class UserAdminResponse(BaseModel):
     created_at: datetime
     last_login_at: Optional[datetime] = None
     series_count: int = 0
-    
+
     class Config:
         from_attributes = True
 
 
 class UserRoleUpdate(BaseModel):
-    """更新用戶角色"""
-    role: str  # "admin" or "user"
+    role: str
 
 
 class SystemStats(BaseModel):
-    """系統統計"""
     total_users: int
     total_admins: int
     total_series: int
@@ -59,7 +54,6 @@ class SystemStats(BaseModel):
 
 
 class SeriesAdminResponse(BaseModel):
-    """系列團管理回應"""
     id: int
     name: str
     status: str
@@ -70,13 +64,12 @@ class SeriesAdminResponse(BaseModel):
     member_count: int
     created_at: datetime
     creator_name: str
-    
+
     class Config:
         from_attributes = True
 
 
 class EventLogResponse(BaseModel):
-    """事件日誌回應"""
     id: int
     event_type: str
     category: str
@@ -87,19 +80,10 @@ class EventLogResponse(BaseModel):
     target_id: Optional[int] = None
     description: Optional[str] = None
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 
-
-class DrawInput(BaseModel):
-    """管理員手動輸入開獎資料"""
-    lottery_type: str
-    draw_term: str
-    draw_date: str
-    numbers: dict
-    jackpot: Optional[int] = 0
-    second_prize: Optional[int] = 0
 
 # ==================== 系統總覽 ====================
 
@@ -108,24 +92,23 @@ async def get_system_stats(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """取得系統統計資料"""
-    # 用戶統計
     total_users = db.query(User).count()
     total_admins = db.query(User).filter(User.role == UserRole.ADMIN).count()
-    
-    # 系列團統計
-    total_series = db.query(GroupSeries).filter(GroupSeries.status == SeriesStatus.ACTIVE).count()
-    active_series = db.query(GroupSeries).filter(
+
+    total_series = db.query(GroupSeries).filter(
         GroupSeries.status == SeriesStatus.ACTIVE
     ).count()
-    
-    # 單期團統計
+    active_series = total_series
+
     total_groups = db.query(Group).count()
-    
-    # 金額統計
-    total_pool = db.query(func.coalesce(func.sum(GroupSeries.current_pool), 0)).filter(GroupSeries.status == SeriesStatus.ACTIVE).scalar()
-    total_prize = db.query(func.coalesce(func.sum(Group.total_prize), 0)).scalar()
-    
+
+    total_pool = db.query(
+        func.coalesce(func.sum(GroupSeries.current_pool), 0)
+    ).filter(GroupSeries.status == SeriesStatus.ACTIVE).scalar()
+    total_prize = db.query(
+        func.coalesce(func.sum(Group.total_prize), 0)
+    ).scalar()
+
     return SystemStats(
         total_users=total_users,
         total_admins=total_admins,
@@ -148,33 +131,29 @@ async def list_users(
     search: Optional[str] = None,
     role: Optional[str] = None
 ):
-    """取得用戶列表"""
     query = db.query(User)
-    
-    # 搜尋
+
     if search:
         query = query.filter(
             (User.display_name.ilike(f"%{search}%")) |
             (User.nickname.ilike(f"%{search}%"))
         )
-    
-    # 角色篩選
+
     if role:
         if role == "admin":
             query = query.filter(User.role == UserRole.ADMIN)
         elif role == "user":
             query = query.filter(User.role == UserRole.USER)
-    
+
     users = query.order_by(User.id).offset(skip).limit(limit).all()
-    
+
     result = []
     for user in users:
-        # 計算參與的系列團數
         series_count = db.query(GroupMember).filter(
             GroupMember.user_id == user.id,
             GroupMember.status == MemberStatus.ACTIVE
         ).count()
-        
+
         result.append(UserAdminResponse(
             id=user.id,
             line_user_id=user.line_user_id,
@@ -187,7 +166,7 @@ async def list_users(
             last_login_at=user.last_login_at,
             series_count=series_count
         ))
-    
+
     return result
 
 
@@ -197,17 +176,16 @@ async def get_user_detail(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """取得用戶詳情"""
     user = db.query(User).filter(User.id == user_id).first()
-    
+
     if not user:
         raise HTTPException(status_code=404, detail="用戶不存在")
-    
+
     series_count = db.query(GroupMember).filter(
         GroupMember.user_id == user.id,
         GroupMember.status == MemberStatus.ACTIVE
     ).count()
-    
+
     return UserAdminResponse(
         id=user.id,
         line_user_id=user.line_user_id,
@@ -229,25 +207,21 @@ async def update_user_role(
     admin_id: int = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """更新用戶角色"""
     user = db.query(User).filter(User.id == user_id).first()
-    
+
     if not user:
         raise HTTPException(status_code=404, detail="用戶不存在")
-    
-    # 不能修改自己的權限
+
     if user.id == admin_id:
         raise HTTPException(status_code=400, detail="不能修改自己的權限")
-    
-    # 驗證角色值
+
     if data.role not in ["admin", "user"]:
         raise HTTPException(status_code=400, detail="無效的角色值")
-    
-    # 更新角色
+
     old_role = user.role.value
     user.role = UserRole.ADMIN if data.role == "admin" else UserRole.USER
     db.commit()
-    
+
     return {
         "message": f"已將 {user.display_name} 的角色從 {old_role} 改為 {data.role}",
         "user_id": user.id,
@@ -265,35 +239,32 @@ async def list_all_series(
     limit: int = Query(50, ge=1, le=100),
     status: Optional[str] = None
 ):
-    """取得所有系列團"""
     query = db.query(GroupSeries)
-    
+
     if status:
         if status == "active":
             query = query.filter(GroupSeries.status == SeriesStatus.ACTIVE)
         elif status == "ended":
             query = query.filter(GroupSeries.status == SeriesStatus.ENDED)
-    
+
     series_list = query.order_by(GroupSeries.id.desc()).offset(skip).limit(limit).all()
-    
+
     result = []
     for series in series_list:
-        # 取得成員數
         member_count = db.query(GroupMember).filter(
             GroupMember.series_id == series.id,
             GroupMember.status == MemberStatus.ACTIVE
         ).count()
-        
-        # 取得創建者
+
         creator = db.query(GroupMember).filter(
             GroupMember.series_id == series.id,
             GroupMember.role == "admin"
         ).first()
-        
+
         creator_name = "未知"
         if creator and creator.user:
             creator_name = creator.user.nickname or creator.user.display_name
-        
+
         result.append(SeriesAdminResponse(
             id=series.id,
             name=series.name,
@@ -306,27 +277,8 @@ async def list_all_series(
             created_at=series.created_at,
             creator_name=creator_name
         ))
-    
+
     return result
-
-
-# ==================== 事件日誌 ====================
-
-
- 期開獎結果", "action": "updated", "id": existing.id}
-    else:
-        # 新增
-        draw = LotteryDraw(
-            lottery_type=data.lottery_type,
-            draw_term=data.draw_term,
-            draw_date=draw_date_parsed,
-            numbers=numbers,
-            jackpot=data.jackpot
-        )
-        db.add(draw)
-        db.commit()
-        db.refresh(draw)
-        return {"message": f"已新增第 {data.draw_term} 期開獎結果", "action": "created", "id": draw.id}
 
 
 # ==================== 集資管理操作 ====================
@@ -378,3 +330,56 @@ async def admin_delete_series(
     db.delete(series)
     db.commit()
     return {"message": "已刪除"}
+
+
+# ==================== 事件日誌 ====================
+
+@router.get("/logs", response_model=List[EventLogResponse])
+async def list_event_logs(
+    admin_id: int = Depends(require_admin),
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    category: Optional[str] = None
+):
+    query = db.query(EventLog)
+
+    if category:
+        try:
+            cat = EventCategory(category)
+            query = query.filter(EventLog.category == cat)
+        except ValueError:
+            pass
+
+    logs = query.order_by(EventLog.created_at.desc()).offset(skip).limit(limit).all()
+
+    result = []
+    for log in logs:
+        result.append(EventLogResponse(
+            id=log.id,
+            event_type=log.event_type,
+            category=log.category.value if log.category else "unknown",
+            actor_type=log.actor_type.value if log.actor_type else "unknown",
+            actor_id=log.actor_id,
+            actor_name=log.actor_name,
+            target_type=log.target_type,
+            target_id=log.target_id,
+            description=log.description,
+            created_at=log.created_at
+        ))
+
+    return result
+
+
+# ==================== 系統操作 ====================
+
+@router.post("/broadcast")
+async def send_broadcast(
+    message: str,
+    admin_id: int = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    return {
+        "message": "公告功能尚未實作",
+        "preview": message
+    }
