@@ -343,8 +343,9 @@
             try {
                 await apiPost('/series', {
                     name,
-                    allowed_lottery_types: [lotteryType],
-                    initial_pool_share: initialAmount
+                    lottery_type: lotteryType,
+                    share_amount: shareAmount,
+                    initial_amount: initialAmount
                 });
                 showToast('建立成功！', 'success');
                 closeModal('create-modal');
@@ -364,7 +365,7 @@
             }
             
             try {
-                await apiPost('/series/join', { code: code, initial_pool_share: amount });
+                await apiPost('/series/join', { invitation_code: code, initial_amount: amount });
                 showToast('加入成功！', 'success');
                 closeModal('join-modal');
                 loadSeries();
