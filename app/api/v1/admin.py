@@ -310,6 +310,25 @@ async def list_all_series(
     return result
 
 
+# ==================== 事件日誌 ====================
+
+
+ 期開獎結果", "action": "updated", "id": existing.id}
+    else:
+        # 新增
+        draw = LotteryDraw(
+            lottery_type=data.lottery_type,
+            draw_term=data.draw_term,
+            draw_date=draw_date_parsed,
+            numbers=numbers,
+            jackpot=data.jackpot
+        )
+        db.add(draw)
+        db.commit()
+        db.refresh(draw)
+        return {"message": f"已新增第 {data.draw_term} 期開獎結果", "action": "created", "id": draw.id}
+
+
 # ==================== 集資管理操作 ====================
 
 @router.post("/series/{series_id}/end")
@@ -342,7 +361,7 @@ async def admin_delete_series(
     if not series:
         raise HTTPException(status_code=404, detail="集資不存在")
     if series.total_periods > 0 and series.total_prize > 0:
-        raise HTTPException(status_code=400, detail="有開獎記錄的集資不可刪除")
+        raise HTTPException(status_code=400, detail="有開獎記錄不可刪除")
     try:
         db.query(UserLedger).filter(UserLedger.series_id == series_id).delete(synchronize_session=False)
     except Exception:
@@ -359,23 +378,3 @@ async def admin_delete_series(
     db.delete(series)
     db.commit()
     return {"message": "已刪除"}
-
-
-# ==================== 事件日誌 ====================
-
-
- 期開獎結果", "action": "updated", "id": existing.id}
-    else:
-        # 新增
-        draw = LotteryDraw(
-            lottery_type=data.lottery_type,
-            draw_term=data.draw_term,
-            draw_date=draw_date_parsed,
-            numbers=numbers,
-            jackpot=data.jackpot
-        )
-        db.add(draw)
-        db.commit()
-        db.refresh(draw)
-        return {"message": f"已新增第 {data.draw_term} 期開獎結果", "action": "created", "id": draw.id}
-
