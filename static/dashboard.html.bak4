@@ -489,17 +489,7 @@
                 } catch (e) { console.error('Failed to load groups:', e); }
             }
             if (recentGroups.length === 0) {
-                // 沒有單期團時，顯示集資本身
-                const LNAMES = { 'power': '威力彩', 'super': '大樂透', 'daily539': '今彩539' };
-                container.innerHTML = seriesList.slice(0, 5).map(s => `
-                    <a href="/series/${s.id}" class="activity-item">
-                        <div class="activity-info">
-                            <div class="activity-name">${s.name}</div>
-                            <div class="activity-detail">${LNAMES[s.lottery_types?.[0]] || s.lottery_types?.[0] || ''} · 資金池 $${Number(s.current_pool).toLocaleString()} · ${s.member_count} 人</div>
-                        </div>
-                        <span class="activity-status collecting">進行中</span>
-                    </a>
-                `).join('');
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><h3 class="empty-title">尚無單期團</h3><p class="empty-desc">管理員開新期後會顯示在這裡</p></div>`;
                 return;
             }
             const statusText = { collecting: '集資中', locked: '已鎖定', purchased: '已購買', drawn: '已開獎', settled: '已結算' };

@@ -239,6 +239,10 @@
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
+    
+        @media (min-width: 900px) {
+            .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
+        }
     </style>
 </head>
 <body>

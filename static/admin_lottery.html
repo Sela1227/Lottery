@@ -29,6 +29,10 @@
         .draw-type:first-child { margin-top: 0; }
         .draw-item { font-size: 14px; color: #555; padding: 4px 0; }
         .recent-title { display: flex; justify-content: space-between; align-items: center; }
+    
+        @media (min-width: 900px) {
+            .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
+        }
     </style>
 </head>
 <body>
