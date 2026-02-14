@@ -13,7 +13,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user_id
 from app.models.user import User
 from app.models.member import GroupMember, MemberStatus
-from app.models.series import GroupSeries, SeriesStatus
+from app.models.series import GroupSeries
 from app.models.ledger import UserLedger, AccountType, TransactionType
 from app.constants import TRANSACTION_TYPE_DISPLAY
 
@@ -139,16 +139,7 @@ async def get_transactions(
     limit: int = Query(20, ge=1, le=100)
 ):
     """取得交易記錄"""
-    # 排除已刪除且未開期的集資帳本（測試資料）
-    deleted_series_ids = db.query(GroupSeries.id).filter(
-        GroupSeries.status == SeriesStatus.ENDED,
-        GroupSeries.total_periods == 0
-    ).all()
-    deleted_ids = [s[0] for s in deleted_series_ids]
-    
     query = db.query(UserLedger).filter(UserLedger.user_id == user_id)
-    if deleted_ids:
-        query = query.filter(~UserLedger.series_id.in_(deleted_ids))
     
     # 篩選帳戶類型
     if account_type:
@@ -213,11 +204,6 @@ async def get_transaction_summary(
 ):
     """取得交易統計摘要"""
     # 總儲值
-    # 排除已刪除且未開期的集資
-    _dead = [s[0] for s in db.query(GroupSeries.id).filter(
-        GroupSeries.status == SeriesStatus.ENDED, GroupSeries.total_periods == 0
-    ).all()]
-    
     total_deposit = db.query(func.coalesce(func.sum(UserLedger.amount), 0)).filter(
         UserLedger.user_id == user_id,
         UserLedger.transaction_type == TransactionType.DEPOSIT
@@ -230,22 +216,16 @@ async def get_transaction_summary(
     ).scalar()
     
     # 總獎金
-    _prize_q = db.query(func.coalesce(func.sum(UserLedger.amount), 0)).filter(
+    total_prize = db.query(func.coalesce(func.sum(UserLedger.amount), 0)).filter(
         UserLedger.user_id == user_id,
         UserLedger.transaction_type == TransactionType.POOL_PRIZE
-    )
-    if _dead:
-        _prize_q = _prize_q.filter(~UserLedger.series_id.in_(_dead))
-    total_prize = _prize_q.scalar()
+    ).scalar()
     
     # 總投資（加入 + 加碼）
-    _inv_q = db.query(func.coalesce(func.sum(UserLedger.amount), 0)).filter(
+    total_invested = db.query(func.coalesce(func.sum(UserLedger.amount), 0)).filter(
         UserLedger.user_id == user_id,
         UserLedger.transaction_type.in_([TransactionType.POOL_JOIN, TransactionType.POOL_TOPUP])
-    )
-    if _dead:
-        _inv_q = _inv_q.filter(~UserLedger.series_id.in_(_dead))
-    total_invested = _inv_q.scalar()
+    ).scalar()
     
     return {
         "total_deposit": float(total_deposit),
