@@ -341,14 +341,14 @@
                 
                 const roi = data.total_invested > 0 
                     ? ((data.total_prize - data.total_invested) / data.total_invested * 100).toFixed(1) 
-                    : 0;
+                    : 0 || 0;
                 const roiEl = $('overall-roi');
                 roiEl.textContent = roi + '%';
                 roiEl.className = 'roi-value ' + (roi >= 0 ? 'positive' : 'negative');
                 
-                setText('roi-detail', `投入 $${formatMoney(data.total_invested)} / 獎金 $${formatMoney(data.total_prize)}`);
-                setText('total-invested', '$' + formatMoney(data.total_invested));
-                setText('total-prize', '$' + formatMoney(data.total_prize));
+                setText('roi-detail', `投入 ${formatMoney(data.total_invested)} / 獎金 ${formatMoney(data.total_prize)}`);
+                setText('total-invested', formatMoney(data.total_invested));
+                setText('total-prize', formatMoney(data.total_prize));
                 setText('total-groups', data.total_groups || 0);
                 setText('win-rate', (data.win_rate || 0).toFixed(1) + '%');
             } catch (e) { console.error('loadOverallStats:', e); }
@@ -383,16 +383,16 @@
                     return;
                 }
                 list.innerHTML = data.map(p => {
-                    const roi = p.invested > 0 ? ((p.prize - p.invested) / p.invested * 100).toFixed(1) : 0;
+                    const roi = p.invested > 0 ? ((p.prize - p.invested) / p.invested * 100).toFixed(1) : 0 || 0;
                     return `
                         <div class="perf-item">
                             <div class="perf-info">
                                 <div class="perf-name">${p.series_name || '集資'}</div>
-                                <div class="perf-detail">投入 $${formatMoney(p.invested)} / ${p.groups || 0} 期</div>
+                                <div class="perf-detail">投入 ${formatMoney(p.invested)} / ${p.groups || 0} 期</div>
                             </div>
                             <div class="perf-roi">
-                                <div class="perf-roi-value ${roi >= 0 ? 'positive' : 'negative'}">${roi}%</div>
-                                <div class="perf-profit">${roi >= 0 ? '+' : ''}$${formatMoney(p.prize - p.invested)}</div>
+                                <div class="perf-roi-value ${(isFinite(roi) ? roi : 0) >= 0 ? 'positive' : 'negative'}">${(isFinite(roi) ? roi : 0)}%</div>
+                                <div class="perf-profit">${(isFinite(roi) ? roi : 0) >= 0 ? '+' : ''}${formatMoney(p.prize - p.invested)}</div>
                             </div>
                         </div>
                     `;
@@ -412,7 +412,7 @@
                     <div class="win-item">
                         <div class="win-header">
                             <div class="win-title">${w.series_name || '集資'}</div>
-                            <div class="win-amount">+$${formatMoney(w.prize_share)}</div>
+                            <div class="win-amount">+${formatMoney(w.prize_share)}</div>
                         </div>
                         <div class="win-detail">第 ${w.draw_term || ''} 期 · ${w.prize_level || ''}</div>
                     </div>

@@ -167,6 +167,9 @@
         @media (min-width: 900px) {
             .header { padding-left: calc((100vw - 800px) / 2 + 20px); padding-right: calc((100vw - 800px) / 2 + 20px); }
         }
+    
+        .sync-btn { padding: 6px 14px; background: var(--sela-orange); color: white; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
+        .sync-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -183,6 +186,7 @@
             <span class="brand">樂透一路發</span>
         </div>
         <div class="header-right">
+                <a href="/admin/lottery" class="sync-btn" id="admin-sync-btn" style="display:none;">🎰 同步</a>
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar"></div>
                 <span class="user-name" id="user-name"></span>
@@ -231,7 +235,6 @@
             <a href="/lottery" class="action-btn lottery"><div class="action-icon">🎰</div><div class="action-title">對獎專區</div><div class="action-desc">開獎資訊與歷史</div></a>
             <a href="/stats" class="action-btn number-stats"><div class="action-icon">📊</div><div class="action-title">號碼統計</div><div class="action-desc">熱門冷門分析</div></a>
             <a href="/settings" class="action-btn settings"><div class="action-icon">⚙️</div><div class="action-title">設定</div><div class="action-desc">個人資料與通知</div></a>
-            <a href="/series" class="action-btn" onclick="event.preventDefault(); showJoinModal();"><div class="action-icon">🎫</div><div class="action-title">加入集資</div><div class="action-desc">使用邀請碼</div></a>
             <a href="/admin" class="action-btn admin" id="admin-btn" style="display: none;"><div class="action-icon">🔧</div><div class="action-title">管理後台</div><div class="action-desc">系統管理</div></a>
         </div>
         
