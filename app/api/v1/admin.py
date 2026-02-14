@@ -15,7 +15,7 @@ from app.models.user import User, UserRole
 from app.models.series import GroupSeries, SeriesStatus
 from app.models.member import GroupMember, MemberStatus
 from app.models.group import Group, GroupStatus
-from app.models.ledger import EventLog, EventCategory
+from app.models.ledger import EventLog, EventCategory, UserLedger
 from app.models.lottery_draw import LotteryDraw
 
 
